@@ -1,12 +1,9 @@
-import os
-import requests
-from fastapi import FastAPI, HTTPException
+import logging
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from dotenv import load_dotenv
-from transformers import pipeline
-
-load_dotenv()  # 加载 .env 文件
+from routers import chat_router  # 导入路由
+from utils.logger import setup_logger
+from utils.config import Config
 
 app = FastAPI()
 
@@ -19,22 +16,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 定义请求体模型
-class Message(BaseModel):
-    message: str
+# 配置日志记录
+logger = setup_logger("chat_app")
+logger.info("应用启动中...")
 
-# 初始化 HuggingFace 的 pipeline
-try:
-    generator = pipeline("text-generation", model="Qwen/Qwen-7B-Chat", trust_remote_code=True)
-except Exception as e:
-    raise RuntimeError(f"初始化模型失败: {e}")
+# 包含所有路由
+app.include_router(chat_router, prefix="/api")
 
-@app.post("/api/chat")
-async def chat(message: Message):
-    try:
-        # 使用 pipeline 生成文本，明确使用 max_new_tokens 控制生成长度
-        outputs = generator(message.message, max_new_tokens=512, truncation=True, num_return_sequences=1)
-        reply = outputs[0]['generated_text'].strip()
-        return {"message": reply}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# 记录应用启动事件
+@app.on_event("startup")
+def startup_event():
+    logger.info("Chat 应用已启动")
+
+# 你可以在这里包含更多的路由，例如：
+# from routers import other_router
+# app.include_router(other_router, prefix="/api")
