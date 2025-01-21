@@ -1,10 +1,10 @@
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# from routers import chat_router, users
-from routers import users
-from utils.logger import setup_logger
-from utils.config import Config
+# from api import chat_router, users
+from api import users
+from core.logger import setup_logger
+from core.config import Config
 
 app = FastAPI()
 
