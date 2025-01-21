@@ -6,11 +6,11 @@ load_dotenv()
 
 class Config:
     # HuggingFace 配置
-    HUGGINGFACE_MODEL_NAME: str = os.getenv("HUGGINGFACE_MODEL_NAME", "Qwen/Qwen2.5-7B-Instruct")
-    HUGGINGFACE_API_KEY: str = os.getenv("HUGGINGFACE_API_KEY", "")
+    #HUGGINGFACE_MODEL_NAME: str = os.getenv("HUGGINGFACE_MODEL_NAME", "Qwen/Qwen2.5-7B-Instruct")
+    #HUGGINGFACE_API_KEY: str = os.getenv("HUGGINGFACE_API_KEY", "")
 
     # 数据库配置
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./test.db")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "mysql+pymysql://root:930309@localhost:3306/test")
 
     # 应用配置
     DEBUG: bool = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")

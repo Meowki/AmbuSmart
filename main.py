@@ -1,7 +1,8 @@
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import chat_router  # 导入路由
+# from routers import chat_router, users
+from routers import users
 from utils.logger import setup_logger
 from utils.config import Config
 
@@ -21,12 +22,13 @@ logger = setup_logger("chat_app")
 logger.info("应用启动中...")
 
 # 包含所有路由
-app.include_router(chat_router, prefix="/api")
+# app.include_router(chat_router, prefix="/api")
+app.include_router(users.router, prefix="/api")
 
 # 记录应用启动事件
-@app.on_event("startup")
-def startup_event():
-    logger.info("Chat 应用已启动")
+# @app.on_event("startup")
+# def startup_event():
+#     logger.info("Chat 应用已启动")
 
 # 你可以在这里包含更多的路由，例如：
 # from routers import other_router
