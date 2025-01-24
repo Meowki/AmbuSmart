@@ -1180,18 +1180,16 @@ CREATE TABLE `patient` (
   `telno` varchar(50) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
   `ethnicity` varchar(255) DEFAULT NULL,
-  `id` int NOT NULL AUTO_INCREMENT,
   `patient_id` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`,`patient_id`) USING BTREE,
-  KEY `patient_id` (`patient_id`),
-  KEY `id` (`id`)
+  PRIMARY KEY (`patient_id`) USING BTREE,
+  KEY `patient_id` (`patient_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ----------------------------
 -- Records of patient
 -- ----------------------------
 BEGIN;
-INSERT INTO `patient` (`name`, `sex`, `idType`, `telno`, `address`, `ethnicity`, `id`, `patient_id`) VALUES ('张三', NULL, NULL, NULL, '测试用户', NULL, 1, '123123123412341234');
+INSERT INTO `patient` (`name`, `sex`, `idType`, `telno`, `address`, `ethnicity`, `patient_id`) VALUES ('张三', NULL, NULL, NULL, '测试用户', NULL, '123123123412341234');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;

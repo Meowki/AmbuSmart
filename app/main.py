@@ -2,9 +2,13 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # from api import chat_router, users
-from api import users
+# from api import users
 from core.logger import setup_logger
 from core.config import Config
+from api.patient.patient_routers import router as patient_routers
+from api.patient.allergy_routers import router as allergy_routers
+from db.base import Base
+from db.session import engine
 
 app = FastAPI()
 
@@ -23,7 +27,9 @@ logger.info("应用启动中...")
 
 # 包含所有路由
 # app.include_router(chat_router, prefix="/api")
-app.include_router(users.router, prefix="/api")
+# app.include_router(users.router, prefix="/api")
+app.include_router(patient_routers, prefix="/api")
+app.include_router(allergy_routers, prefix="/api")
 
 # 记录应用启动事件
 # @app.on_event("startup")
@@ -33,3 +39,6 @@ app.include_router(users.router, prefix="/api")
 # 你可以在这里包含更多的路由，例如：
 # from routers import other_router
 # app.include_router(other_router, prefix="/api")
+@app.get("/")
+def read_root():
+    return {"message": "欢迎使用 AmbuSmart API"}
