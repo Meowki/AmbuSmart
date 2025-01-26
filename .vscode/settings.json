@@ -1,7 +1,7 @@
 {
     "C_Cpp.files.exclude": {
         "files.exclude": {
-        "**/__pycache__": true,
+        "**/__pycache__/": true,
         "**/*.pyc": true,
         "**/.vscode": true,
         "**/.vs": true
