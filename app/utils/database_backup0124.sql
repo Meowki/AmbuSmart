@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 9.1.0, for Win64 (x86_64)
 --
--- Host: localhost    Database: mydatabase
+-- Host: localhost    Database: AmbuSmart
 -- ------------------------------------------------------
 -- Server version	9.1.0
 
@@ -16,12 +16,12 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `mydatabase`
+-- Current Database: `AmbuSmart`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `mydatabase` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `AmbuSmart` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 
-USE `mydatabase`;
+USE `AmbuSmart`;
 
 --
 -- Table structure for table `allergies`
