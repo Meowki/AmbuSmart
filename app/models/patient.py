@@ -15,4 +15,5 @@ class Patient(Base):
 
     # 定义与 Allergy 模型的关系
     allergies = relationship("Allergy", back_populates="patient", cascade="all, delete-orphan")
+    medical_histories = relationship("MedicalHistory", cascade="all, delete-orphan", back_populates="patient")
     # 其他关系

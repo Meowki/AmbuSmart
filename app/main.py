@@ -7,10 +7,16 @@ from core.logger import setup_logger
 from core.config import Config
 from api.patient.patient_routers import router as patient_routers
 from api.patient.allergy_routers import router as allergy_routers
+from api.patient.medical_history_routers import router as medical_history_routers
+from api.personnel.department_routers import router as department_routers
+from api.personnel.health_personnel_router import router as health_personnel_routers    
 from db.base import Base
 from db.session import engine
 
-app = FastAPI()
+app = FastAPI(
+    title="医疗项目API",
+    # 其他参数...
+)
 
 # 配置 CORS 以允许前端访问
 app.add_middleware(
@@ -30,7 +36,10 @@ logger.info("应用启动中...")
 # app.include_router(users.router, prefix="/api")
 app.include_router(patient_routers, prefix="/api")
 app.include_router(allergy_routers, prefix="/api")
+app.include_router(medical_history_routers, prefix="/api")
 
+app.include_router(department_routers, prefix="/api")
+app.include_router(health_personnel_routers, prefix="/api")
 # 记录应用启动事件
 # @app.on_event("startup")
 # def startup_event():

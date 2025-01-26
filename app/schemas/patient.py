@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
 from .allergy import Allergy
+from .medical_history import MedicalHistory
 from datetime import datetime
 
 # def calculate_age(id_card: str) -> int:
@@ -30,6 +31,7 @@ class PatientUpdate(PatientBase):
 
 class Patient(PatientBase):
     allergies: List[Allergy] = []
+    medical_histories: List[MedicalHistory] = []
     # age: int
 
     class Config:
