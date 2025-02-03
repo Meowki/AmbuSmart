@@ -29,7 +29,7 @@ class MedicalRecordBase(BaseModel):
 class MedicalRecordCreate(MedicalRecordBase):
     pass
 
-class MedicalRecordRead(MedicalRecordBase):
+class MedicalRecord(MedicalRecordBase):
     record_id: int
     patient: Optional[Patient]=[]
     health_personnel: Optional[HealthPersonnel]=[]

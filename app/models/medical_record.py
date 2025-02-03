@@ -27,6 +27,6 @@ class MedicalRecord(Base):
     assessment = Column(String(255), nullable=True, comment='初步评估结果/诊断')
     remark = Column(String(255), nullable=True)
     
-    patient = relationship("Patient", back_populates="medical_records")
-    health_personnel = relationship("HealthPersonnel", back_populates="medical_records")
-    department = relationship("Department", back_populates="medical_records")
+    # patient = relationship("Patient", back_populates="medical_record")
+    # health_personnel = relationship("HealthPersonnel", back_populates="medical_record")
+    # department = relationship("Department", back_populates="medical_record")
