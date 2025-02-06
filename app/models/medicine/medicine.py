@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, DECIMAL
 from sqlalchemy.orm import relationship
-from app.database import Base
+from db.base import Base
 
 class Medicine(Base):
     __tablename__ = 'medicine'
@@ -13,4 +13,4 @@ class Medicine(Base):
     unit = Column(String(255), nullable=True, comment='单位')
     store = Column(String(255), nullable=True, comment='库存')
     specs = Column(String(255), nullable=True, comment='规格')
-    sell = Column(Integer, unsigned=True, default=0, comment='销售数量')
+    sell = Column(Integer, default=0, comment='销售数量')
