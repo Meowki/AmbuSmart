@@ -5,7 +5,7 @@ from schemas.patient import PatientCreate
 
 class CRUDPatient:
     def get(self, db: Session, patient_id: str):
-        return db.query(Patient).filter(Patient.patient_id == patient_id).first()
+        return db.query(Patient).filter(Patient.patient_id == patient_id).all()
 
     def get_all(self, db: Session, skip: int = 0, limit: int = 100):
         return db.query(Patient).offset(skip).limit(limit).all()

@@ -12,4 +12,4 @@ class CheckHistory(Base):
     remark = Column(String(255), nullable=True)
     result = Column(BLOB, nullable=True)
     description = Column(BLOB, nullable=True)
-    cid = Column(String(255), ForeignKey('check.cid'), nullable=True)
+    cid = Column(String(255), ForeignKey('checks.cid'), nullable=True)

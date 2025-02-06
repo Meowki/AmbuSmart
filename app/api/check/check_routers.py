@@ -33,8 +33,8 @@ def get_all_checks(skip: int = 0, limit: int = 100, db: Session = Depends(get_db
     checks = check_service.get_checks(db, skip, limit)
     return checks
 
-##这里卡了好久，原因是：
-##FastAPI是按顺序匹配路由的。当请求到达时，它会先匹配到第一个符合的路由。
+# 这里卡了好久，原因是：
+# FastAPI是按顺序匹配路由的。当请求到达时，它会先匹配到第一个符合的路由。
 # 原本用 /check/{name}做的路由
 # 所以当访问/api/check/test时，会首先被get_check_by_cid处理，返回404。
 # 期望的是通过name来查询，由于路由顺序的问题，导致请求被错误地处理。

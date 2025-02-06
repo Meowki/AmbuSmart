@@ -17,6 +17,6 @@ class CRUDCaseHistory:
         return db_case_history
     
     def get_by_patient(self, db: Session, patient_id: str):
-        return db.query(CaseHistory).filter(CaseHistory.patient_id == patient_id).first()
+        return db.query(CaseHistory).filter(CaseHistory.patient_id == patient_id).all()
 
 crud_case_history = CRUDCaseHistory()

@@ -21,7 +21,7 @@ def create_patient(patient: PatientCreate, db: Session = Depends(get_db)):
     db_patient = patient_service.create_patient(db, patient)
     return db_patient
 
-@router.get("/{patient_id}", response_model=Patient)
+@router.get("/{patient_id}", response_model=list[Patient])
 def read_patient(patient_id: str, db: Session = Depends(get_db)):
     db_patient = patient_service.get_patient(db, patient_id)
     if db_patient is None:

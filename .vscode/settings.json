@@ -11,5 +11,6 @@
     "python.analysis.extraPaths": ["${workspaceFolder}"],
     "apc.stylesheet": {
         ".anysphere-markdown-container-root": "font-size: 16px; line-height: 1.4;"
-    }
+    },
+    "marscode.chatLanguage": "cn"
 }

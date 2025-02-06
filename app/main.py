@@ -13,6 +13,8 @@ from api.personnel.health_personnel_router import router as health_personnel_rou
 from api.record.medical_record_routers import router as medical_record_routers
 from api.record.case_history_routers import router as case_history_routers
 from api.check.check_routers import router as check_routers
+from api.check.check_histories_routers import router as check_histories_routers
+
 from db.base import Base
 from db.session import engine
 
@@ -48,6 +50,7 @@ app.include_router(medical_record_routers, prefix="/api")
 app.include_router(case_history_routers, prefix="/api")
 
 app.include_router(check_routers, prefix="/api")
+app.include_router(check_histories_routers, prefix="/api")
 
 # 记录应用启动事件
 # @app.on_event("startup")
