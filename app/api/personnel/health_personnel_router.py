@@ -23,7 +23,7 @@ def create_health_personnel(health_personnel: HealthPersonnelCreate, db: Session
 
 @router.get("/{wid}", response_model=HealthPersonnel)
 def read_health_personnel(wid: str, db: Session = Depends(get_db)):
-    db_health_personnel = health_personnel_service.get_health_personnel(db, wid)
+    db_health_personnel = health_personnel_service.get_health_personnel_by_wid(db, wid)
     if db_health_personnel is None:
         raise HTTPException(status_code=404, detail="HealthPersonnel not found")
     return db_health_personnel

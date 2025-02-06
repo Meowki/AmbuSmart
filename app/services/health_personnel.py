@@ -4,7 +4,7 @@ from schemas.health_personnel import HealthPersonnelCreate
 from crud.health_personnel import crud_health_personnel
 
 class HealthPersonnelService:
-    def get_health_personnel(self, db: Session, wid: str):
+    def get_health_personnel_by_wid(self, db: Session, wid: str):
         return crud_health_personnel.get(db, wid)
 
     def get_health_personnel(self, db: Session, skip: int = 0, limit: int = 100):

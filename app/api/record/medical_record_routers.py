@@ -18,13 +18,18 @@ def get_db():
         db.close()
 
 @router.post("/", response_model=MedicalRecord)
-def add_medical_record(patient_id: str, medical_record: MedicalRecordCreate, db: Session = Depends(get_db)):
-    db_medical_record = medical_record_service.add_medical_record(db, medical_record, patient_id)
+def add_medical_record(medical_record: MedicalRecordCreate, db: Session = Depends(get_db)):
+    db_medical_record = medical_record_service.add_medical_record(db, medical_record)
     return db_medical_record
 
 @router.get("/", response_model=list[MedicalRecord])
+def get_all_medical_record(db: Session = Depends(get_db)):
+    medical_record = medical_record_service.get_all_medical_record(db)
+    return medical_record
+
+@router.get("/{patient_id}", response_model=list[MedicalRecord])
 def get_medical_histories_by_patient(patient_id: str, db: Session = Depends(get_db)):
     medical_record = medical_record_service.get_medical_record_by_patient(db, patient_id)
-    return medical_record if isinstance(medical_record,list) else [medical_record]
+    return medical_record 
 
 # 其他医疗历史相关的路由

@@ -1,9 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
-from .patient import Patient
-from .health_personnel import HealthPersonnel
-from .department import Department
 
 class MedicalRecordBase(BaseModel):
     patient_id: str
@@ -31,9 +28,6 @@ class MedicalRecordCreate(MedicalRecordBase):
 
 class MedicalRecord(MedicalRecordBase):
     record_id: int
-    patient: Optional[Patient]=[]
-    health_personnel: Optional[HealthPersonnel]=[]
-    department: Optional[Department]=[]
 
     class Config:
         orm_mode = True

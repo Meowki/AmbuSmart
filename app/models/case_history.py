@@ -16,7 +16,5 @@ class CaseHistory(Base):
     in_assessment = Column(String(255), nullable=True, comment='入院病情')
     remark = Column(String(255), nullable=True)
     out_result = Column(String(255), nullable=True, comment='出院诊断')
-    
+
     patient = relationship("Patient", back_populates="case_histories")
-    health_personnel = relationship("HealthPersonnel", back_populates="case_histories")
-    department = relationship("Department", back_populates="case_histories")

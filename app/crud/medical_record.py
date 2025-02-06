@@ -17,7 +17,7 @@ class CRUDMedicalRecord:
         return db_medical_record
     
     def get_by_patient(self, db: Session, patient_id: str):
-        return db.query(MedicalRecord).filter(MedicalRecord.patient_id == patient_id).first()
+        return db.query(MedicalRecord).filter(MedicalRecord.patient_id == patient_id)
 
     # 其他CRUD方法
 
