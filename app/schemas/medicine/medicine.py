@@ -10,12 +10,13 @@ class MedicineBase(BaseModel):
     store: Optional[str] = None
     specs: Optional[str] = None
     sell: Optional[int] = 0
+    mid: str
 
 class MedicineCreate(MedicineBase):
     pass
 
 class Medicine(MedicineBase):
-    mid: str
+   
 
     class Config:
         orm_mode = True
