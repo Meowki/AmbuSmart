@@ -11,7 +11,7 @@
  Target Server Version : 90100 (9.1.0)
  File Encoding         : 65001
 
- Date: 07/02/2025 16:59:33
+ Date: 07/02/2025 18:04:24
 */
 
 SET NAMES utf8mb4;
@@ -44,7 +44,7 @@ INSERT INTO `allergies` VALUES (3, '123123123412341234', '测试', '重度', 'st
 -- ----------------------------
 DROP TABLE IF EXISTS `ambulance`;
 CREATE TABLE `ambulance`  (
-  `aid` int NOT NULL COMMENT '给救护车的一个表',
+  `aid` int NOT NULL AUTO_INCREMENT COMMENT '给救护车的一个表',
   `car_num` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `dispatch_time` datetime NULL DEFAULT NULL COMMENT '出车时间',
   `arrival_on_scene_time` datetime NULL DEFAULT NULL COMMENT '到达现场时间',
@@ -54,11 +54,14 @@ CREATE TABLE `ambulance`  (
   PRIMARY KEY (`aid`) USING BTREE,
   INDEX `ambulance_operation`(`operation_id` ASC) USING BTREE,
   CONSTRAINT `ambulance_operation` FOREIGN KEY (`operation_id`) REFERENCES `operation_histories` (`operation_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 12004 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ambulance
 -- ----------------------------
+INSERT INTO `ambulance` VALUES (12001, '苏EX8080', NULL, NULL, NULL, NULL, 20202);
+INSERT INTO `ambulance` VALUES (12002, 'string', '2025-02-07 09:48:02', '2025-02-07 09:48:02', '2025-02-07 09:48:02', '2025-02-07 09:48:02', 20202);
+INSERT INTO `ambulance` VALUES (12003, '测试', '2025-02-07 09:48:02', '2025-02-07 09:48:02', '2025-02-07 09:48:02', '2025-02-07 09:48:02', 20202);
 
 -- ----------------------------
 -- Table structure for case_histories
@@ -1147,18 +1150,16 @@ DROP TABLE IF EXISTS `operation_histories`;
 CREATE TABLE `operation_histories`  (
   `operation_id` int NOT NULL AUTO_INCREMENT COMMENT '急救用表',
   `patient_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `aid` int NULL DEFAULT NULL COMMENT '对应救护车',
   PRIMARY KEY (`operation_id`) USING BTREE,
   INDEX `operation_patient`(`patient_id` ASC) USING BTREE,
-  INDEX `operation_ambu`(`aid` ASC) USING BTREE,
-  CONSTRAINT `operation_ambu` FOREIGN KEY (`aid`) REFERENCES `ambulance` (`aid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `operation_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 20203 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 20205 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of operation_histories
 -- ----------------------------
-INSERT INTO `operation_histories` VALUES (20202, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20202, '123123123412341234');
+INSERT INTO `operation_histories` VALUES (20204, '123456123112311231');
 
 -- ----------------------------
 -- Table structure for operation_relating
