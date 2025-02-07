@@ -14,3 +14,4 @@ class CheckRelationship(Base):
 
     medical_record = relationship("MedicalRecord", back_populates="check_relationship")
     check_histories = relationship("CheckHistory", back_populates="check_relationship")
+    case_history = relationship("CaseHistory", back_populates="check_relationship")

@@ -1,6 +1,9 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
+
+from schemas.check.check_histories import CheckHistory
+from schemas.medicine.medicine_histories import MedicineHistory
 
 class CaseHistoryBase(BaseModel):
     patient_id: str
@@ -21,3 +24,13 @@ class CaseHistory(CaseHistoryBase):
 
     class Config:
         from_attributes = True
+
+
+# 这个用于病人ID查询时返回的 CaseHistory 包括检查记录和用药记录
+class CaseHistoryWithChecksResponse(CaseHistoryBase):
+    case_id: int
+    check_histories: Optional[List[CheckHistory]] = []
+    medicine_histories: Optional[List[MedicineHistory]] = []
+
+    class Config:
+        orm_mode = True

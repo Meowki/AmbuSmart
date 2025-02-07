@@ -14,5 +14,5 @@ class MedicineRelationship(Base):
     # 设置关系
     medical_record = relationship("MedicalRecord", back_populates="medicine_relationship")
     medicine_histories = relationship("MedicineHistory", back_populates="medicine_relationship")
-    # case_history = relationship("CaseHistory", back_populates="medicine_relationship")
+    case_history = relationship("CaseHistory", back_populates="medicine_relationship")
     # operation_history = relationship("OperationHistory", back_populates="medicine_relationship")
