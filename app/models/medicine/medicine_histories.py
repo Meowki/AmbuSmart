@@ -13,3 +13,5 @@ class MedicineHistory(Base):
     time = Column(Date, nullable=True)
     status = Column(String(255), nullable=True)
     wid = Column(String(255), ForeignKey('health_personnel.wid'), nullable=True)
+
+    medicine_relationship = relationship("MedicineRelationship", back_populates="medicine_histories")

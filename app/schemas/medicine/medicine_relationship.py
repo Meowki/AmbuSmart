@@ -1,13 +1,13 @@
 from pydantic import BaseModel
 from typing import Optional
 
-class CheckRelationshipBase(BaseModel):
+class MedicineRelationshipBase(BaseModel):
+    mrid: Optional[int] = None
     record_id: Optional[int] = None
     case_id: Optional[int] = None
     operation_id: Optional[int] = None
-    check_id: Optional[int] = None
 
-class CheckRelationship(CheckRelationshipBase):
+class MedicineRelationship(MedicineRelationshipBase):
     id: int
 
     class Config:
