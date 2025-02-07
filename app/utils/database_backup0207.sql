@@ -11,7 +11,7 @@
  Target Server Version : 90100 (9.1.0)
  File Encoding         : 65001
 
- Date: 06/02/2025 18:15:18
+ Date: 07/02/2025 16:59:33
 */
 
 SET NAMES utf8mb4;
@@ -46,7 +46,14 @@ DROP TABLE IF EXISTS `ambulance`;
 CREATE TABLE `ambulance`  (
   `aid` int NOT NULL COMMENT '给救护车的一个表',
   `car_num` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`aid`) USING BTREE
+  `dispatch_time` datetime NULL DEFAULT NULL COMMENT '出车时间',
+  `arrival_on_scene_time` datetime NULL DEFAULT NULL COMMENT '到达现场时间',
+  `departure_from_scene_time` datetime NULL DEFAULT NULL COMMENT '离开现场时间',
+  `arrival_at_hospital_time` datetime NULL DEFAULT NULL COMMENT '到达医院时间\r\n',
+  `operation_id` int NULL DEFAULT NULL,
+  PRIMARY KEY (`aid`) USING BTREE,
+  INDEX `ambulance_operation`(`operation_id` ASC) USING BTREE,
+  CONSTRAINT `ambulance_operation` FOREIGN KEY (`operation_id`) REFERENCES `operation_histories` (`operation_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -75,13 +82,14 @@ CREATE TABLE `case_histories`  (
   CONSTRAINT `case_department` FOREIGN KEY (`dno`) REFERENCES `department` (`dno`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `case_hp` FOREIGN KEY (`wid`) REFERENCES `health_personnel` (`wid`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `case_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 10302 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10303 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of case_histories
 -- ----------------------------
 INSERT INTO `case_histories` VALUES (10300, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `case_histories` VALUES (10301, '123123123412341234', 'w10001', 'b1', 'string', '2025-02-06 06:30:01', '2025-02-06 06:30:01', '入院病情', 'string', 'string');
+INSERT INTO `case_histories` VALUES (10301, '123123123412341234', 'w10001', 'b1', 'string', '2025-02-06 06:30:01', '2025-02-06 06:30:01', '入院病情', '测试1，仅有medicine', 'string');
+INSERT INTO `case_histories` VALUES (10302, '123123123412341234', 'w1027', 'j1', NULL, NULL, NULL, NULL, '测试2，各有2', NULL);
 
 -- ----------------------------
 -- Table structure for check_histories
@@ -103,7 +111,7 @@ CREATE TABLE `check_histories`  (
   CONSTRAINT `check_hp` FOREIGN KEY (`wid`) REFERENCES `health_personnel` (`wid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `check_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `to_checklist` FOREIGN KEY (`cid`) REFERENCES `checks` (`cid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 1005 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1008 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of check_histories
@@ -111,6 +119,9 @@ CREATE TABLE `check_histories`  (
 INSERT INTO `check_histories` VALUES (1001, '123123123412341234', 'w1024', '2025-02-06 15:00:34', '测试记录', NULL, NULL, 'h3');
 INSERT INTO `check_histories` VALUES (1002, '789789200101251234', 'w10001', '2025-02-06 18:10:36', NULL, NULL, NULL, 't0001');
 INSERT INTO `check_histories` VALUES (1004, '123123123412341234', 'w10001', '2025-02-06 10:06:59', 'string', 0x737472696E67, 0xE6B58BE8AF9532, 't0001');
+INSERT INTO `check_histories` VALUES (1005, '123123123412341234', 'w1025', '2025-02-07 14:54:29', '和1004是同一个门诊做的', NULL, NULL, 'h5');
+INSERT INTO `check_histories` VALUES (1006, '123123123412341234', 'w1027', '2025-03-07 16:53:09', '给case1', NULL, NULL, 'h5');
+INSERT INTO `check_histories` VALUES (1007, '123123123412341234', 'w1030', '2025-02-07 16:53:32', '给case1', NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for check_relationship
@@ -118,9 +129,9 @@ INSERT INTO `check_histories` VALUES (1004, '123123123412341234', 'w10001', '202
 DROP TABLE IF EXISTS `check_relationship`;
 CREATE TABLE `check_relationship`  (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '用于记录检查和门诊/住院/急救的关系',
-  `record_id` int NULL DEFAULT 10010,
-  `case_id` int NULL DEFAULT 10300,
-  `operation_id` int NULL DEFAULT 20202 COMMENT '急救用',
+  `record_id` int NULL DEFAULT NULL,
+  `case_id` int NULL DEFAULT NULL,
+  `operation_id` int NULL DEFAULT NULL COMMENT '急救用',
   `check_id` int NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `check_recordmed`(`record_id` ASC) USING BTREE,
@@ -131,11 +142,16 @@ CREATE TABLE `check_relationship`  (
   CONSTRAINT `check_operation` FOREIGN KEY (`operation_id`) REFERENCES `operation_histories` (`operation_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `check_recordmed` FOREIGN KEY (`record_id`) REFERENCES `medical_record` (`record_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `to_check` FOREIGN KEY (`check_id`) REFERENCES `check_histories` (`check_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of check_relationship
 -- ----------------------------
+INSERT INTO `check_relationship` VALUES (1, 10025, NULL, NULL, 1001);
+INSERT INTO `check_relationship` VALUES (2, 10027, NULL, NULL, 1004);
+INSERT INTO `check_relationship` VALUES (3, 10027, NULL, NULL, 1005);
+INSERT INTO `check_relationship` VALUES (4, NULL, 10301, NULL, 1006);
+INSERT INTO `check_relationship` VALUES (5, NULL, 10301, NULL, 1007);
 
 -- ----------------------------
 -- Table structure for checks
@@ -1058,6 +1074,7 @@ INSERT INTO `medicine` VALUES ('m14270', '注射用阿莫西林钠克拉维酸�
 INSERT INTO `medicine` VALUES ('m14271', '左卡尼汀注射液', '注射剂', '东北制药集团沈阳第一制药有限公司', 42.60, '支', '100', '1g:5ml', 0);
 INSERT INTO `medicine` VALUES ('m14272', '左氧氟沙星氯化钠注射液', '注射剂', '浙江医药股份有限公司新昌制药厂', 39.80, '袋', '100', '0.3g:100ml', 0);
 INSERT INTO `medicine` VALUES ('m14273', '30%脂肪乳注射液', '注射液', '西安力邦制药有限公司', 32.90, '瓶', '100', '30%:100ml', 0);
+INSERT INTO `medicine` VALUES ('t0001', '测试', 'string', 'string', 0.00, 'string', 'string', 'string', 0);
 
 -- ----------------------------
 -- Table structure for medicine_histories
@@ -1080,12 +1097,17 @@ CREATE TABLE `medicine_histories`  (
   CONSTRAINT `medicine_hp` FOREIGN KEY (`wid`) REFERENCES `health_personnel` (`wid`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `medicine_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `to_medicine` FOREIGN KEY (`mid`) REFERENCES `medicine` (`mid`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 1003 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1008 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of medicine_histories
 -- ----------------------------
 INSERT INTO `medicine_histories` VALUES (1002, '123123123412341234', 'm13804', 1, '测试记录', '2025-02-06', NULL, 'w1025');
+INSERT INTO `medicine_histories` VALUES (1003, '123123123412341234', 't0001', 0, '测试用', '2025-02-07', 'string', 'w10001');
+INSERT INTO `medicine_histories` VALUES (1004, '123123123412341234', 'm13805', 12, '打算和1003开一个单子', '2025-02-07', NULL, 'w1026');
+INSERT INTO `medicine_histories` VALUES (1005, '123123123412341234', 'm13808', 1, '给第一个case', '2025-02-07', NULL, NULL);
+INSERT INTO `medicine_histories` VALUES (1006, '123123123412341234', 'm14047', NULL, '第二个', '2025-03-06', NULL, NULL);
+INSERT INTO `medicine_histories` VALUES (1007, '123123123412341234', 'm13812', NULL, '2.2', '2025-02-20', NULL, NULL);
 
 -- ----------------------------
 -- Table structure for medicine_relationship
@@ -1094,9 +1116,9 @@ DROP TABLE IF EXISTS `medicine_relationship`;
 CREATE TABLE `medicine_relationship`  (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '用药记录与门诊、住院、急救的关系',
   `mrid` int UNSIGNED NULL DEFAULT NULL,
-  `record_id` int NULL DEFAULT 10010,
-  `case_id` int NULL DEFAULT 10300,
-  `operation_id` int NULL DEFAULT 20202,
+  `record_id` int NULL DEFAULT NULL,
+  `case_id` int NULL DEFAULT NULL,
+  `operation_id` int NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `to_case`(`case_id` ASC) USING BTREE,
   INDEX `to_medicine_histories`(`mrid` ASC) USING BTREE,
@@ -1106,11 +1128,17 @@ CREATE TABLE `medicine_relationship`  (
   CONSTRAINT `to_medicine_histories` FOREIGN KEY (`mrid`) REFERENCES `medicine_histories` (`mrid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `to_operation` FOREIGN KEY (`operation_id`) REFERENCES `operation_histories` (`operation_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `to_record` FOREIGN KEY (`record_id`) REFERENCES `medical_record` (`record_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of medicine_relationship
 -- ----------------------------
+INSERT INTO `medicine_relationship` VALUES (1, 1002, 10025, NULL, NULL);
+INSERT INTO `medicine_relationship` VALUES (2, 1003, 10027, NULL, NULL);
+INSERT INTO `medicine_relationship` VALUES (3, 1004, 10027, NULL, NULL);
+INSERT INTO `medicine_relationship` VALUES (4, 1005, NULL, 10301, NULL);
+INSERT INTO `medicine_relationship` VALUES (5, 1006, NULL, 10302, NULL);
+INSERT INTO `medicine_relationship` VALUES (6, 1007, NULL, 10302, NULL);
 
 -- ----------------------------
 -- Table structure for operation_histories
