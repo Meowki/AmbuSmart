@@ -11,3 +11,5 @@ class Check(Base):
     price = Column(DECIMAL(10, 2), nullable=True, comment='检查价格')
     device = Column(String(255), nullable=True, comment='使用设备')
     num = Column(Integer,  default=0, comment='检查次数')
+
+    

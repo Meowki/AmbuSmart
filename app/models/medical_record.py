@@ -28,3 +28,4 @@ class MedicalRecord(Base):
     remark = Column(String(255), nullable=True)
 
     patient = relationship("Patient", back_populates="medical_record")
+    check_relationship = relationship("CheckRelationship", back_populates="medical_record")

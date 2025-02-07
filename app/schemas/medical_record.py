@@ -1,6 +1,8 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
+
+from schemas.check.check_histories import CheckHistory
 
 class MedicalRecordBase(BaseModel):
     patient_id: str
@@ -26,8 +28,17 @@ class MedicalRecordBase(BaseModel):
 class MedicalRecordCreate(MedicalRecordBase):
     pass
 
+# 这个用于普通的查询，不包含检查记录
 class MedicalRecord(MedicalRecordBase):
     record_id: int
+
+    class Config:
+        orm_mode = True
+
+# 这个用于病人ID查询时返回的 MedicalRecord 包括检查记录
+class MedicalRecordWithChecksResponse(MedicalRecordBase):
+    record_id: int
+    check_histories: Optional[List[CheckHistory]] = []
 
     class Config:
         orm_mode = True

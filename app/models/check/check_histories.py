@@ -13,3 +13,5 @@ class CheckHistory(Base):
     result = Column(BLOB, nullable=True)
     description = Column(BLOB, nullable=True)
     cid = Column(String(255), ForeignKey('checks.cid'), nullable=True)
+
+    check_relationship = relationship("CheckRelationship", back_populates="check_histories")
