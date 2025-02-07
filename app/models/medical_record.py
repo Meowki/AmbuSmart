@@ -1,4 +1,4 @@
-# 门诊/急诊病历，待补充药方和检查结果
+# 门诊/急诊病历
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from db.base import Base

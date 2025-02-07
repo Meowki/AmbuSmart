@@ -16,6 +16,7 @@ from api.check.check_routers import router as check_routers
 from api.check.check_histories_routers import router as check_histories_routers
 from api.medicine.medicine_routers import router as medicine_routers
 from api.medicine.medicine_histories_routers import router as medicine_histories_routers
+from api.ambulance.ambulance_routers import router as ambulance_routers
 
 from db.base import Base
 from db.session import engine
@@ -56,6 +57,8 @@ app.include_router(check_histories_routers, prefix="/api")
 
 app.include_router(medicine_routers, prefix="/api")
 app.include_router(medicine_histories_routers, prefix="/api")
+
+app.include_router(ambulance_routers, prefix="/api")
 
 # 记录应用启动事件
 # @app.on_event("startup")
