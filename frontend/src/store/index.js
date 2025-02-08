@@ -1,4 +1,11 @@
-import { createPinia } from 'pinia';
+import Vue from 'vue';
+import Vuex from 'vuex';
+import user from './user';
 
-const pinia = createPinia();
-export default pinia;
+Vue.use(Vuex);
+
+export default new Vuex.Store({
+  modules: {
+    user
+  }
+});

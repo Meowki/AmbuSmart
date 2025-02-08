@@ -18,6 +18,11 @@ const routes = [
     path: '/users',
     name: 'Users',
     component: UserManagement
+  },
+  {
+    path:'/test',
+    name:'Test',
+    component:()=>import('../components/test.vue')
   }
 ]
 
