@@ -18,4 +18,5 @@ class Patient(Base):
     medical_histories = relationship("MedicalHistory", cascade="all, delete-orphan", back_populates="patient")
     case_histories = relationship("CaseHistory", back_populates="patient")
     medical_record = relationship("MedicalRecord", back_populates="patient")
+    operation_histories = relationship("OperationHistory", back_populates="patient")
     # 其他关系
