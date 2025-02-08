@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from db.base import Base
 
@@ -15,5 +15,9 @@ class BasicCheck(Base):
     pulse = Column(String(255), nullable=True, comment='脉搏 次/分')
     respiration = Column(String(255), nullable=True, comment='呼吸 次/分')
     oxygen_saturation = Column(String(255), nullable=True, comment='血氧饱和度 %')
+    patient_id = Column(String(255), ForeignKey('patient.patient_id', ondelete='CASCADE', onupdate='CASCADE'))
 
-    operation_histories = relationship("OperationHistory", back_populates="basic_check")
+    # operation_histories = relationship("OperationHistory", back_populates="basic_check")
+    # 反向关系：从BasicCheck到OperationHistory
+    # initial_operation_history = relationship("OperationHistory", backref="initial_basic_check", foreign_keys="[OperationHistory.initial_eid]")
+    # final_operation_history = relationship("OperationHistory", backref="final_basic_check", foreign_keys="[OperationHistory.final_eid]")

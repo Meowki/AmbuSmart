@@ -11,7 +11,7 @@
  Target Server Version : 90100 (9.1.0)
  File Encoding         : 65001
 
- Date: 08/02/2025 15:05:25
+ Date: 08/02/2025 15:42:05
 */
 
 SET NAMES utf8mb4;
@@ -71,7 +71,10 @@ CREATE TABLE `basic_check`  (
   `pulse` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '脉搏 次/分',
   `respiration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '呼吸 次/分',
   `oxygen_saturation` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '血氧饱和度 %',
-  PRIMARY KEY (`eid`) USING BTREE
+  `patient_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`eid`) USING BTREE,
+  INDEX `basicCheck_patient`(`patient_id` ASC) USING BTREE,
+  CONSTRAINT `basicCheck_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------

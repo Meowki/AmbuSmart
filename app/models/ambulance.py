@@ -18,6 +18,6 @@ class Ambulance(Base):
     operation_id = Column(Integer, ForeignKey('operation_histories.operation_id'), nullable=True)
 
     # 关系设置
-    operation_history = relationship("OperationHistory", back_populates="ambulance")
+    # operation_history = relationship("OperationHistory", back_populates="ambulance")
 
 
