@@ -11,7 +11,7 @@
  Target Server Version : 90100 (9.1.0)
  File Encoding         : 65001
 
- Date: 07/02/2025 18:04:24
+ Date: 08/02/2025 15:05:25
 */
 
 SET NAMES utf8mb4;
@@ -44,24 +44,39 @@ INSERT INTO `allergies` VALUES (3, '123123123412341234', '测试', '重度', 'st
 -- ----------------------------
 DROP TABLE IF EXISTS `ambulance`;
 CREATE TABLE `ambulance`  (
-  `aid` int NOT NULL AUTO_INCREMENT COMMENT '给救护车的一个表',
+  `aid` int NOT NULL AUTO_INCREMENT COMMENT '给救护车的一个表，暂时弃用，该系统对车本身没有存储需求。',
   `car_num` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `dispatch_time` datetime NULL DEFAULT NULL COMMENT '出车时间',
-  `arrival_on_scene_time` datetime NULL DEFAULT NULL COMMENT '到达现场时间',
-  `departure_from_scene_time` datetime NULL DEFAULT NULL COMMENT '离开现场时间',
-  `arrival_at_hospital_time` datetime NULL DEFAULT NULL COMMENT '到达医院时间\r\n',
-  `operation_id` int NULL DEFAULT NULL,
-  PRIMARY KEY (`aid`) USING BTREE,
-  INDEX `ambulance_operation`(`operation_id` ASC) USING BTREE,
-  CONSTRAINT `ambulance_operation` FOREIGN KEY (`operation_id`) REFERENCES `operation_histories` (`operation_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 12004 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`aid`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ambulance
 -- ----------------------------
-INSERT INTO `ambulance` VALUES (12001, '苏EX8080', NULL, NULL, NULL, NULL, 20202);
-INSERT INTO `ambulance` VALUES (12002, 'string', '2025-02-07 09:48:02', '2025-02-07 09:48:02', '2025-02-07 09:48:02', '2025-02-07 09:48:02', 20202);
-INSERT INTO `ambulance` VALUES (12003, '测试', '2025-02-07 09:48:02', '2025-02-07 09:48:02', '2025-02-07 09:48:02', '2025-02-07 09:48:02', 20202);
+
+-- ----------------------------
+-- Table structure for basic_check
+-- ----------------------------
+DROP TABLE IF EXISTS `basic_check`;
+CREATE TABLE `basic_check`  (
+  `eid` int NOT NULL,
+  `timestamp` datetime NULL DEFAULT NULL,
+  `reject` int NULL DEFAULT 0 COMMENT '若1表示患者拒绝检查',
+  `consciousness` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '神志 清醒/嗜睡/昏迷',
+  `pupil` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '如2/2 表示左右',
+  `pupillary_light_reflex` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '对光反射 灵敏/迟钝/消失\r\n',
+  `blood_pressure` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '血压 mmHg\r\n',
+  `pulse` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '脉搏 次/分',
+  `respiration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '呼吸 次/分',
+  `oxygen_saturation` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '血氧饱和度 %',
+  PRIMARY KEY (`eid`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of basic_check
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for case_histories
@@ -265,6 +280,8 @@ INSERT INTO `department` VALUES ('f1', '妇科', '妇产科');
 INSERT INTO `department` VALUES ('f2', '产科', '妇产科');
 INSERT INTO `department` VALUES ('g1', '骨科', '骨科');
 INSERT INTO `department` VALUES ('g2', '骨科（创伤）', '骨科');
+INSERT INTO `department` VALUES ('h1', '后勤', '后勤');
+INSERT INTO `department` VALUES ('h2', '护理', '护理');
 INSERT INTO `department` VALUES ('j1', '血液科', '部门');
 INSERT INTO `department` VALUES ('j2', '医学影像科', '部门');
 INSERT INTO `department` VALUES ('j3', '体外检查科', '部门');
@@ -322,6 +339,39 @@ CREATE TABLE `health_personnel`  (
 -- ----------------------------
 -- Records of health_personnel
 -- ----------------------------
+INSERT INTO `health_personnel` VALUES ('d5201', 'h1', '冯昊测', '司机', '男', '420101196402108602', 50);
+INSERT INTO `health_personnel` VALUES ('d5202', 'h1', '吕实堂', '司机', '男', '420101197905266631', 49);
+INSERT INTO `health_personnel` VALUES ('d5203', 'h1', '周所龄', '司机', '男', '420101198509121291', 45);
+INSERT INTO `health_personnel` VALUES ('d5204', 'h1', '阮新巧', '司机', '男', '225080199206131000', 32);
+INSERT INTO `health_personnel` VALUES ('d5205', 'h1', '黎白卉', '司机', '女', '44613219880524926X', 36);
+INSERT INTO `health_personnel` VALUES ('d5206', 'h1', '缑安雁', '司机', '男', '116486198402088000', 38);
+INSERT INTO `health_personnel` VALUES ('d5207', 'h1', '郏小凡', '司机', '男', '130491198911073000', 35);
+INSERT INTO `health_personnel` VALUES ('d5208', 'h1', '柴问安', '司机', '男', '238563197911040000', 48);
+INSERT INTO `health_personnel` VALUES ('h3209', 'h2', '昝晓兰', '护士', '女', '442017196810081000', 50);
+INSERT INTO `health_personnel` VALUES ('h3210', 'h2', '姜青筠', '护士', '女', '217520198709074000', 36);
+INSERT INTO `health_personnel` VALUES ('h3211', 'h2', '索友儿', '护士', '女', '335209198709187000', 36);
+INSERT INTO `health_personnel` VALUES ('h3212', 'h2', '曾沛儿', '护士', '女', '355505197508046000', 45);
+INSERT INTO `health_personnel` VALUES ('h3213', 'h2', '籍觅珍', '护士', '女', '651653200607209000', 25);
+INSERT INTO `health_personnel` VALUES ('h3214', 'h2', '闻曼香', '护士', '女', '824552199105317000', 30);
+INSERT INTO `health_personnel` VALUES ('h3215', 'h2', '蔺南松', '护士', '女', '130465199403166000', 32);
+INSERT INTO `health_personnel` VALUES ('h3216', 'h2', '司徒孤丝', '护士', '女', '422866199404218000', 32);
+INSERT INTO `health_personnel` VALUES ('h3217', 'h2', '于青曼', '护士', '女', '507017198209055000', 39);
+INSERT INTO `health_personnel` VALUES ('h3218', 'h2', '水又菡', '护士', '男', '119549198601250000', 35);
+INSERT INTO `health_personnel` VALUES ('h3219', 'h2', '柴千兰', '护士', '女', '215374200409144000', 26);
+INSERT INTO `health_personnel` VALUES ('h3220', 'h2', '杨元霜', '护士', '男', '822443197903249000', 38);
+INSERT INTO `health_personnel` VALUES ('h3221', 'h2', '焦夏彤', '护士', '女', '622609199007040000', 35);
+INSERT INTO `health_personnel` VALUES ('h3222', 'h2', '饶元枫', '护士', '女', '820640197205158000', 38);
+INSERT INTO `health_personnel` VALUES ('h3223', 'h2', '崔晓瑶', '护士', '女', '214786199610173000', 31);
+INSERT INTO `health_personnel` VALUES ('h3224', 'h2', '太叔向雪', '护士', '女', '520701198205223000', 39);
+INSERT INTO `health_personnel` VALUES ('h3225', 'h2', '郦安蕾', '护士', '女', '22997919620704202X', 39);
+INSERT INTO `health_personnel` VALUES ('h3226', 'h2', '养冷珍', '护士', '女', '321389200105125000', 24);
+INSERT INTO `health_personnel` VALUES ('j8090', 'h1', '云傲蕾', '担架工', '女', '838276199006146000', 31);
+INSERT INTO `health_personnel` VALUES ('j8091', 'h1', '澹台以蕊', '担架工', '女', '459311198806178000', 38);
+INSERT INTO `health_personnel` VALUES ('j8092', 'h1', '贾绮彤', '担架工', '男', '123025196707161000', 39);
+INSERT INTO `health_personnel` VALUES ('j8093', 'h1', '皮如松', '担架工', '男', '353267196008140000', 45);
+INSERT INTO `health_personnel` VALUES ('j8094', 'h1', '冷山雁', '担架工', '男', '125393200302246000', 36);
+INSERT INTO `health_personnel` VALUES ('j8095', 'h1', '季从安', '担架工', '男', '450692198102134000', 38);
+INSERT INTO `health_personnel` VALUES ('j8096', 'h1', '古乐菱', '担架工', '男', '415052200210078000', 47);
 INSERT INTO `health_personnel` VALUES ('w10001', 'g1', '田柾国', '医生', '男', '123456199709011234', 25);
 INSERT INTO `health_personnel` VALUES ('w1023', 'b1', '钟如妙', '医生', '男', '220281199502038962', 28);
 INSERT INTO `health_personnel` VALUES ('w1024', 'b1', '幸葵樱', '副高', '女', '469021197902212545', 44);
@@ -576,7 +626,7 @@ CREATE TABLE `medical_record`  (
   CONSTRAINT `med_department` FOREIGN KEY (`dno`) REFERENCES `department` (`dno`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `med_hp` FOREIGN KEY (`wid`) REFERENCES `health_personnel` (`wid`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `med_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 10028 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10029 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of medical_record
@@ -584,6 +634,7 @@ CREATE TABLE `medical_record`  (
 INSERT INTO `medical_record` VALUES (10010, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '零号病历');
 INSERT INTO `medical_record` VALUES (10025, '123123123412341234', 'w10001', 'b1', 'string', 'string', 'string', 'string', 'string', '2025-02-06 06:23:14', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', '别管了，玩一下智能手机');
 INSERT INTO `medical_record` VALUES (10027, '123123123412341234', 'w10001', 'b1', 'string', 'string', 'string', 'string', 'string', '2025-02-06 07:22:00', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
+INSERT INTO `medical_record` VALUES (10028, '123123123412341234', 'w10001', 'b1', 'string', 'string', 'string', 'string', 'string', '2025-02-07 10:07:07', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
 
 -- ----------------------------
 -- Table structure for medicine
@@ -1150,16 +1201,50 @@ DROP TABLE IF EXISTS `operation_histories`;
 CREATE TABLE `operation_histories`  (
   `operation_id` int NOT NULL AUTO_INCREMENT COMMENT '急救用表',
   `patient_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `informant` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '供史者 本人/亲属/目击者',
+  `scene_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '现场地址',
+  `dispatch_time` datetime NULL DEFAULT NULL COMMENT '出车时间',
+  `arrival_on_scene_time` datetime NULL DEFAULT NULL COMMENT '到达现场时间',
+  `departure_from_scene_time` datetime NULL DEFAULT NULL COMMENT '离开现场时间',
+  `arrival_at_hospital_time` datetime NULL DEFAULT NULL COMMENT '到达医院时间\r\n',
+  `destination` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '送达地',
+  `severity_level` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '病情分级',
+  `emergency_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '急救性质 院前急救/转院/其他',
+  `chief_complaint` blob NULL COMMENT '病史/主诉',
+  `initial_diagnosis` blob NULL COMMENT '初步诊断',
+  `procedures` blob NULL COMMENT '急救处理，有就记录，看表',
+  `medicine` blob NULL COMMENT '药物使用记录',
+  `outcome` blob NULL COMMENT '急救结果',
+  `physician` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '急救医师（写名字吧，实在是懒得filter wid）',
+  `nurse` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '护士',
+  `driver` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '司机',
+  `paramedic` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '抢救员',
+  `stretcher_bearer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '担架工',
+  `recipient` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '院内接收者',
+  `initial_eid` int NULL DEFAULT NULL COMMENT '初检id',
+  `final_eid` int NULL DEFAULT NULL COMMENT '终检id',
+  `ti_score` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '创伤指数评分',
+  `ti_content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'ti具体内容，参考表格\r\n',
+  `gcs_score` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'gcs评分',
+  `gcs_content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'gcs具体内容',
+  `Killip_score` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'Killip分级',
+  `Killip_content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '表格里的胸痛高位状态评估',
+  `Killip_diagnosis` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '胸痛初步判断',
+  `cerebral_stroke_content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '脑卒中评估',
   PRIMARY KEY (`operation_id`) USING BTREE,
   INDEX `operation_patient`(`patient_id` ASC) USING BTREE,
-  CONSTRAINT `operation_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  INDEX `initial_exam`(`initial_eid` ASC) USING BTREE,
+  INDEX `final_exam`(`final_eid` ASC) USING BTREE,
+  CONSTRAINT `operation_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `final_exam` FOREIGN KEY (`final_eid`) REFERENCES `basic_check` (`eid`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `initial_exam` FOREIGN KEY (`initial_eid`) REFERENCES `basic_check` (`eid`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB AUTO_INCREMENT = 20205 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of operation_histories
 -- ----------------------------
-INSERT INTO `operation_histories` VALUES (20202, '123123123412341234');
-INSERT INTO `operation_histories` VALUES (20204, '123456123112311231');
+INSERT INTO `operation_histories` VALUES (20202, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20204, '123456123112311231', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for operation_relating
