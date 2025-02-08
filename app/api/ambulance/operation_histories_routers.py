@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from schemas.ambulance.operation_history import OperationHistoryCreate, OperationHistory
+from schemas.ambulance.operation_history import OperationHistoryCreate, OperationHistory, OperationHistoryWithBasicCheck
 from services.ambulance.operation_histories_sevice import operation_histories_service
 from db.session import SessionLocal
 
@@ -21,7 +21,7 @@ def create_operation_history(operation: OperationHistoryCreate, db: Session = De
     db_operation = operation_histories_service.create_operation_history(db, operation)
     return db_operation
 
-@router.get("/{patient_id}", response_model=list[OperationHistory])
+@router.get("/{patient_id}", response_model=list[OperationHistoryWithBasicCheck])
 def get_by_patient_id(patient_id: str, db: Session = Depends(get_db)):
     db_operation = operation_histories_service.get_by_patient_id(db, patient_id)
     if db_operation is None:

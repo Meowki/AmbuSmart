@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
+from schemas.ambulance.basic_check import BasicCheck
 
 class OperationHistoryBase(BaseModel):
     patient_id: Optional[str] = None
@@ -43,3 +44,14 @@ class OperationHistory(OperationHistoryBase):
 
     class Config:
         orm_mode = True
+
+class OperationHistoryUpdate(OperationHistoryBase):
+    pass
+
+class OperationHistoryDelete(BaseModel):
+    operation_id: int
+
+class OperationHistoryWithBasicCheck(OperationHistoryBase):
+    operation_id: int
+    initial_check: Optional[BasicCheck] = None
+    final_check: Optional[BasicCheck] = None
