@@ -1,13 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomePage from '../views/HomePage.vue'
+// import HomePage from '../views/HomePage.vue'
 import ChatWindow from '../views/Chat.vue'
 import UserManagement from '../views/UserManagement.vue'
 
 const routes = [
+  // {
+  //   path: '/',
+  //   name: 'HomePage',
+  //   component: HomePage
+  // },
   {
     path: '/',
-    name: 'HomePage',
-    component: HomePage
+    name: 'AmbuMenu',
+    component: ()=>import('../views/AmbuMenu.vue')
   },
   {
     path: '/chat',
@@ -23,7 +28,8 @@ const routes = [
     path:'/test',
     name:'Test',
     component:()=>import('../views/test.vue')
-  }
+  },
+
 ]
 
 const router = createRouter({
