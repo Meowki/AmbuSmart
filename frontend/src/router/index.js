@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomePage from '../components/HomePage.vue'
-import ChatWindow from '../components/Chat.vue'
-import UserManagement from '../components/UserManagement.vue'
+import HomePage from '../views/HomePage.vue'
+import ChatWindow from '../views/Chat.vue'
+import UserManagement from '../views/UserManagement.vue'
 
 const routes = [
   {
@@ -22,7 +22,7 @@ const routes = [
   {
     path:'/test',
     name:'Test',
-    component:()=>import('../components/test.vue')
+    component:()=>import('../views/test.vue')
   }
 ]
 
