@@ -12,7 +12,7 @@
   </div>
    <div class="home-container">
     <el-card class="main-card" shadow="always">
-      <h1 class="title">AmbuSmart 急救医疗辅助平台</h1>
+      <h1 class="title">PEC - AmbuSmart 院前急救平台</h1>
       <p class="subtitle">🚑 智能辅助，守护生命</p>
       <el-button type="danger" class="start-button" @click="startEmergency">
         进入急救
@@ -20,12 +20,12 @@
       <div class="card-container">
         <el-card class="card" shadow="always">
           <div class="card-content">
-            <p>📞 紧急求救</p>
+            <p>📞 历史记录</p>
           </div>
         </el-card>
         <el-card class="card" shadow="always">
           <div class="card-content">
-            <p>📖 急救指南</p>
+            <p>📖 急救手册</p>
           </div>
         </el-card>
         <el-card class="card" shadow="always">
@@ -43,7 +43,7 @@ export default {
   name: "HomePage",
   methods: {
     startEmergency() {
-      this.$router.push("/emergency");
+      this.$router.push("/AmbuStart");
     },
   },
 };
