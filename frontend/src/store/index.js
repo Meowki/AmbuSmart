@@ -1,11 +1,12 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
-import user from './user';
+import { createStore } from "vuex";
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
-  modules: {
-    user
-  }
+export default createStore({
+  state: {
+    operation_id: null,
+  },
+  mutations: {
+    setOperationId(state, operation_id) {
+      state.operation_id = operation_id;
+    },
+  },
 });

@@ -96,8 +96,9 @@ methods: {
       this.operation_id = response.data.operation_id; 
       console.log("Operation created, ID:", this.operation_id);
 
-      // 记录到 Vuex / Pinia (如果有状态管理)
+      // 记录到 Vuex 
       this.$store.commit("setOperationId", this.operation_id);
+      console.log("Operation ID stored in Vuex:", this.$store.state.operation_id);
 
       // 跳转到急救页面，并传递 ID
       this.$router.push({ path: "/AmbuStart", query: { operation_id: this.operation_id } });
