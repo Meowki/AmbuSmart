@@ -43,11 +43,7 @@ import api from "@/services/api";
 
 export default {
   name: "HomePage",
-  // methods: {
-  //   startEmergency() {
-  //     this.$router.push("/AmbuStart");
-  //   },
-  // },
+
   data() {
   return {
     operation_id: null, // 用于存储 operation_id

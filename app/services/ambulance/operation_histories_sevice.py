@@ -23,9 +23,18 @@ class OperationHistoryService:
 
     def get_all(self, db: Session, skip: int = 0, limit: int = 100):
         return crud_operation_histories.get_all(db, skip, limit)
+    
+    def get_by_operation_id(self, db: Session, operation_id: int):
+        return crud_operation_histories.get_by_operation_id(db, operation_id)
 
     def create_operation_history(self, db: Session, operation: OperationHistoryCreate):
         return crud_operation_histories.create(db, operation)
+    
+    def delete_operation_history(self, db: Session, operation_id: int):
+        return crud_operation_histories.delete(db, operation_id)
+
+    def update_operation_history(self, db: Session, operation_id: int, operation: OperationHistoryCreate):
+        return crud_operation_histories.update(db, operation_id, operation)
 
 
 operation_histories_service = OperationHistoryService()

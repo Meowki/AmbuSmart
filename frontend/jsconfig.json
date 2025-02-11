@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "esnext",
+    "target": "es6",
+    "module": "esnext", 
     "baseUrl": "./",
+    "types": ["web-bluetooth"],
     "moduleResolution": "node",
     "paths": {
       "@/*": [

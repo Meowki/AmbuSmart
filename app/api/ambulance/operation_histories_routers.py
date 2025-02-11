@@ -33,3 +33,12 @@ def get_all_operation_histories(skip: int = 0, limit: int = 100, db: Session = D
     operations = operation_histories_service.get_all(db, skip, limit)
     return operations
 
+@router.delete("/delete/{operation_id}", response_model=OperationHistory)
+def delete_operation_history(operation_id: str, db: Session = Depends(get_db)):
+    db_operation = operation_histories_service.get_by_operation_id(db, operation_id)
+    if db_operation is None:
+        raise HTTPException(status_code=404, detail="Operation History not found")
+    operation_histories_service.delete_operation_history(db, operation_id)
+    return db_operation
+
+

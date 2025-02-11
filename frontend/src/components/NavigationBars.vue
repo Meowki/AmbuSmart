@@ -14,7 +14,7 @@
   </header>
 
    <el-dialog v-model="showConfirm" title="退出" width="30%" align-center>
-      <span>确认取消本次急救及<b style="color: red">记录</b>，返回主页？</span>
+      <span>确认取消本次急救及<b style="color: red">相关所有记录</b>，返回主页？</span>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="showConfirm = false">取消</el-button>
@@ -26,26 +26,45 @@
 
 <script setup>
 import { defineProps, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';  
+import { useRouter } from 'vue-router';  
+import api from "@/services/api";
 
-const router = useRouter();
+const store = useStore();  
+const router = useRouter();  
 const showConfirm = ref(false);
 
 defineProps({
   activeStep: String
 });
 
-const steps = ['出车准备', '信息采集','决策系统', '统计分析', '急救结束'];
+const steps = ['出车准备', '信息采集', '决策系统', '统计分析', '急救结束'];
 
 const confirmExit = () => {
   showConfirm.value = true;
 };
 
-const exitToHome = () => {
+const exitToHome = async () => {
   showConfirm.value = false;
-  router.push('/');
+
+  const operationId = store.state.operation_id; 
+  console.log("Operation ID stored in Vuex:", operationId);
+
+  if (operationId) {
+    try {
+      await api.delete(`/operation_histories/delete/${operationId}`);
+      console.log("Operation record deleted successfully");
+    } catch (error) {
+      console.error("Failed to delete operation record:", error);
+    }
+  }
+
+  store.commit("setOperationId", null); // 清空 Vuex 里的 operation_id
+
+  router.push('/'); // 跳转回主页
 };
 </script>
+
 
 <style scoped>
 .navbar {
