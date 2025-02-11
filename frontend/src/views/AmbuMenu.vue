@@ -39,13 +39,74 @@
 </template>
 
 <script>
+import api from "@/services/api";
+
 export default {
   name: "HomePage",
-  methods: {
-    startEmergency() {
-      this.$router.push("/AmbuStart");
-    },
-  },
+  // methods: {
+  //   startEmergency() {
+  //     this.$router.push("/AmbuStart");
+  //   },
+  // },
+  data() {
+  return {
+    operation_id: null, // 用于存储 operation_id
+  };
+},
+methods: {
+  
+  async startEmergency() {
+    try {
+      // 发送请求创建 operation_history 记录
+     const response = await api.post("/operation_histories/",{
+        patient_id: null,
+        informant: null,
+        scene_address: null,
+        dispatch_time: new Date().toISOString(),
+        arrival_on_scene_time: null,
+        departure_from_scene_time: null,
+        arrival_at_hospital_time: null,
+        destination: null,
+        severity_level: null,
+        emergency_type: null,
+        chief_complaint: null,
+        initial_diagnosis: null,
+        procedures: null,
+        medicine: null,
+        outcome: null,
+        physician: null,
+        nurse: null,
+        driver: null,
+        paramedic: null,
+        stretcher_bearer: null,
+        recipient: null,
+        initial_eid: null,
+        final_eid: null,
+        ti_score: null,
+        ti_content: null,
+        gcs_score: null,
+        gcs_content: null,
+        Killip_score: null,
+        Killip_content: null,
+        Killip_diagnosis: null,
+        cerebral_stroke_content: null
+      });
+
+      // 存储 operation_id
+      this.operation_id = response.data.operation_id; 
+      console.log("Operation created, ID:", this.operation_id);
+
+      // 记录到 Vuex / Pinia (如果有状态管理)
+      this.$store.commit("setOperationId", this.operation_id);
+
+      // 跳转到急救页面，并传递 ID
+      this.$router.push({ path: "/AmbuStart", query: { operation_id: this.operation_id } });
+    } catch (error) {
+      console.error("Failed to create operation history:", error);
+    }
+  }
+}
+
 };
 </script>
 
