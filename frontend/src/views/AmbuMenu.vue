@@ -1,33 +1,46 @@
 <template>
-  <div class="home-container">
-    <h1 class="title">AmbuSmart 急救医疗辅助平台</h1>
-    <p class="subtitle">🚑 智能辅助，守护生命</p>
-    <el-button type="danger" class="start-button" @click="startEmergency">
-      进入急救
-    </el-button>
-    <div class="card-container">
-      <el-card class="card" shadow="always">
-        <div class="card-content">
-          <p>📞 紧急求救</p>
-        </div>
-      </el-card>
-      <el-card class="card" shadow="always">
-        <div class="card-content">
-          <p>📖 急救指南</p>
-        </div>
-      </el-card>
-      <el-card class="card" shadow="always">
-        <div class="card-content">
-          <p>🌍 最近医院</p>
-        </div>
-      </el-card>
-    </div>
+    <div style="z-index: 0" class="waveWrapper waveAnimation">
+  <div class="waveWrapperInner bgTop">
+    <div class="wave waveTop" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-top.png')"></div>
+  </div>
+  <div class="waveWrapperInner bgMiddle">
+    <div class="wave waveMiddle" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-mid.png')"></div>
+  </div>
+  <div class="waveWrapperInner bgBottom">
+    <div class="wave waveBottom" style="background-image: url('http://front-end-noobs.com/jecko/img/wave-bot.png')"></div>
+  </div>
+  </div>
+   <div class="home-container">
+    <el-card class="main-card" shadow="always">
+      <h1 class="title">AmbuSmart 急救医疗辅助平台</h1>
+      <p class="subtitle">🚑 智能辅助，守护生命</p>
+      <el-button type="danger" class="start-button" @click="startEmergency">
+        进入急救
+      </el-button>
+      <div class="card-container">
+        <el-card class="card" shadow="always">
+          <div class="card-content">
+            <p>📞 紧急求救</p>
+          </div>
+        </el-card>
+        <el-card class="card" shadow="always">
+          <div class="card-content">
+            <p>📖 急救指南</p>
+          </div>
+        </el-card>
+        <el-card class="card" shadow="always">
+          <div class="card-content">
+            <p>🌍 最近医院</p>
+          </div>
+        </el-card>
+      </div>
+    </el-card>
   </div>
 </template>
 
 <script>
 export default {
-  name: "AmbuMenu",
+  name: "HomePage",
   methods: {
     startEmergency() {
       this.$router.push("/emergency");
@@ -41,11 +54,17 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 50px;
-  background: linear-gradient(to bottom, #e0f7fa, #ffffff);
-  height: 100vh;
   animation: fadeIn 1.5s ease-in-out;
+  height: 100vh;
+}
+.main-card {
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  margin-top: -30px;
 }
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
@@ -56,10 +75,11 @@ export default {
   font-weight: bold;
   margin-bottom: 10px;
   animation: fadeIn 1.5s ease-in-out;
+  color: white;
 }
 .subtitle {
   font-size: 18px;
-  color: #666;
+  color: white;
   margin-bottom: 30px;
   animation: fadeIn 1.5s ease-in-out;
 }
@@ -83,6 +103,8 @@ export default {
   padding: 20px;
   border-radius: 15px;
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
 }
 .card:hover {
   transform: translateY(-5px);
@@ -93,5 +115,68 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+@keyframes move_wave {
+    0% { transform: translateX(0) translateZ(0) scaleY(1) }
+    50% { transform: translateX(-25%) translateZ(0) scaleY(0.55) }
+    100% { transform: translateX(-50%) translateZ(0) scaleY(1) }
+}
+.waveWrapper {
+    overflow: hidden;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    margin: auto;
+}
+.waveWrapperInner {
+    position: absolute;
+    width: 100%;
+    overflow: hidden;
+    height: 100%;
+    bottom: -1px;
+    background-image: linear-gradient(to top, #75adee 20%, #002b88 80%);
+}
+.bgTop {
+    z-index: 15;
+    opacity: 0.5;
+}
+.bgMiddle {
+    z-index: 10;
+    opacity: 0.75;
+}
+.bgBottom {
+    z-index: 5;
+}
+.wave {
+    position: absolute;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background-repeat: repeat no-repeat;
+    background-position: 0 bottom;
+    transform-origin: center bottom;
+}
+.waveTop {
+    background-size: 50% 100px;
+}
+.waveAnimation .waveTop {
+  animation: move-wave 3s;
+   -webkit-animation: move-wave 3s;
+   -webkit-animation-delay: 1s;
+   animation-delay: 1s;
+}
+.waveMiddle {
+    background-size: 50% 120px;
+}
+.waveAnimation .waveMiddle {
+    animation: move_wave 10s linear infinite;
+}
+.waveBottom {
+    background-size: 50% 100px;
+}
+.waveAnimation .waveBottom {
+    animation: move_wave 15s linear infinite;
 }
 </style>
