@@ -6,6 +6,16 @@ from schemas.health_personnel import HealthPersonnelCreate
 class CRUDHealthPersonnel:
     def get(self, db: Session, wid: str):
         return db.query(HealthPersonnel).filter(HealthPersonnel.wid == wid).first()
+    
+    def get_by_dno(self, db: Session, dno: str):
+        return db.query(HealthPersonnel).filter(HealthPersonnel.dno == dno).all()
+    
+    def get_by_name(self, db: Session, name: str):
+        return db.query(HealthPersonnel).filter(HealthPersonnel.name.ilike(f"%{name}%")).all()
+    
+    def get_by_name_dno(self, db: Session, name: str,dno: str):
+        return db.query(HealthPersonnel).filter(HealthPersonnel.name.ilike(f"%{name}%"),
+                                                HealthPersonnel.dno == dno).all()
 
     def get_all(self, db: Session, skip: int = 0, limit: int = 100):
         return db.query(HealthPersonnel).offset(skip).limit(limit).all()

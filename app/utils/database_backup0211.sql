@@ -11,7 +11,7 @@
  Target Server Version : 90100 (9.1.0)
  File Encoding         : 65001
 
- Date: 08/02/2025 15:42:05
+ Date: 11/02/2025 16:57:59
 */
 
 SET NAMES utf8mb4;
@@ -50,7 +50,7 @@ CREATE TABLE `ambulance`  (
   `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`aid`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ambulance
@@ -61,7 +61,7 @@ CREATE TABLE `ambulance`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `basic_check`;
 CREATE TABLE `basic_check`  (
-  `eid` int NOT NULL,
+  `eid` int NOT NULL AUTO_INCREMENT,
   `timestamp` datetime NULL DEFAULT NULL,
   `reject` int NULL DEFAULT 0 COMMENT '若1表示患者拒绝检查',
   `consciousness` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '神志 清醒/嗜睡/昏迷',
@@ -75,11 +75,13 @@ CREATE TABLE `basic_check`  (
   PRIMARY KEY (`eid`) USING BTREE,
   INDEX `basicCheck_patient`(`patient_id` ASC) USING BTREE,
   CONSTRAINT `basicCheck_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 12003 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of basic_check
 -- ----------------------------
+INSERT INTO `basic_check` VALUES (12001, '2025-02-08 07:58:34', 0, '反正我上班上的神志不清', 'string', 'string', 'string', 'string', 'string', 'string', NULL);
+INSERT INTO `basic_check` VALUES (12002, '2025-02-08 08:06:15', 0, '测试', 'string', 'string', 'string', 'string', 'string', 'string', NULL);
 
 -- ----------------------------
 -- Table structure for case_histories
@@ -1239,15 +1241,21 @@ CREATE TABLE `operation_histories`  (
   INDEX `initial_exam`(`initial_eid` ASC) USING BTREE,
   INDEX `final_exam`(`final_eid` ASC) USING BTREE,
   CONSTRAINT `operation_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `final_exam` FOREIGN KEY (`final_eid`) REFERENCES `basic_check` (`eid`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `initial_exam` FOREIGN KEY (`initial_eid`) REFERENCES `basic_check` (`eid`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 20205 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+  CONSTRAINT `final_exam` FOREIGN KEY (`final_eid`) REFERENCES `basic_check` (`eid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `initial_exam` FOREIGN KEY (`initial_eid`) REFERENCES `basic_check` (`eid`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 20219 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of operation_histories
 -- ----------------------------
 INSERT INTO `operation_histories` VALUES (20202, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20204, '123456123112311231', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20204, '123456123112311231', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 12001, 12002, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20206, '123123123412341234', '本人', '翻斗花园小区', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '人民医院', '1级', '院前急救', 0xE4B88AE78FADE4B88AE7B4AFE4BA86, 0xE99C80E8A681E4B88BE78FAD, 0xE697A0, 0xE69C8DE794A86B6F69E6B586E69E9CE985A5E985AAE5A5B6E88CB6E4B880E4BBBD, 0xE6988EE5A4A9E591A8E697A5E5B0B1E883BDE6B4BBE4BA86, '渥子集', '无', '斡梓级', '无', '无', '无', NULL, NULL, '无', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
+INSERT INTO `operation_histories` VALUES (20207, '123123123412341234', 'string', 'string', '2025-02-08 08:42:42', '2025-02-08 08:42:42', '2025-02-08 08:42:42', '2025-02-08 08:42:42', 'string', 'string', 'string', 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 'string', 'string', 'string', 'string', 'string', 'string', NULL, NULL, 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
+INSERT INTO `operation_histories` VALUES (20211, NULL, NULL, NULL, '2025-02-11 07:17:56', '2025-02-11 07:17:56', '2025-02-11 07:17:56', '2025-02-11 07:17:56', 'string', 'string', 'string', 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 'string', 'string', 'string', 'string', 'string', 'string', NULL, NULL, 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
+INSERT INTO `operation_histories` VALUES (20212, NULL, NULL, NULL, '2025-02-11 08:02:09', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20216, NULL, NULL, NULL, '2025-02-11 08:41:55', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20217, NULL, NULL, NULL, '2025-02-11 08:44:54', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for operation_relating
