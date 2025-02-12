@@ -108,7 +108,8 @@
         </el-collapse>
 
         <el-form-item>
-          <el-button type="primary" @click="submitForm">提交</el-button>
+          <!-- 修改按钮为"下一步" -->
+          <el-button type="primary" @click="nextStep">确认出车</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -117,11 +118,13 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';  // 引入路由
 import { useStore } from 'vuex';
 import api from "@/services/api";
 import NavigationBar from '@/components/NavigationBars.vue';
 import { ElMessage } from 'element-plus';
 
+const router = useRouter(); // 用于跳转
 const store = useStore();
 const currentStep = ref('出车准备');
 const operationId = computed(() => store.state.operation_id);
@@ -132,11 +135,11 @@ const formData = ref({
   nurse: '',
   paramedic: '',
   stretcher_bearer: '',
-  patient_id: '',
+  patient_id: null,
   specialHandling: [],
   equipmentCheck: {
     "基础设备": [],
-    "特殊药品": [],
+    "基础药品": [],
     "中毒处理": [],
     "传染病隔离": []
   }
@@ -197,11 +200,28 @@ onMounted(() => {
 });
 
 // 设备和药品的分类数据
+// 设备和药品的分类数据
 const categorizedEquipment = ref([
-  { name: "基础设备", items: ['氧气瓶', '呼吸机', '心电监护仪', '担架床'], disabled: false },
-  { name: "特殊药品", items: ['止痛药', '抗过敏药物', '抗生素'], disabled: false },
-  { name: "中毒处理", items: ['解毒药物', '炭粉', '氧气面罩'], disabled: true },
-  { name: "传染病隔离", items: ['防护服', '口罩', '手套', '防护眼镜'], disabled: true },
+  { 
+    name: "基础设备", 
+    items: ['氧气瓶（压力≥1000psi）', '便携式呼吸气囊', '心电监护仪/除颤仪', '脊柱板/铲式担架', '负压吸引器'], 
+    disabled: false 
+  },
+  { 
+    name: "基础药品", 
+    items: ['肾上腺素', '阿托品', '硝酸甘油片', '50%葡萄糖', '生理盐水'], 
+    disabled: false 
+  },
+  { 
+    name: "中毒处理", 
+    items: ['活性炭（口服解毒剂）', '纳洛酮（阿片类过量）', '阿托品（有机磷中毒）', '洗胃包'], 
+    disabled: true 
+  },
+  { 
+    name: "传染病隔离", 
+    items: ['三级防护服', 'N95口罩', '护目镜/面屏', '含氯消毒剂', '医疗废物袋'], 
+    disabled: true 
+  },
 ]);
 
 // 根据特殊处理选项更新设备和药品
@@ -220,9 +240,51 @@ const handleSpecialHandlingChange = () => {
   });
 };
 
-const submitForm = () => {
-  console.log('提交数据:', formData.value);
-  ElMessage.success('数据已提交');
+// 校验当前勾选的设备和药品
+const checkSelectedItems = () => {
+  // 只检查当前启用的类别
+  const allSelected = categorizedEquipment.value.every(category => {
+    if (category.disabled) return true;  // 跳过已禁用的类别
+    return formData.value.equipmentCheck[category.name] && formData.value.equipmentCheck[category.name].length > 0;
+  });
+  return allSelected;
+};
+
+// 更新operation_histories
+const updateOperationHistory = async () => {
+  const operationHistoryData = {
+    operation_id: operationId.value,
+    driver: formData.value.driver,
+    physician: formData.value.physician,
+    nurse: formData.value.nurse,
+    paramedic: formData.value.paramedic,
+    stretcher_bearer: formData.value.stretcher_bearer,
+    patient_id: formData.value.patient_id,
+    dispatch_time: new Date().toISOString()  // 设置当前时间
+  };
+
+  try {
+    const response = await api.put(`/operation_histories/update/${operationId.value}`, operationHistoryData);
+    console.log('更新成功:', response);
+    return true;
+  } catch (error) {
+    console.error('更新失败:', error);
+    return false;
+  }
+};
+
+// 下一步处理函数
+const nextStep = async () => {
+  if (checkSelectedItems()) {
+    const updateSuccess = await updateOperationHistory();
+    if (updateSuccess) {
+      router.push('/AmbuInfo'); // 跳转到/AmbuInfo页面
+    } else {
+      ElMessage.error('更新操作历史失败，请稍后再试。');
+    }
+  } else {
+    ElMessage.error('请勾选所有必选项！');
+  }
 };
 </script>
 
