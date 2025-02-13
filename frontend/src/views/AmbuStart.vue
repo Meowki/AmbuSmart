@@ -10,7 +10,10 @@
           </el-form-item>
           
           <el-form-item label="患者身份证号">
-            <el-input v-model="formData.patient_id" placeholder="若未知请先进入下一步" style="width:260px"/>
+            <el-input v-model="originalPatientId" 
+                      @blur="validatePatientId" 
+                      placeholder="若未知请先进入下一步" 
+                      style="width:260px"/>
           </el-form-item>
         </div>
 
@@ -129,6 +132,7 @@ const store = useStore();
 const currentStep = ref('出车准备');
 const operationId = computed(() => store.state.operation_id);
 
+const originalPatientId = ref(''); // 用于临时保存用户输入的patient_id
 const formData = ref({
   driver: '',
   physician: '',
@@ -150,6 +154,31 @@ const physicianList = ref([]);
 const nurseList = ref([]);
 const paramedicList = ref([]);
 const stretcherBearerList = ref([]);
+
+
+
+// 验证patient_id
+const validatePatientId = async () => {
+  const patientId = originalPatientId.value;
+
+  // 确保 patient_id 不为 null 或 undefined
+  if (patientId && patientId.length === 18) {
+    try {
+      const response = await api.get(`/patients/${patientId}`);
+      if (response.data.length === 0) {
+        ElMessage.error('该患者不存在');
+      }
+      else{
+        formData.value.patient_id = originalPatientId.value;
+      }
+    } catch (error) {
+      ElMessage.error('检查患者失败，请稍后再试');
+    }
+  } else if (patientId && patientId.length !== 18) {
+    ElMessage.error('请输入有效的18位身份证号');
+  }
+};
+
 
 const fetchDrivers = async () => {
   const response = await api.get(`/health_personnel/dno/h1`);
@@ -265,6 +294,12 @@ const updateOperationHistory = async () => {
 
   try {
     const response = await api.put(`/operation_histories/update/${operationId.value}`, operationHistoryData);
+    console.log("OperationHistoryData:"+operationHistoryData)
+    if (formData.value.patient_id){
+      // 记录到 Vuex 中
+      store.commit("setPatientId", formData.value.patient_id); // 使用 useStore 来提交 mutation
+      console.log("Patient ID stored in Vuex:", store.state.patient_id);
+    }
     console.log('更新成功:', response);
     return true;
   } catch (error) {
