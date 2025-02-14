@@ -185,6 +185,32 @@
           </el-col>
         </el-row>
 
+        <el-divider></el-divider>
+        <el-row gutter={20}>
+          <el-col :span="8">
+            <el-form-item label="供史者">
+            <el-select
+                v-model="sceneData.informant"
+                placeholder="请选择"
+              >
+                <el-option
+                  label="本人"
+                  value="本人"
+                />
+                <el-option
+                  label="亲属"
+                  value="亲属"
+                />
+                <el-option
+                  label="目击者"
+                  value="目击者"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+
         <el-form-item>
           <el-button type="primary" @click="nextStep">到达现场</el-button>
         </el-form-item>
@@ -224,6 +250,7 @@ const sceneData = ref({
   emergency_type: "",
   severity_level: "",
   arrival_on_scene_time: new Date().toISOString(), // 设置当前时间
+  informant:"",
   scene_lat: null, // 预留纬度
   scene_lng: null, // 预留经度
 });
