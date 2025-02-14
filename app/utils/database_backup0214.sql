@@ -11,7 +11,7 @@
  Target Server Version : 90100 (9.1.0)
  File Encoding         : 65001
 
- Date: 11/02/2025 16:57:59
+ Date: 14/02/2025 18:31:58
 */
 
 SET NAMES utf8mb4;
@@ -285,8 +285,9 @@ INSERT INTO `department` VALUES ('f1', '妇科', '妇产科');
 INSERT INTO `department` VALUES ('f2', '产科', '妇产科');
 INSERT INTO `department` VALUES ('g1', '骨科', '骨科');
 INSERT INTO `department` VALUES ('g2', '骨科（创伤）', '骨科');
-INSERT INTO `department` VALUES ('h1', '后勤', '后勤');
+INSERT INTO `department` VALUES ('h1', '后勤1', '后勤');
 INSERT INTO `department` VALUES ('h2', '护理', '护理');
+INSERT INTO `department` VALUES ('h3', '后勤2', '后勤');
 INSERT INTO `department` VALUES ('j1', '血液科', '部门');
 INSERT INTO `department` VALUES ('j2', '医学影像科', '部门');
 INSERT INTO `department` VALUES ('j3', '体外检查科', '部门');
@@ -305,6 +306,7 @@ INSERT INTO `department` VALUES ('n7', '消化内科', '内科');
 INSERT INTO `department` VALUES ('n8', '肾内科', '内科');
 INSERT INTO `department` VALUES ('n9', '内分泌科', '内科');
 INSERT INTO `department` VALUES ('p1', '皮肤科', '皮肤科');
+INSERT INTO `department` VALUES ('q1', '抢救员', '抢救');
 INSERT INTO `department` VALUES ('test01', '测试', '内科');
 INSERT INTO `department` VALUES ('w1', '普通外科', '外科');
 INSERT INTO `department` VALUES ('w2', '特诊外科', '外科');
@@ -316,9 +318,8 @@ INSERT INTO `department` VALUES ('w7', '甲状腺外科', '外科');
 INSERT INTO `department` VALUES ('w8', '乳腺外科', '外科');
 INSERT INTO `department` VALUES ('y1', '眼科', '眼科');
 INSERT INTO `department` VALUES ('z1', '肿瘤科', '肿瘤科');
-INSERT INTO `department` VALUES ('zy1', '中医内科', '中医科');
+INSERT INTO `department` VALUES ('zy1', '中医伤科', '中医科');
 INSERT INTO `department` VALUES ('zy2', '中医针灸科', '中医科');
-INSERT INTO `department` VALUES ('zy3', '中医伤科', '中医科');
 
 -- ----------------------------
 -- Table structure for health_personnel
@@ -352,6 +353,7 @@ INSERT INTO `health_personnel` VALUES ('d5205', 'h1', '黎白卉', '司机', '�
 INSERT INTO `health_personnel` VALUES ('d5206', 'h1', '缑安雁', '司机', '男', '116486198402088000', 38);
 INSERT INTO `health_personnel` VALUES ('d5207', 'h1', '郏小凡', '司机', '男', '130491198911073000', 35);
 INSERT INTO `health_personnel` VALUES ('d5208', 'h1', '柴问安', '司机', '男', '238563197911040000', 48);
+INSERT INTO `health_personnel` VALUES ('d5209', 'h1', '陈周', '司机', '男', '123123456145617894', 40);
 INSERT INTO `health_personnel` VALUES ('h3209', 'h2', '昝晓兰', '护士', '女', '442017196810081000', 50);
 INSERT INTO `health_personnel` VALUES ('h3210', 'h2', '姜青筠', '护士', '女', '217520198709074000', 36);
 INSERT INTO `health_personnel` VALUES ('h3211', 'h2', '索友儿', '护士', '女', '335209198709187000', 36);
@@ -370,13 +372,13 @@ INSERT INTO `health_personnel` VALUES ('h3223', 'h2', '崔晓瑶', '护士', '�
 INSERT INTO `health_personnel` VALUES ('h3224', 'h2', '太叔向雪', '护士', '女', '520701198205223000', 39);
 INSERT INTO `health_personnel` VALUES ('h3225', 'h2', '郦安蕾', '护士', '女', '22997919620704202X', 39);
 INSERT INTO `health_personnel` VALUES ('h3226', 'h2', '养冷珍', '护士', '女', '321389200105125000', 24);
-INSERT INTO `health_personnel` VALUES ('j8090', 'h1', '云傲蕾', '担架工', '女', '838276199006146000', 31);
-INSERT INTO `health_personnel` VALUES ('j8091', 'h1', '澹台以蕊', '担架工', '女', '459311198806178000', 38);
-INSERT INTO `health_personnel` VALUES ('j8092', 'h1', '贾绮彤', '担架工', '男', '123025196707161000', 39);
-INSERT INTO `health_personnel` VALUES ('j8093', 'h1', '皮如松', '担架工', '男', '353267196008140000', 45);
-INSERT INTO `health_personnel` VALUES ('j8094', 'h1', '冷山雁', '担架工', '男', '125393200302246000', 36);
-INSERT INTO `health_personnel` VALUES ('j8095', 'h1', '季从安', '担架工', '男', '450692198102134000', 38);
-INSERT INTO `health_personnel` VALUES ('j8096', 'h1', '古乐菱', '担架工', '男', '415052200210078000', 47);
+INSERT INTO `health_personnel` VALUES ('j8090', 'h3', '云傲蕾', '担架工', '女', '838276199006146000', 31);
+INSERT INTO `health_personnel` VALUES ('j8091', 'h3', '澹台以蕊', '担架工', '女', '459311198806178000', 38);
+INSERT INTO `health_personnel` VALUES ('j8092', 'h3', '贾绮彤', '担架工', '男', '123025196707161000', 39);
+INSERT INTO `health_personnel` VALUES ('j8093', 'h3', '皮如松', '担架工', '男', '353267196008140000', 45);
+INSERT INTO `health_personnel` VALUES ('j8094', 'h3', '冷山雁', '担架工', '男', '125393200302246000', 36);
+INSERT INTO `health_personnel` VALUES ('j8095', 'h3', '季从安', '担架工', '男', '450692198102134000', 38);
+INSERT INTO `health_personnel` VALUES ('j8096', 'h3', '古乐菱', '担架工', '男', '415052200210078000', 47);
 INSERT INTO `health_personnel` VALUES ('w10001', 'g1', '田柾国', '医生', '男', '123456199709011234', 25);
 INSERT INTO `health_personnel` VALUES ('w1023', 'b1', '钟如妙', '医生', '男', '220281199502038962', 28);
 INSERT INTO `health_personnel` VALUES ('w1024', 'b1', '幸葵樱', '副高', '女', '469021197902212545', 44);
@@ -502,18 +504,18 @@ INSERT INTO `health_personnel` VALUES ('w1143', 'z1', '黄斐莉', '正高', '�
 INSERT INTO `health_personnel` VALUES ('w1144', 'z1', '单添红', '精英', '男', '440105199902036775', 24);
 INSERT INTO `health_personnel` VALUES ('w1145', 'z1', '龙沁妮', '副高', '男', '370684191905303849', 104);
 INSERT INTO `health_personnel` VALUES ('w1146', 'z1', '符金渝', '医生', '女', '620121190310271862', 119);
-INSERT INTO `health_personnel` VALUES ('w1147', 'zy1', '汪奇栋', '副高', '男', '632726197707048466', 46);
-INSERT INTO `health_personnel` VALUES ('w1148', 'zy1', '缪溢昌', '正高', '女', '440512193205309262', 91);
-INSERT INTO `health_personnel` VALUES ('w1149', 'zy1', '祝闽坦', '精英', '男', '340826199403184198', 29);
-INSERT INTO `health_personnel` VALUES ('w1150', 'zy1', '邢允文', '医生', '女', '32098119110817523X', 111);
-INSERT INTO `health_personnel` VALUES ('w1151', 'zy1', '黄严帆', '医生', '男', '330205192807288892', 95);
+INSERT INTO `health_personnel` VALUES ('w1147', 'q1', '汪奇栋', '副高', '男', '632726197707048466', 46);
+INSERT INTO `health_personnel` VALUES ('w1148', 'q1', '缪溢昌', '正高', '女', '440512193205309262', 91);
+INSERT INTO `health_personnel` VALUES ('w1149', 'q1', '祝闽坦', '精英', '男', '340826199403184198', 29);
+INSERT INTO `health_personnel` VALUES ('w1150', 'q1', '邢允文', '医生', '女', '32098119110817523X', 111);
+INSERT INTO `health_personnel` VALUES ('w1151', 'q1', '黄严帆', '医生', '男', '330205192807288892', 95);
 INSERT INTO `health_personnel` VALUES ('w1152', 'zy2', '吕雍琼', '副高', '女', '220202199712205940', 25);
 INSERT INTO `health_personnel` VALUES ('w1153', 'zy2', '秋琴栋', '正高', '男', '360821199411239170', 28);
 INSERT INTO `health_personnel` VALUES ('w1154', 'zy2', '咎弘璋', '精英', '女', '130321193904034934', 84);
-INSERT INTO `health_personnel` VALUES ('w1155', 'zy2', '程俐璇', '医生', '男', '53282319161129254X', 106);
-INSERT INTO `health_personnel` VALUES ('w1156', 'zy2', '龚珍安', '医生', '女', '152529199911037134', 23);
-INSERT INTO `health_personnel` VALUES ('w1157', 'zy2', '宋垒辉', '医生', '男', '350702197508106694', 48);
-INSERT INTO `health_personnel` VALUES ('w1158', 'zy2', '翁玉蓉', '医生', '男', '130435194503097019', 78);
+INSERT INTO `health_personnel` VALUES ('w1155', 'q1', '程俐璇', '医生', '男', '53282319161129254X', 106);
+INSERT INTO `health_personnel` VALUES ('w1156', 'q1', '龚珍安', '医生', '女', '152529199911037134', 23);
+INSERT INTO `health_personnel` VALUES ('w1157', 'q1', '宋垒辉', '医生', '男', '350702197508106694', 48);
+INSERT INTO `health_personnel` VALUES ('w1158', 'q1', '翁玉蓉', '医生', '男', '130435194503097019', 78);
 INSERT INTO `health_personnel` VALUES ('w1159', 'j2', '潘祺余', '副高', '女', '140724196706077198', 56);
 INSERT INTO `health_personnel` VALUES ('w1160', 'j2', '史畅秀', '副高', '男', '420525200003082400', 23);
 INSERT INTO `health_personnel` VALUES ('w1161', 'j2', '郦琼赢', '医生', '女', '530621200004093836', 23);
@@ -547,14 +549,14 @@ INSERT INTO `health_personnel` VALUES ('w1188', 'j6', '龙霆韬', '副高', '�
 INSERT INTO `health_personnel` VALUES ('w1189', 'j6', '叶友勋', '正高', '男', '513327196302189563', 60);
 INSERT INTO `health_personnel` VALUES ('w1190', 'j6', '咎研亚', '精英', '女', '140927193011290992', 92);
 INSERT INTO `health_personnel` VALUES ('w1191', 'j6', '韶绚樱', '医生', '男', '130204192602280965', 97);
-INSERT INTO `health_personnel` VALUES ('w1192', 'j7', '韩艾心', '医生', '女', '360724195710158675', 65);
+INSERT INTO `health_personnel` VALUES ('w1192', 'q1', '韩艾心', '医生', '女', '360724195710158675', 65);
 INSERT INTO `health_personnel` VALUES ('w1193', 'j7', '黎卉晔', '副高', '男', '130105200203239867', 21);
 INSERT INTO `health_personnel` VALUES ('w1194', 'j7', '伊屹盼', '正高', '男', '210904200503192148', 18);
 INSERT INTO `health_personnel` VALUES ('w1195', 'j7', '潘蔷芬', '精英', '女', '422828196312237857', 59);
 INSERT INTO `health_personnel` VALUES ('w1196', 'j7', '金花言', '医生', '男', '320681192802080829', 95);
-INSERT INTO `health_personnel` VALUES ('w1197', 'j7', '邱纯默', '医生', '女', '430529190410211821', 118);
-INSERT INTO `health_personnel` VALUES ('w1198', 'j7', '张嫒晓', '医生', '男', '46902719251231068X', 97);
-INSERT INTO `health_personnel` VALUES ('w1199', 'g2', '杨羽旋', '医生', '男', '50023819170806015X', 106);
+INSERT INTO `health_personnel` VALUES ('w1197', 'q1', '邱纯默', '医生', '女', '430529190410211821', 118);
+INSERT INTO `health_personnel` VALUES ('w1198', 'q1', '张嫒晓', '医生', '男', '46902719251231068X', 97);
+INSERT INTO `health_personnel` VALUES ('w1199', 'q1', '杨羽旋', '医生', '男', '50023819170806015X', 106);
 INSERT INTO `health_personnel` VALUES ('w1200', 'g2', '咎奕咪', '副高', '女', '150207194010126675', 82);
 INSERT INTO `health_personnel` VALUES ('w1201', 'g2', '鲍璇朗', '副高', '男', '451003193505086282', 88);
 INSERT INTO `health_personnel` VALUES ('w1202', 'n1', '姚懿青', '医生', '女', '231281197107116383', 52);
@@ -1243,7 +1245,7 @@ CREATE TABLE `operation_histories`  (
   CONSTRAINT `operation_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `final_exam` FOREIGN KEY (`final_eid`) REFERENCES `basic_check` (`eid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `initial_exam` FOREIGN KEY (`initial_eid`) REFERENCES `basic_check` (`eid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 20219 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 20236 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of operation_histories
@@ -1251,11 +1253,18 @@ CREATE TABLE `operation_histories`  (
 INSERT INTO `operation_histories` VALUES (20202, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `operation_histories` VALUES (20204, '123456123112311231', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 12001, 12002, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `operation_histories` VALUES (20206, '123123123412341234', '本人', '翻斗花园小区', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '人民医院', '1级', '院前急救', 0xE4B88AE78FADE4B88AE7B4AFE4BA86, 0xE99C80E8A681E4B88BE78FAD, 0xE697A0, 0xE69C8DE794A86B6F69E6B586E69E9CE985A5E985AAE5A5B6E88CB6E4B880E4BBBD, 0xE6988EE5A4A9E591A8E697A5E5B0B1E883BDE6B4BBE4BA86, '渥子集', '无', '斡梓级', '无', '无', '无', NULL, NULL, '无', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
-INSERT INTO `operation_histories` VALUES (20207, '123123123412341234', 'string', 'string', '2025-02-08 08:42:42', '2025-02-08 08:42:42', '2025-02-08 08:42:42', '2025-02-08 08:42:42', 'string', 'string', 'string', 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 'string', 'string', 'string', 'string', 'string', 'string', NULL, NULL, 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
+INSERT INTO `operation_histories` VALUES (20207, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x706174636855706461746554657374, NULL, 0x737472696E67, 0x746573743233, 0x737472696E67, 'string', 'string', 'string', '1234341', 'string', 'string', NULL, NULL, NULL, 'contentPatchUpdate', NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `operation_histories` VALUES (20211, NULL, NULL, NULL, '2025-02-11 07:17:56', '2025-02-11 07:17:56', '2025-02-11 07:17:56', '2025-02-11 07:17:56', 'string', 'string', 'string', 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 'string', 'string', 'string', 'string', 'string', 'string', NULL, NULL, 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
 INSERT INTO `operation_histories` VALUES (20212, NULL, NULL, NULL, '2025-02-11 08:02:09', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20216, NULL, NULL, NULL, '2025-02-11 08:41:55', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20217, NULL, NULL, NULL, '2025-02-11 08:44:54', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20216, '123123123412341234', 'string', 'string', '2025-02-12 10:36:15', '2025-02-12 10:36:15', '2025-02-12 10:36:15', '2025-02-12 10:36:15', 'string', 'string', 'string', 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 'string', 'string', 'string', 'string', 'string', 'string', NULL, NULL, 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
+INSERT INTO `operation_histories` VALUES (20228, NULL, NULL, NULL, '2025-02-13 08:03:15', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', '', '周所龄', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20229, NULL, NULL, NULL, '2025-02-13 10:49:22', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20230, '123123123412341234', NULL, NULL, '2025-02-13 10:53:09', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20231, '123123123412341234', NULL, NULL, '2025-02-14 09:18:46', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', '', '黎白卉', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20232, NULL, NULL, NULL, '2025-02-14 09:57:58', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', '', '周所龄', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20233, NULL, NULL, '测试地址', NULL, '2025-02-14 10:17:45', NULL, NULL, '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20234, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x706174636874657374, 0x74657374323331, 0x6E61, 'na', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20235, '123123123412341234', NULL, '测试地址', '2025-02-14 10:27:39', '2025-02-14 10:28:04', NULL, NULL, '', '', '', NULL, NULL, NULL, NULL, NULL, '', '', '黎白卉', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for operation_relating
@@ -1297,7 +1306,8 @@ CREATE TABLE `patient`  (
 -- ----------------------------
 -- Records of patient
 -- ----------------------------
-INSERT INTO `patient` VALUES ('张三', NULL, NULL, NULL, '测试用户', NULL, '123123123412341234');
+INSERT INTO `patient` VALUES ('NA', 'NA', '护照', 'NA', 'NA', 'NA', '123123000000000000');
+INSERT INTO `patient` VALUES ('张三', NULL, '身份证', NULL, '测试用户', NULL, '123123123412341234');
 INSERT INTO `patient` VALUES ('测试0', '男', '身份证', '12312312312', '无', '无', '123456123112311231');
 INSERT INTO `patient` VALUES ('Mark', 'male', '身份证', '12345678912', 'string', 'string', '789789200101251234');
 
