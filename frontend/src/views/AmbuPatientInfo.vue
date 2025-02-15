@@ -209,10 +209,22 @@
             </el-form-item>
           </el-col>
         </el-row>
-
+        <!--可以考虑加语音输入-->
+        <el-row gutter="{20}">
+          <el-col :span="20">
+              <el-form-item label="主诉">
+              <el-input
+                v-model="sceneData.chief_complaint"
+                style="width: 400px"
+                :rows="4"
+                type="textarea"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          </el-row>
 
         <el-form-item>
-          <el-button type="primary" @click="nextStep">到达现场</el-button>
+          <el-button type="primary" @click="nextStep">下一步</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -249,8 +261,8 @@ const sceneData = ref({
   destination: "",
   emergency_type: "",
   severity_level: "",
-  arrival_on_scene_time: new Date().toISOString(), // 设置当前时间
   informant:"",
+  chief_complaint:"",
   scene_lat: null, // 预留纬度
   scene_lng: null, // 预留经度
 });
@@ -345,10 +357,11 @@ const updateOperationHistory = async () => {
     patient_id: formData.value.patient_id,
     operation_id: store.state.operation_id,
     scene_address: sceneData.value.scene_address,
-    destination: "",
-    emergency_type: "",
-    severity_level: "",
-    arrival_on_scene_time: new Date().toISOString(), // 设置当前时间
+    destination: sceneData.value.destination,
+    emergency_type: sceneData.value.emergency_type,
+    severity_level: sceneData.value.severity_level,
+    informant: sceneData.value.informant,
+    chief_complaint: sceneData.value.chief_complaint,
   };
 
   try {
