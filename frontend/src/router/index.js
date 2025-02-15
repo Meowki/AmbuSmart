@@ -25,6 +25,11 @@ const routes = [
     component:()=>import('../views/AmbuPatientInfo.vue')
   },
   {
+    path:'/AmbuCore',
+    name:'AmbuCore',
+    component:()=>import('../views/AmbuCore.vue')
+  },
+  {
     path: '/chat',
     name: 'ChatWindow',
     component: ChatWindow
