@@ -130,7 +130,7 @@
                   v-for="hospital in hospitalOptions"
                   :key="hospital.id"
                   :label="hospital.name"
-                  :value="hospital.id"
+                  :value="hospital.name"
                 />
               </el-select>
             </el-form-item>
@@ -222,6 +222,9 @@
             </el-form-item>
           </el-col>
           </el-row>
+        
+        <!-- 可能还需要加按钮，来展示患者的病历（门诊/急救/住院记录） -->
+        <!-- 重点显示过敏史和既往史 -->
 
         <el-form-item>
           <el-button type="primary" @click="nextStep">下一步</el-button>
