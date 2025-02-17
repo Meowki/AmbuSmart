@@ -1,9 +1,6 @@
 <template>
   <div class="chat-wrapper">
     <div class="chat-container">
-      <div class="chat-header">
-        <h2>Test 聊天窗口</h2>
-      </div>
       <transition-group name="message" tag="div" class="chat-messages" ref="messages">
         <div
           class="message"
@@ -88,38 +85,30 @@ export default {
 .chat-container {
   width: 100%;
   max-width: 800px;
-  height: 700px;
+  height: 600px;
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.chat-header {
   padding: 20px;
-  background-color: #4a90e2;
-  color: #ffffff;
-  text-align: center;
-  font-size: 1.5em;
-  font-weight: bold;
 }
 
 .chat-messages {
   flex: 1;
-  padding: 20px;
+  padding: 8px;
   overflow-y: auto;
   background-color: #eef3f7;
+  margin-bottom: 10px;
 }
 
 .message {
   margin-bottom: 15px;
-  padding: 12px 18px;
-  border-radius: 20px;
+  padding: 10px 15px;
   max-width: 70%;
   word-wrap: break-word;
-  font-size: 1em;
+  font-size: 0.8em;
   line-height: 1.4;
 }
 
@@ -127,28 +116,31 @@ export default {
   background-color: #d1e7ff;
   align-self: flex-end;
   color: #003366;
+  border-radius: 12px;
 }
 
 .gpt-message {
   background-color: #f1f1f1;
   align-self: flex-start;
   color: #333333;
+  border-radius: 12px;
 }
 
 .chat-input {
   display: flex;
-  padding: 15px 20px;
+  justify-content: space-between;
+  padding: 12px;
   border-top: 1px solid #ddd;
   background-color: #fafafa;
 }
 
 .chat-input input {
   flex: 1;
-  padding: 12px 18px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 25px;
   outline: none;
-  font-size: 1em;
+  font-size: 0.9em;
   transition: border-color 0.3s;
 }
 
@@ -157,14 +149,14 @@ export default {
 }
 
 .chat-input button {
-  margin-left: 15px;
-  padding: 12px 24px;
+  margin-left: 10px;
+  padding: 10px 20px;
   background-color: #4a90e2;
   color: #ffffff;
   border: none;
   border-radius: 25px;
   cursor: pointer;
-  font-size: 1em;
+  font-size: 0.9em;
   transition: background-color 0.3s;
 }
 
@@ -174,7 +166,7 @@ export default {
 
 @media (max-width: 600px) {
   .chat-container {
-    height: 90vh;
+    height: 85vh;
   }
 
   .chat-header {
@@ -182,17 +174,17 @@ export default {
   }
 
   .message {
-    max-width: 85%;
-    font-size: 0.9em;
+    max-width: 95%;
+    font-size: 0.8em;
   }
 
   .chat-input input {
-    font-size: 0.9em;
+    font-size: 0.8em;
   }
 
   .chat-input button {
-    font-size: 0.9em;
-    padding: 10px 20px;
+    font-size: 0.85em;
+    padding: 8px 16px;
   }
 }
 

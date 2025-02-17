@@ -12,4 +12,3 @@ createApp(App)
   .use(store)
   .mount('#app')
 
-  // console.log("API BASE URL:", process.env.VUE_APP_API_BASE_URL); 
