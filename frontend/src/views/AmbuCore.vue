@@ -4,52 +4,49 @@
   <div class="main-container">
     <!-- 左侧功能区 -->
     <div class="sidebar">
-      <el-button @click="handleAction('action1')" type="primary"
-        >查看患者历史</el-button
-      >
-      <el-button @click="handleAction('action2')" type="success"
-        >添加药物记录</el-button
-      >
-      <el-button @click="handleAction('action3')" type="info"
-        >获取急救建议</el-button
-      >
-      <!-- 更多按钮... -->
+      <el-button @click="handleAction('action1')" type="primary">查看患者历史</el-button>
+      <el-button @click="handleAction('action2')" type="success">添加药物记录</el-button>
+      <el-button @click="handleAction('action3')" type="info">获取急救建议</el-button>
     </div>
 
     <!-- 右侧聊天区 -->
     <div class="chat-area">
-     
-  <t-chat
-    clearHistory
-    :data="[
-        {
-        avatar: 'https://tdesign.gtimg.com/site/chat-avatar.png',
-        content: '它叫 McMurdo Station ATM，是美国富国银行安装在南极洲最大科学中心麦克默多站的一台自动提款机。',
-        role: 'assistant',
-      },
-      {
-        avatar: 'https://tdesign.gtimg.com/site/avatar.jpg',
-        content: '南极的自动提款机叫什么名字？',
-        role: 'user',
-      }]"
-  >
-  </t-chat>
-
-
+      <h3>before</h3>
+      <div class="react-container">
+        <!-- 使用 applyReactInVue 包裹 React 组件 -->
+        <MyReactComponentInVue />
+      </div>
+      <h3>later</h3>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
+<script>
+import { applyReactInVue } from 'veaury'; // 引入 veaury 的工具
 import NavigationBar from "@/components/NavigationBars.vue";
-// import ChatWindow from "@/components/ChatWindow.vue";
+import MyReactComponent from '@/components/MyReactComponent.jsx'; // 确保使用正确的文件扩展名
 
+// 使用 applyReactInVue 将 React 组件转换为 Vue 组件
+console.log("output:"+MyReactComponent);
+const MyReactComponentInVue = applyReactInVue(MyReactComponent);
 
-const currentStep = ref("决策系统");
+// const MyReactComponentInVue = applyReactInVue(MyReactComponent);
 
-const handleAction = (action) => {
-  console.log("执行动作:", action);
+export default {
+  data() {
+    return {
+      currentStep: "决策系统",
+    };
+  },
+  methods: {
+    handleAction(action) {
+      console.log("执行动作:", action);
+    },
+  },
+  components: {
+    MyReactComponentInVue, // 注册转换后的组件
+    NavigationBar,
+  },
 };
 </script>
 
@@ -60,7 +57,7 @@ const handleAction = (action) => {
 }
 
 .sidebar {
-  width: 25%; /* 左侧1/4 */
+  width: 25%;
   padding: 20px;
   background-color: #f5f5f5;
   display: flex;
@@ -69,7 +66,7 @@ const handleAction = (action) => {
 }
 
 .chat-area {
-  width: 75%; /* 右侧3/4 */
+  width: 75%;
   padding: 10px;
   background-color: #fff;
   overflow-y: auto;
@@ -80,9 +77,13 @@ const handleAction = (action) => {
   font-size: 1em;
 }
 
+.react-container {
+  margin: 20px 0;
+}
+
 @media (max-width: 768px) {
   .main-container {
-    flex-direction: column; /* 在小屏幕上堆叠 */
+    flex-direction: column;
   }
 
   .sidebar {

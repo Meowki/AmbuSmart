@@ -4,13 +4,13 @@ import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import TDesignChat from '@tdesign-vue-next/chat'; // 引入chat组件
+// import TDesignChat from '@tdesign-vue-next/chat'; // 引入chat组件
 
 
 createApp(App)
   .use(router)
   .use(ElementPlus)
   .use(store)
-  .use(TDesignChat)
+  // .use(TDesignChat)
   .mount('#app')
 
