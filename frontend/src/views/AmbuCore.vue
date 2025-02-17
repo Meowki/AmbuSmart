@@ -14,7 +14,7 @@
       <h3>before</h3>
       <div class="react-container">
         <!-- 使用 applyReactInVue 包裹 React 组件 -->
-        <MyReactComponentInVue />
+        <ChatComponentInVue />
       </div>
       <h3>later</h3>
     </div>
@@ -24,12 +24,13 @@
 <script>
 import { applyReactInVue } from 'veaury'; // 引入 veaury 的工具
 import NavigationBar from "@/components/NavigationBars.vue";
-import MyReactComponent from '@/components/MyReactComponent.jsx'; // 确保使用正确的文件扩展名
+// import MyReactComponent from '@/components/MyReactComponent.jsx'; // 确保使用正确的文件扩展名
+import ChatComponent from '@/components/ChatWindow.jsx';
+
+const ChatComponentInVue = applyReactInVue(ChatComponent);
 
 // 使用 applyReactInVue 将 React 组件转换为 Vue 组件
-console.log("output:"+MyReactComponent);
-const MyReactComponentInVue = applyReactInVue(MyReactComponent);
-
+// console.log("output:"+MyReactComponent);
 // const MyReactComponentInVue = applyReactInVue(MyReactComponent);
 
 export default {
@@ -44,8 +45,9 @@ export default {
     },
   },
   components: {
-    MyReactComponentInVue, // 注册转换后的组件
+    // MyReactComponentInVue, // 注册转换后的组件
     NavigationBar,
+    ChatComponentInVue,
   },
 };
 </script>
