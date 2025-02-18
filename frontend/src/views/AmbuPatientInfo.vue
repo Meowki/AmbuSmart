@@ -285,10 +285,36 @@ const fetchPatientInfo = async () => {
       formData.value.telno = patientData.telno || "";
       formData.value.address = patientData.address || "";
       formData.value.ethnicity = patientData.ethnicity || "";
+      // 如果证件类型是身份证，计算年龄
+      if (formData.value.idType === "身份证" && patientId) {
+        const age = calculateAge(patientId);
+        formData.value.age = age;
+      }
     } catch (error) {
       console.error("获取患者信息失败:", error);
     }
   }
+};
+
+// 计算年龄的函数
+const calculateAge = (idNumber) => {
+  // 提取身份证号中的出生日期部分 (第7到14位)
+  const birthDateStr = idNumber.substring(6, 14);
+  const birthYear = parseInt(birthDateStr.substring(0, 4), 10);
+  const birthMonth = parseInt(birthDateStr.substring(4, 6), 10);
+  const birthDay = parseInt(birthDateStr.substring(6, 8), 10);
+
+  const today = new Date();
+  const birthDate = new Date(birthYear, birthMonth - 1, birthDay); // 月份需要减1
+
+  // 计算年龄
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--; // 如果还没到今年生日，则年龄减1
+  }
+
+  return age;
 };
 
 // 验证patient_id
@@ -302,10 +328,14 @@ const validatePatientId = async () => {
       if (response.data.length === 0) {
         ElMessage.error("该患者不存在");
       } else {
-        formData.value.patient_id = originalPatientId.value;
-        // 若患者存在，重新加载患者信息
-        fetchPatientInfo();
-        sceneData.value.patient_id = originalPatientId.value;
+        if (response.data[0].idType === formData.value.idType) {
+          ElMessage.success("患者信息验证成功");
+          formData.value.patient_id = originalPatientId.value;
+          fetchPatientInfo();
+          sceneData.value.patient_id = originalPatientId.value;
+        } else {
+          ElMessage.error("请校验患者证件类型");
+        }
       }
     } catch (error) {
       ElMessage.error("检查患者失败，请稍后再试");
