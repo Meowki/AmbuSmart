@@ -4,17 +4,7 @@ from .allergy import Allergy
 from .medical_history import MedicalHistory
 from .medical_record import MedicalRecord
 from .case_history import CaseHistory
-from datetime import datetime
-
-# def calculate_age(id_card: str) -> int:
-#     """根据身份证号计算年龄"""
-#     birth_date = patient_id[6:14]  # 获取身份证号中的出生日期（假设为YYYYMMDD）
-#     birth_date = datetime.strptime(birth_date, "%Y%m%d")
-#     today = datetime.today()
-#     age = today.year - birth_date.year
-#     if today.month < birth_date.month or (today.month == birth_date.month and today.day < birth_date.day):
-#         age -= 1
-#     return age
+from .ambulance.operation_history import OperationHistory
 
 class PatientBase(BaseModel):
     name: str
@@ -36,6 +26,7 @@ class Patient(PatientBase):
     medical_histories: List[MedicalHistory] = []
     medical_record: List[MedicalRecord] = []
     case_histories: List[CaseHistory] = []
+    operation_histories: List[OperationHistory] = []
     # age: int
 
     class Config:

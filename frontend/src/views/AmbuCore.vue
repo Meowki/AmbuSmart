@@ -4,17 +4,17 @@
   <div class="main-container">
     <!-- 左侧功能区 -->
     <div class="sidebar">
-      <el-button @click="handleAction('action1')" type="primary">患者信息</el-button>
-      <el-button @click="handleAction('action2')" type="success">量化评估</el-button>
-      <el-button @click="handleAction('action3')" type="info">智能总结</el-button>
-      <el-button @click="handleAction('action4')" type="info">时间节点</el-button>
+      <el-card class="sidebar-card">
+        <el-button @click="handleAction('action1')" type="primary" class="sidebar-button">患者信息</el-button>
+        <el-button @click="handleAction('action2')" type="success" class="sidebar-button">量化评估</el-button>
+        <el-button @click="handleAction('action3')" type="info" class="sidebar-button">智能总结</el-button>
+        <el-button @click="handleAction('action4')" type="info" class="sidebar-button">时间节点</el-button>
+      </el-card>
     </div>
-
+  
     <!-- 右侧聊天区 -->
     <div class="chat-area">
       <div class="react-container">
-        <!-- 使用 applyReactInVue 包裹 React 组件 -->
-        <!--<ChatComponentInVue />-->
         <IndependentInVue />
       </div>
     </div>
@@ -24,12 +24,9 @@
 <script>
 import { applyReactInVue } from 'veaury'; // 引入 veaury 的工具
 import NavigationBar from "@/components/NavigationBars.vue";
-// import ChatComponent from '@/components/ChatWindow.jsx';
 import Independent from '@/components/Independent.jsx'; // 引入新的 React 组件
 
-// const ChatComponentInVue = applyReactInVue(ChatComponent);
 const IndependentInVue = applyReactInVue(Independent); // 引入新的 React 组件
-
 
 export default {
   data() {
@@ -44,7 +41,6 @@ export default {
   },
   components: {
     NavigationBar,
-    // ChatComponentInVue,
     IndependentInVue, 
   },
 };
@@ -58,29 +54,48 @@ html, body {
 
 .main-container {
   display: flex;
-  height: 86vh;
+  height: 86vh; /* 使用整个视窗 */
   overflow: hidden; /* 禁止主容器的滚动 */
 }
 
 .sidebar {
-  width: 25%;
+  width: 20%;
   padding: 20px;
-  background-color: #f5f5f5;
+  background: linear-gradient(135deg, #f5f5f5, #e0e0e0); /* 渐变背景 */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+  border-radius: 12px; /* 左侧栏圆角 */
+}
+
+.sidebar-card {
+  padding: 10px;
+  background-color: transparent;
+}
+
+.sidebar-button {
+  margin-bottom: 15px;
+  font-size: 1em;
+  border-radius: 6px; /* 按钮圆角 */
+  transition: background-color 0.3s ease; /* 添加按钮 hover 动画 */
+}
+
+.sidebar-button:hover {
+  background-color: #1677ff; /* hover 时的背景色 */
+  color: white;
 }
 
 .chat-area {
-  width: 90%; /* 右侧区域 */
-  height: 100vh; /* 保证其高度填满页面 */
+  width: 100%; /* 右侧区域 */
+  height: 85vh; /* 保证其高度填满页面 */
   background-color: #fff;
+  padding:5px;
+  border-radius: 12px; /* 圆角效果 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 卡片阴影效果 */
+  overflow: hidden; /* 防止溢出内容 */
 }
 
-.el-button {
-  margin-bottom: 15px;
-  font-size: 1em;
-}
 
 .react-container {
   margin: 20px 0;
@@ -101,3 +116,4 @@ html, body {
   }
 }
 </style>
+
