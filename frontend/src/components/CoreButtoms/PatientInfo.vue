@@ -103,7 +103,7 @@
             <!-- 显示门诊记录的必要属性 -->
             <el-table-column label="就诊日期" prop="timestamp"></el-table-column>
             <el-table-column label="诊断结果" prop="assessment"></el-table-column>
-            <el-table-column label="备注" prop="remark"></el-table-column>
+            <el-table-column label="科室" prop="dname"></el-table-column>
             <el-table-column label="操作">
               <template #default="scope">
                 <el-button @click="viewRecordDetails(scope.row)" size="mini">查看详情</el-button>
@@ -140,58 +140,9 @@
   <!-- 门诊单的dialogue -->
    <!-- 完整内容展示弹框 -->
       <el-dialog v-model="dialogVisibleMedical" width="70%">
-        <span slot="title">门诊记录详情</span>
-        <el-form :model="currentRecord" label-width="120px">
-          <el-form-item label="病历编号">
-            <el-input v-model="currentRecord.record_id" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="就诊医院">
-            <el-input v-model="currentRecord.hospital" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="就诊类型">
-            <el-input v-model="currentRecord.type" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="陪伴人">
-            <el-input v-model="currentRecord.companion" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="主诉">
-            <el-input v-model="currentRecord.chief_complaint" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="现病史">
-            <el-input v-model="currentRecord.present_illness" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="体温">
-            <el-input v-model="currentRecord.temperature" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="脉搏">
-            <el-input v-model="currentRecord.pulse" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="收缩压">
-            <el-input v-model="currentRecord.sbp" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="舒张压">
-            <el-input v-model="currentRecord.dbp" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="肺部">
-            <el-input v-model="currentRecord.pulmonary" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="意识状态">
-            <el-input v-model="currentRecord.consciousness" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="治疗措施">
-            <el-input v-model="currentRecord.measures" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="观察">
-            <el-input v-model="currentRecord.observation" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="评估">
-            <el-input v-model="currentRecord.assessment" disabled></el-input>
-          </el-form-item>
-          <el-form-item label="备注">
-            <el-input v-model="currentRecord.remark" disabled></el-input>
-          </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
+        <span >门诊记录详情</span>
+          <MedicalRecordTable />
+        <span class="dialog-footer">
           <el-button @click="dialogVisible = false">关闭</el-button>
         </span>
       </el-dialog>
@@ -202,9 +153,11 @@ import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useStore } from "vuex";
 import api from "@/services/api";
+import MedicalRecordTable from "@/components/CoreButtoms/medicalRecordTable.vue";
 
 const store = useStore();
 
+//保存的时候记得也要把patient_id存起来，有可能被改了
 const dialogVisible = ref(false); 
 const dialogVisibleMedical = ref(false);
 const activeTab = ref("1"); // 默认显示的 tab
@@ -229,41 +182,24 @@ const medicalHistories = ref([
 const medicalRecords = ref([
   {
     record_id: null,
-    timestamp: "2025-02-06T06:23:14",
-    chief_complaint: "轻微头痛",
-    remark: "零号病历",
-    hospital: "某医院",
-    type: "普通门诊",
-    companion: "无",
-    present_illness: "头痛持续2天",
-    temperature: "36.5°C",
-    pulse: "72次/分钟",
-    sbp: "120mmHg",
-    dbp: "80mmHg",
-    pulmonary: "正常",
-    consciousness: "清醒",
-    measures: "观察",
-    observation: "无异常",
-    assessment: "一般",
-  },
-  {
-    record_id: 10025,
-    timestamp: "2025-02-06T07:22:00",
-    chief_complaint: "感冒症状",
-    remark: "别管了，玩一下智能手机",
-    hospital: "某医院",
-    type: "普通门诊",
-    companion: "父母",
-    present_illness: "感冒3天，流感症状",
-    temperature: "37.8°C",
-    pulse: "80次/分钟",
-    sbp: "118mmHg",
-    dbp: "78mmHg",
-    pulmonary: "稍有异常",
-    consciousness: "清醒",
-    measures: "静脉注射药物",
-    observation: "持续观察",
-    assessment: "较重",
+    timestamp: "",
+    dname:"",
+    wname:"", //对应doctor name
+    chief_complaint: "",
+    remark: "",
+    hospital: "",
+    type: "",
+    companion: "",
+    present_illness: "",
+    temperature: "",
+    pulse: "",
+    sbp: "",
+    dbp: "",
+    pulmonary: "",
+    consciousness: "",
+    measures: "",
+    observation: "",
+    assessment: "",
   },
 ]);
 
@@ -308,7 +244,35 @@ const fetchPatientInfo = async () => {
       // 获取并设置既往史信息
       medicalHistories.value = patientData.medical_histories || [];
       // 获取并设置门诊记录
-      medicalRecords.value = patientData.medical_records || [];
+      // 填充门诊记录
+      try{
+        const response = await api.get(`/record/medical-records/patientId/${patientId}`);
+        console.log(response)
+        medicalRecords.value = response.data.map(record => ({
+        record_id: record.record_id || null,
+        timestamp: record.timestamp || "",
+        dname: record.department?.dname || "", // 科室名称
+        wname: record.doctor?.name || "", // 医生姓名
+        chief_complaint: record.chief_complaint || "",
+        remark: record.remark || "",
+        hospital: record.hospital || "",
+        type: record.type || "",
+        companion: record.companion || "",
+        present_illness: record.present_illness || "",
+        temperature: record.temperature || "",
+        pulse: record.pulse || "",
+        sbp: record.sbp || "",
+        dbp: record.dbp || "",
+        pulmonary: record.pulmonary || "",
+        consciousness: record.consciousness || "",
+        measures: record.measures || "",
+        observation: record.observation || "",
+        assessment: record.assessment || "",
+      }));
+      }catch (error) {
+      console.error("获取门诊记录失败:", error);
+    }
+      
     } catch (error) {
       console.error("获取患者信息失败:", error);
     }

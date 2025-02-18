@@ -27,7 +27,7 @@ def get_all_medical_record(db: Session = Depends(get_db)):
     medical_record = medical_record_service.get_all_medical_record(db)
     return medical_record
 
-@router.get("/{patient_id}", response_model=list[MedicalRecordWithChecksResponse])
+@router.get("/patientId/{patient_id}", response_model=list[MedicalRecordWithChecksResponse])
 def get_medical_histories_by_patient(patient_id: str, db: Session = Depends(get_db)):
     medical_record = medical_record_service.get_medical_record_by_patient(db, patient_id)
     return medical_record 
