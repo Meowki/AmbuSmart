@@ -140,11 +140,7 @@
   <!-- 门诊单的dialogue -->
    <!-- 完整内容展示弹框 -->
       <el-dialog v-model="dialogVisibleMedical" width="70%">
-        <span >门诊记录详情</span>
-          <MedicalRecordTable />
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">关闭</el-button>
-        </span>
+       <MedicalRecordTable :records="currentRecord" />
       </el-dialog>
 </template>
 
@@ -278,6 +274,7 @@ const fetchPatientInfo = async () => {
     }
   }
 };
+
 
 // 计算年龄的函数
 const calculateAge = (idNumber) => {

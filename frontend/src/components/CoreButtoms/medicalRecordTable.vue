@@ -75,6 +75,7 @@
 
 <script setup>
 import { CaretRight } from '@element-plus/icons-vue'
+import { ref, defineProps } from 'vue';
 import dayjs from 'dayjs'
 
 const record = {
@@ -99,6 +100,46 @@ const record = {
 const formatDateTime = (val) => {
   return dayjs(val).format('YYYY年MM月DD日 HH时mm分')
 }
+
+// 声明接收的props
+// const props = defineProps({
+//   records: {  // 完整病历列表
+//     type: Array,
+//     default: () => []
+//   },
+//   currentRecord: {  // 当前选中病历
+//     type: Object,
+//     default: () => ({})
+//   }
+// })
+
+
+// const props = defineProps({
+//   records: {
+//     type: Array,
+//     default: () => []
+//   }
+// });
+
+// 当前查看的门诊记录详情
+const currentRecord = ref({});
+
+// 查看记录详情
+/*eslint-disable*/
+const viewRecordDetails = (record) => {
+  currentRecord.value = { ...record };
+};
+/*eslint-disable*/
+const props = defineProps({
+  records: {
+    type: Array,
+    default: () => []
+  }
+});
+
+// 打印传递过来的数据
+console.log("接收到的门诊记录:", props.records);
+
 </script>
 
 <style scoped>
