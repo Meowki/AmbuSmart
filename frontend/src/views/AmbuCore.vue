@@ -5,13 +5,14 @@
     <!-- 左侧功能区 -->
     <div class="sidebar">
       <el-card class="sidebar-card">
-        <el-button @click="handleAction('action1')" type="primary" class="sidebar-button">患者信息</el-button>
+        <PatientInfo />
         <el-button @click="handleAction('action2')" type="success" class="sidebar-button">量化评估</el-button>
         <el-button @click="handleAction('action3')" type="info" class="sidebar-button">智能总结</el-button>
         <el-button @click="handleAction('action4')" type="info" class="sidebar-button">时间节点</el-button>
+        <!-- 还要加基础检查结果 -->
       </el-card>
     </div>
-  
+
     <!-- 右侧聊天区 -->
     <div class="chat-area">
       <div class="react-container">
@@ -22,11 +23,12 @@
 </template>
 
 <script>
-import { applyReactInVue } from 'veaury'; // 引入 veaury 的工具
+import { applyReactInVue } from 'veaury'; 
 import NavigationBar from "@/components/NavigationBars.vue";
-import Independent from '@/components/Independent.jsx'; // 引入新的 React 组件
+import Independent from '@/components/Independent.jsx'; 
+import PatientInfo from "@/components/CoreButtoms/PatientInfo.vue";
 
-const IndependentInVue = applyReactInVue(Independent); // 引入新的 React 组件
+const IndependentInVue = applyReactInVue(Independent); 
 
 export default {
   data() {
@@ -42,6 +44,7 @@ export default {
   components: {
     NavigationBar,
     IndependentInVue, 
+    PatientInfo
   },
 };
 </script>

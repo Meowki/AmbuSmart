@@ -37,82 +37,118 @@ import {
     },
   ];
   const useStyle = createStyles(({ token, css }) => {
-    return {
+  return {
+    layout: css`
+      width: 100%;
+      min-width: 800px;
+      height: 550px;
+      border-radius: ${token.borderRadius}px;
+      display: flex;
+      background: ${token.colorBgContainer};
+      font-family: AlibabaPuHuiTi, ${token.fontFamily}, sans-serif;
+      margin-top: -10px;
+      .ant-prompts {
+        color: ${token.colorText};
+      }
+    `,
+    menu: css`
+      background: ${token.colorBgLayout}80;
+      width: 280px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    `,
+    conversations: css`
+      padding: 0 12px;
+      flex: 1;
+      overflow-y: auto;
+    `,
+    chat: css`
+      height: 100%;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      gap: 16px;
+    `,
+    messages: css`
+      flex: 1;
+    `,
+    placeholder: css`
+      padding-top: 32px;
+    `,
+    sender: css`
+      box-shadow: ${token.boxShadow};
+    `,
+    logo: css`
+      display: flex;
+      height: 72px;
+      align-items: center;
+      justify-content: start;
+      padding: 0 24px;
+      box-sizing: border-box;
+
+      img {
+        width: 24px;
+        height: 24px;
+        display: inline-block;
+      }
+
+      span {
+        display: inline-block;
+        margin: 0 8px;
+        font-weight: bold;
+        color: ${token.colorText};
+        font-size: 16px;
+      }
+    `,
+    addBtn: css`
+      background: #1677ff0f;
+      border: 1px solid #1677ff34;
+      width: calc(100% - 24px);
+      margin: 0 12px 24px 12px;
+    `,
+    // 调整 .chat-area 和 .react-container 的响应式设计
+    chatArea: css`
+      width: 100%; /* 确保 chat-area 宽度是自适应的 */
+      height: 85vh; /* 高度使用视口高度 */
+      max-height: 600px; /* 最大高度限制，防止过高 */
+      background-color: #fff;
+      padding: 5px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 卡片阴影效果 */
+      overflow: hidden; /* 防止溢出内容 */
+    `,
+    reactContainer: css`
+      margin: 20px 0;
+      width: 100%; /* 保证 react-container 宽度自适应 */
+      height: 100%; /* 保证内容填满 */
+    `,
+
+    // 响应式设计：在小屏幕下调整布局
+    '@media (max-width: 768px)': {
       layout: css`
-        width: 100%;
-        min-width: 800px;
-        height: 550px;
-        border-radius: ${token.borderRadius}px;
-        display: flex;
-        background: ${token.colorBgContainer};
-        font-family: AlibabaPuHuiTi, ${token.fontFamily}, sans-serif;
-        margin-top:-10px;
-        .ant-prompts {
-          color: ${token.colorText};
-        }
+        min-width: 100%;
+        height: auto;
+      `,
+      chatArea: css`
+        height: 80vh;
+        max-height: 500px;
+      `,
+      reactContainer: css`
+        margin: 10px 0;
       `,
       menu: css`
-        background: ${token.colorBgLayout}80;
-        width: 280px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-      `,
-      conversations: css`
-        padding: 0 12px;
-        flex: 1;
-        overflow-y: auto;
-      `,
-      chat: css`
-        height: 100%;
         width: 100%;
-        max-width: 800px;
-        margin: 0 auto;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        padding: 10px;
-        gap: 16px;
+        height: auto;
       `,
-      messages: css`
-        flex: 1;
-      `,
-      placeholder: css`
-        padding-top: 32px;
-      `,
-      sender: css`
-        box-shadow: ${token.boxShadow};
-      `,
-      logo: css`
-        display: flex;
-        height: 72px;
-        align-items: center;
-        justify-content: start;
-        padding: 0 24px;
-        box-sizing: border-box;
-  
-        img {
-          width: 24px;
-          height: 24px;
-          display: inline-block;
-        }
-  
-        span {
-          display: inline-block;
-          margin: 0 8px;
-          font-weight: bold;
-          color: ${token.colorText};
-          font-size: 16px;
-        }
-      `,
-      addBtn: css`
-        background: #1677ff0f;
-        border: 1px solid #1677ff34;
-        width: calc(100% - 24px);
-        margin: 0 12px 24px 12px;
-      `,
-    };
-  });
+    },
+  };
+});
+
   const placeholderPromptsItems = [
     {
       key: '1',

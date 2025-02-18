@@ -11,3 +11,4 @@ class Department(Base):
     
     # 关系
     health_personnel = relationship("HealthPersonnel", back_populates="department")
+    medical_record = relationship("MedicalRecord", back_populates="department")

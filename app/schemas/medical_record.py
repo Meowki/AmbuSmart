@@ -4,6 +4,8 @@ from datetime import datetime
 
 from schemas.check.check_histories import CheckHistory
 from schemas.medicine.medicine_histories import MedicineHistory
+from schemas.department import Department
+from schemas.health_personnel import HealthPersonnel
 
 class MedicalRecordBase(BaseModel):
     patient_id: str
@@ -41,6 +43,8 @@ class MedicalRecordWithChecksResponse(MedicalRecordBase):
     record_id: int
     check_histories: Optional[List[CheckHistory]] = []
     medicine_histories: Optional[List[MedicineHistory]] = []
+    department: Optional[Department] = None
+    doctor: Optional[HealthPersonnel] = None
 
     class Config:
         orm_mode = True

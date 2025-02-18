@@ -17,7 +17,9 @@ class MedicalRecordService:
         result = db.query(MedicalRecord).options(
             # 使用 joinedload 加载检查记录和用药记录
             joinedload(MedicalRecord.check_relationship).joinedload(CheckRelationship.check_histories),
-            joinedload(MedicalRecord.medicine_relationship).joinedload(MedicineRelationship.medicine_histories)
+            joinedload(MedicalRecord.medicine_relationship).joinedload(MedicineRelationship.medicine_histories),
+            joinedload(MedicalRecord.department),
+            joinedload(MedicalRecord.health_personnel)
         ).filter(MedicalRecord.patient_id == patient_id).all()
 
         for record in result:
@@ -38,7 +40,25 @@ class MedicalRecordService:
             medical_record_dict['medicine_histories'] = [
                 medicine_rel.medicine_histories for medicine_rel in record.medicine_relationship
             ]
-            
+            # 添加科室信息
+            if record.department:
+                medical_record_dict['department'] = {
+                    'dno': record.department.dno,
+                    'dname': record.department.dname,
+                    'type': record.department.type
+                }
+            else:
+                medical_record_dict['department'] = None
+
+            # 添加医生信息
+            if record.health_personnel:
+                medical_record_dict['doctor'] = {
+                    'wid': record.health_personnel.wid,
+                    'name': record.health_personnel.name,
+                    'job': record.health_personnel.job
+                }
+            else:
+                medical_record_dict['doctor'] = None
             medical_records_with_checks_and_medicines.append(medical_record_dict)
         
         return medical_records_with_checks_and_medicines
