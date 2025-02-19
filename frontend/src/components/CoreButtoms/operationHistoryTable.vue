@@ -4,7 +4,7 @@
       <h2>院前急救记录单</h2>
       <div class="record-info">
         <span>急救号：{{ currentOperation.operation_id }}</span>  &nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;<span>日期：{{ new Date(currentOperation.dispatch_time).toLocaleDateString() }}</span>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span>日期：{{ currentOperation.dispatch_time.split(' ')[0] }}</span>
       </div>
     </div>
 
@@ -38,10 +38,18 @@
         <el-descriptions-item label="现场地址">{{ currentOperation.scene_address }}</el-descriptions-item>
         <el-descriptions-item label="急救性质">{{ currentOperation.emergency_type }}</el-descriptions-item>
         <el-descriptions-item label="病情分级">{{ currentOperation.severity_level }}</el-descriptions-item>
-        <el-descriptions-item label="主诉症状">{{ currentOperation.chief_complaint }}</el-descriptions-item>
-        <el-descriptions-item label="初步诊断">{{ currentOperation.initial_diagnosis }}</el-descriptions-item>
       </el-descriptions>
     </el-card>
+
+    <div class="diagnosis-section">
+        <h4>主诉症状：</h4>
+        <el-alert :title="currentOperation.chief_complaint" type="warning" :closable="false" />
+      </div>
+
+       <div class="diagnosis-section">
+        <h4>初步诊断：</h4>
+        <el-alert :title="currentOperation.initial_diagnosis " type="warning" :closable="false" />
+      </div>
 
     <!-- 医疗评估 -->
     <el-card class="section-card">
@@ -91,6 +99,17 @@
       </el-descriptions>
     </el-card>
 
+        <div class="treatment-plan">
+        <h4>处理措施：</h4>
+        <ul>
+          <!-- 检查 measures 是否为非空字符串 -->
+          <li v-for="(item, index) in (currentOperation.procedures ? currentOperation.procedures.split('，') : [])" :key="index">
+            <el-icon><caret-right /></el-icon>
+            {{ item }}
+          </li>
+        </ul>
+      </div>
+
     <!-- 签名区 -->
     <div class="signature-area">
       <el-descriptions :column="3" border>
@@ -106,6 +125,7 @@
 </template>
 
 <script setup>
+import { CaretRight } from '@element-plus/icons-vue'
 import { ref, defineProps, watch } from 'vue';
 
 // 接收 records-----------------------------------------------
@@ -160,12 +180,21 @@ watch(
   color: #666;
 }
 
+.diagnosis-section h4 {
+  color: #409eff;
+  margin-bottom: 10px;
+}
+
 .section-card {
   margin-bottom: 20px;
 }
 
 .check-section {
   padding: 10px;
+}
+
+.treatment-plan ul {
+  padding-left: 20px;
 }
 
 .signature-area {
