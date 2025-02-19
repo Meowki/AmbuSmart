@@ -114,10 +114,17 @@
 
         <!-- Tab 3 -->
         <el-tab-pane label="住院记录">
-          <el-table :data="medicalHistories" style="width: 100%">
-            <el-table-column label="病情名称" prop="condition_name"></el-table-column>
-            <el-table-column label="诊断日期" prop="diagnosis_date"></el-table-column>
-            <el-table-column label="备注" prop="remark"></el-table-column>
+          <el-table :data="caseHistories" style="width: 100%">
+             <!-- 显示门诊记录的必要属性 -->
+            <el-table-column label="入院时间" prop="in_timestamp"></el-table-column>
+            <el-table-column label="出院时间" prop="out_timestamp"></el-table-column>
+            <el-table-column label="入院病情" prop="in_assessment"></el-table-column>
+            <el-table-column label="出院诊断" prop="out_result"></el-table-column>
+            <el-table-column label="操作">
+              <template #default="scope">
+                <el-button @click="viewCaseDetails(scope.row)" size="mini">查看详情</el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </el-tab-pane>
 
@@ -138,9 +145,13 @@
 
 
   <!-- 门诊单的dialogue -->
-   <!-- 完整内容展示弹框 -->
       <el-dialog v-model="dialogVisibleMedical" width="70%">
        <MedicalRecordTable :records="currentRecord" />
+      </el-dialog>
+
+    <!-- 住院单的dialogue -->
+      <el-dialog v-model="dialogVisibleCase" width="70%">
+       <CaseHistoryTable :records="currentCase" />
       </el-dialog>
 </template>
 
@@ -150,12 +161,12 @@ import { ElMessage } from 'element-plus';
 import { useStore } from "vuex";
 import api from "@/services/api";
 import MedicalRecordTable from "@/components/CoreButtoms/medicalRecordTable.vue";
+import CaseHistoryTable from "@/components/CoreButtoms/caseHistoryTable.vue";
 
 const store = useStore();
 
 //保存的时候记得也要把patient_id存起来，有可能被改了
 const dialogVisible = ref(false); 
-const dialogVisibleMedical = ref(false);
 const activeTab = ref("1"); // 默认显示的 tab
 const originalPatientId = ref(""); // 身份证号
 const patientInfo = ref({
@@ -174,13 +185,15 @@ const allergyInfo = ref([
 const medicalHistories = ref([
   { condition_name: "", diagnosis_date: "", remark: "" },
 ]);
-// 门诊记录
+
+//门诊记录-----------------------------------------------------------
+const dialogVisibleMedical = ref(false);
 const medicalRecords = ref([
   {
     record_id: null,
     timestamp: "",
     dname:"",
-    wname:"", //对应doctor name
+    wname:"", 
     chief_complaint: "",
     remark: "",
     hospital: "",
@@ -199,7 +212,6 @@ const medicalRecords = ref([
   },
 ]);
 
-// 当前查看的门诊记录详情
 const currentRecord = ref({});
 
 const viewRecordDetails = (record) => {
@@ -221,9 +233,45 @@ const viewRecordDetails = (record) => {
   }
 };
 
+//住院记录------------------------------------------------------
+const dialogVisibleCase = ref(false);
+const caseHistories = ref([
+  {
+    case_id: null,
+    in_timestamp: "",
+    out_timestamp: "",
+    in_assessment: "",
+    out_result: "",
+    hospital: "",
+    room: "",
+    bed: "",
+    diagnosis: "",
+    treatment: "",
+    remark: "",
+  }, 
+])
 
+const currentCase = ref({});
 
-// 打开 Dialog
+const viewCaseDetails = (record) => {
+  if (record) {
+    currentCase.value = {
+      ...record,
+      patient_id: patientInfo.value.patient_id,
+      idType: patientInfo.value.idType,
+      name: patientInfo.value.name,
+      sex: patientInfo.value.sex,
+      telno: patientInfo.value.telno,
+      address: patientInfo.value.address,
+      ethnicity: patientInfo.value.ethnicity,
+      age: patientInfo.value.age,
+    };
+      dialogVisibleCase.value = true;
+  } else {
+    console.error("Invalid case data");
+  }
+};
+
 const openDialog = () => {
   dialogVisible.value = true;
 };
@@ -242,18 +290,17 @@ const fetchPatientInfo = async () => {
       patientInfo.value.address = patientData.address || "";
       patientInfo.value.ethnicity = patientData.ethnicity || "";
 
-      // 如果证件类型是身份证，计算年龄
+      // 身份证，计算年龄
       if (patientInfo.value.idType === "身份证" && patientId) {
         const age = calculateAge(patientId);
         patientInfo.value.age = age;
       }
 
-      // 获取并设置过敏信息
+      // 过敏 & 既往史
       allergyInfo.value = patientData.allergies || [];
-      // 获取并设置既往史信息
       medicalHistories.value = patientData.medical_histories || [];
-      // 获取并设置门诊记录
-      // 填充门诊记录
+
+      // --------填充门诊记录
       try{
         const response = await api.get(`/record/medical-records/patientId/${patientId}`);
         console.log(response)
@@ -281,6 +328,27 @@ const fetchPatientInfo = async () => {
       }catch (error) {
       console.error("获取门诊记录失败:", error);
     }
+      // --------填充住院记录
+      try{
+        const response = await api.get(`/record/case-histories/patientId/${patientId}`);
+        // console.log("caseHistories:"+JSON.stringify(response.data)) 
+        caseHistories.value = response.data.map(record => ({
+          case_id: record.case_id || null,
+          in_timestamp:  record.in_timestamp || "",
+          out_timestamp: record.out_timestamp || "",
+          in_assessment: record.in_assessment || "",
+          out_result: record.out_result || "",
+          hospital: record.hospital || "",
+          room: record.room || "",
+          bed: record.bed || "",
+          diagnosis: record.diagnosis || "",
+          treatment: record.treatment || "",
+          remark: record.remark || "",
+        }));
+      }catch(error){
+        console.error("获取住院记录失败:", error);
+      }
+
       
     } catch (error) {
       console.error("获取患者信息失败:", error);

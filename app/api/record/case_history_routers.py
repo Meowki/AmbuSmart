@@ -27,7 +27,7 @@ def get_all_case_histories(db: Session = Depends(get_db)):
     case_history = case_history_service.get_all_case_history(db)
     return case_history 
 
-@router.get("/{patient_id}", response_model=list[CaseHistoryWithChecksResponse])
+@router.get("/patientId/{patient_id}", response_model=list[CaseHistoryWithChecksResponse])
 def get_case_histories_by_patient(patient_id: str, db: Session = Depends(get_db)):
     case_history = case_history_service.get_case_history_by_patient(db, patient_id)
     return case_history 
