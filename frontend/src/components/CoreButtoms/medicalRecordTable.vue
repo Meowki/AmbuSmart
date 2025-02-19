@@ -18,7 +18,7 @@
         <el-descriptions-item label="证件号" :span="1">{{ currentRecord.patient_id }}</el-descriptions-item>
         <el-descriptions-item label="证件类型" >{{ currentRecord.idType }}</el-descriptions-item>
         <el-descriptions-item label="就诊科室">{{ currentRecord.dname }}</el-descriptions-item>
-        <el-descriptions-item label="就诊时间">{{ formatDateTime(currentRecord.timestamp) }}</el-descriptions-item>
+        <el-descriptions-item label="就诊时间">{{ currentRecord.timestamp }}</el-descriptions-item>
       </el-descriptions>
     </el-card>
 
@@ -87,7 +87,6 @@
 <script setup>
 import { CaretRight } from '@element-plus/icons-vue'
 import { ref, defineProps, watch } from 'vue';
-import dayjs from 'dayjs'
 
 // 接收父组件传来的 records
 const props = defineProps({
@@ -98,7 +97,7 @@ const props = defineProps({
 });
 
 // 获取当前门诊记录
-const currentRecord = ref({});  // 初始为空对象
+const currentRecord = ref({});  
 
 console.log("接收到的门诊记录:", props.records);
 // 监听 records 的变化
@@ -120,11 +119,6 @@ watch(
 );
 
 
-
-// 日期格式化
-const formatDateTime = (val) => {
-  return dayjs(val).format('YYYY年MM月DD日 HH时mm分')
-}
 </script>
 
 

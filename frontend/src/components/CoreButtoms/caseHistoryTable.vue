@@ -27,8 +27,8 @@
         <el-descriptions-item label="科室">{{ currentRecord.dname }}</el-descriptions-item>
         <el-descriptions-item label="主治医师">{{ currentRecord.wname }}</el-descriptions-item>
         <el-descriptions-item label="备注">{{ currentRecord.remark }}</el-descriptions-item>
-        <el-descriptions-item label="入院时间">{{ formatDateTime(currentRecord.admission_time) }}</el-descriptions-item>
-        <el-descriptions-item label="出院时间">{{ formatDateTime(currentRecord.discharge_time) }}</el-descriptions-item>
+        <el-descriptions-item label="入院时间">{{ currentRecord.in_timestamp }}</el-descriptions-item>
+        <el-descriptions-item label="出院时间">{{ currentRecord.out_timestamp }}</el-descriptions-item>
       </el-descriptions>
     </el-card>
 
@@ -54,7 +54,6 @@
 
 <script setup>
 import { ref, defineProps, watch } from 'vue';
-import dayjs from 'dayjs'
 
 // 接收父组件传来的 records
 const props = defineProps({
@@ -87,11 +86,6 @@ watch(
 );
 
 
-
-// 日期格式化
-const formatDateTime = (val) => {
-  return dayjs(val).format('YYYY年MM月DD日 HH时mm分')
-}
 </script>
 
 

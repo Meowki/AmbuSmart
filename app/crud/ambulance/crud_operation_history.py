@@ -20,6 +20,9 @@ class CRUDOperationHistory:
     def get_by_operation_id(self, db: Session, operation_id: int):
         return db.query(OperationHistory).filter(OperationHistory.operation_id == operation_id).first()
     
+    def get_without_operation_id(self, db: Session, operation_id: int, patient_id: str):
+        return db.query(OperationHistory).filter(OperationHistory.operation_id != operation_id, OperationHistory.patient_id == patient_id).all()
+    
     def delete(self, db: Session, operation_id: int):
         db_operation = db.query(OperationHistory).filter(OperationHistory.operation_id == operation_id).first()
         if db_operation:

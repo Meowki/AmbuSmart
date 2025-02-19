@@ -130,10 +130,17 @@
 
         <!-- Tab 4 -->
         <el-tab-pane label="急救记录">
-          <el-table :data="medicalHistories" style="width: 100%">
-            <el-table-column label="病情名称" prop="condition_name"></el-table-column>
-            <el-table-column label="诊断日期" prop="diagnosis_date"></el-table-column>
-            <el-table-column label="备注" prop="remark"></el-table-column>
+          <el-table :data="operationHistories" style="width: 100%">
+             <!-- 显示门诊记录的必要属性 -->
+            <el-table-column label="急救时间" prop="dispatch_time"></el-table-column>
+            <el-table-column label="急救性质" prop="emergency_type"></el-table-column>
+            <el-table-column label="主诉" prop="chief_complaint"></el-table-column>
+            <el-table-column label="急救结果" prop="outcome"></el-table-column>
+            <el-table-column label="操作">
+              <template #default="scope">
+                <el-button @click="viewOperationDetails(scope.row)" size="mini">查看详情</el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </el-tab-pane>
       </el-tabs>
@@ -149,9 +156,14 @@
        <MedicalRecordTable :records="currentRecord" />
       </el-dialog>
 
-    <!-- 住院单的dialogue -->
+    <!-- 住院的dialogue -->
       <el-dialog v-model="dialogVisibleCase" width="70%">
        <CaseHistoryTable :records="currentCase" />
+      </el-dialog>
+
+      <!-- 急救的dialogue -->
+      <el-dialog v-model="dialogVisibleOperation" width="70%">
+       <OperationHistoryTable :records="currentOperation" />
       </el-dialog>
 </template>
 
@@ -164,6 +176,7 @@ import dayjs from 'dayjs'
 
 import MedicalRecordTable from "@/components/CoreButtoms/medicalRecordTable.vue";
 import CaseHistoryTable from "@/components/CoreButtoms/caseHistoryTable.vue";
+import OperationHistoryTable from "@/components/CoreButtoms/operationHistoryTable.vue";
 
 const store = useStore();
 
@@ -272,11 +285,94 @@ const viewCaseDetails = (record) => {
   }
 };
 
+//急救记录------------------------------------------------------
+const dialogVisibleOperation = ref(false);
+const operationHistories = ref([
+  {
+    operation_id:null,
+    informant:"",
+    scene_address:"",
+    dispatch_time:"",
+    arrival_on_scene_time:"",
+    departure_from_scene_time:"",
+    arrival_at_hospital_time:"",
+    destination:"",
+    severity_level:"",
+    emergency_type:"",
+    chief_complaint:"",
+    initial_diagnosis:"",
+    procedures:"",
+    medicine:"",
+    outcome:"",
+    physician:"",
+    nurse:"",
+    driver:"",
+    paramedic:"",
+    stretcher_bearer:"",
+    recipient:"",
+    initial_eid:null,
+    final_eid:null,
+    ti_score:"",
+    ti_content:"",
+    gcs_score:"",
+    gcs_content:"",
+    Killip_score:"",
+    Killip_content:"",
+    Killip_diagnosis:"",
+    cerebral_stroke_content:"",
+    initial_check:{
+      timestamp:"",
+      reject:"",
+      consciousness:"",
+      pupil:"",
+      pupillary_light_reflex:"",
+      blood_pressure:"",
+      pulse:"",
+      respiration:"",
+      oxygen_saturation:"",
+    },
+    final_check:{
+      timestamp:"",
+      reject:"",
+      consciousness:"",
+      pupil:"",
+      pupillary_light_reflex:"",
+      blood_pressure:"",
+      pulse:"",
+      respiration:"",
+      oxygen_saturation:"",
+    },
+  }, 
+])
+
+const currentOperation = ref({});
+
+const viewOperationDetails = (record) => {
+  if (record) {
+    currentOperation.value = {
+      ...record,
+      patient_id: patientInfo.value.patient_id,
+      idType: patientInfo.value.idType,
+      name: patientInfo.value.name,
+      sex: patientInfo.value.sex,
+      telno: patientInfo.value.telno,
+      address: patientInfo.value.address,
+      ethnicity: patientInfo.value.ethnicity,
+      age: patientInfo.value.age,
+    };
+      dialogVisibleOperation.value = true;
+  } else {
+    console.error("Invalid case data");
+  }
+};
+
+//-------------------------------------------------------------
+
 const openDialog = () => {
   dialogVisible.value = true;
 };
 
-// 获取患者信息
+// 获取患者信息---------------------------------------------------
 const fetchPatientInfo = async () => {
   const patientId = patientInfo.value.patient_id;
   if (patientId) {
@@ -347,6 +443,73 @@ const fetchPatientInfo = async () => {
         console.error("获取住院记录失败:", error);
       }
 
+      //--------------------填充急救记录
+      try{
+        const operation_id= store.state.operation_id || "20202";
+        const response = await api.get(`/operation_histories/withoutThis/${operation_id}/${patientId}`); 
+        // console.log("response:"+JSON.stringify(response.data))
+        operationHistories.value = response.data.map(record => ({
+          operation_id: record.operation_id || null,
+          informant: record.informant || "",
+          scene_address: record.scene_address || "",
+          dispatch_time: formatDateTime(record.dispatch_time) || "",
+          arrival_on_scene_time: formatDateTime(record.arrival_on_scene_time) || "",
+          departure_from_scene_time: formatDateTime(record.departure_from_scene_time) || "",
+          arrival_at_hospital_time: formatDateTime(record.arrival_at_hospital_time) || "",
+          destination: record.destination || "", 
+          severity_level: record.severity_level || "",
+          emergency_type: record.emergency_type || "",
+          chief_complaint: record.chief_complaint || "",
+          initial_diagnosis: record.initial_diagnosis || "",
+          procedures: record.procedures || "",
+          medicine: record.medicine || "",
+          outcome: record.outcome || "",
+          physician: record.physician || "",
+          nurse: record.nurse || "",
+          driver: record.driver || "",
+          paramedic: record.paramedic || "",
+          stretcher_bearer: record.stretcher_bearer || "",
+          recipient: record.recipient || "",
+          initial_eid: record.initial_eid || null,
+          final_eid: record.final_eid || null,
+          ti_score: record.ti_score || "",
+          ti_content: record.ti_content || "",
+          gcs_score: record.gcs_score || "",
+          gcs_content: record.gcs_content || "",
+          Killip_score: record.Killip_score || "",
+          Killip_content: record.Killip_content || "",
+          Killip_diagnosis: record.Killip_diagnosis || "",
+          cerebral_stroke_content: record.cerebral_stroke_content || "",
+          initial_check: record.initial_check ? {
+            timestamp: formatDateTime(record.initial_check.timestamp) || "",
+            reject: record.initial_check.reject || null,
+            consciousness: record.initial_check.consciousness || "",
+            pupil: record.initial_check.pupil || "",
+            pupillary_light_reflex: record.initial_check.pupillary_light_reflex || "",
+            blood_pressure: record.initial_check.blood_pressure || "",
+            pulse: record.initial_check.pulse || "",
+            respiration: record.initial_check.respiration || "",
+            oxygen_saturation: record.initial_check.oxygen_saturation || "",
+            eid: record.initial_check.eid || null
+          } : {},
+
+          final_check: record.final_check ? {
+            timestamp: formatDateTime(record.final_check.timestamp) || "",
+            reject: record.final_check.reject || null,
+            consciousness: record.final_check.consciousness || "",
+            pupil: record.final_check.pupil || "",
+            pupillary_light_reflex: record.final_check.pupillary_light_reflex || "",
+            blood_pressure: record.final_check.blood_pressure || "",
+            pulse: record.final_check.pulse || "",
+            respiration: record.final_check.respiration || "",
+            oxygen_saturation: record.final_check.oxygen_saturation || "",
+            eid: record.final_check.eid || null
+            } : {}
+        }))
+        // console.log("operationHistories:"+JSON.stringify(operationHistories.value))
+      }catch(error){
+        console.error("获取急救记录失败:", error);
+      }
       
     } catch (error) {
       console.error("获取患者信息失败:", error);
