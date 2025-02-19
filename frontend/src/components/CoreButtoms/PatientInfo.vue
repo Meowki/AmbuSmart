@@ -202,13 +202,26 @@ const medicalRecords = ref([
 // 当前查看的门诊记录详情
 const currentRecord = ref({});
 
-
-
-// 查看记录详情
 const viewRecordDetails = (record) => {
-  currentRecord.value = { ...record };
-  dialogVisibleMedical.value = true;
+  if (record) {
+    currentRecord.value = {
+      ...record,
+      patient_id: patientInfo.value.patient_id,
+      idType: patientInfo.value.idType,
+      name: patientInfo.value.name,
+      sex: patientInfo.value.sex,
+      telno: patientInfo.value.telno,
+      address: patientInfo.value.address,
+      ethnicity: patientInfo.value.ethnicity,
+      age: patientInfo.value.age,
+    };
+      dialogVisibleMedical.value = true;
+  } else {
+    console.error("Invalid record data");
+  }
 };
+
+
 
 // 打开 Dialog
 const openDialog = () => {

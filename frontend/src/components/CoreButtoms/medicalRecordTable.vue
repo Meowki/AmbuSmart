@@ -2,59 +2,68 @@
   <div class="medical-record">
     <!-- 标题区 -->
     <div class="header">
-      <h2>常熟市第二人民医院门诊病历</h2>
+      <h2>门诊病历</h2>
       <div class="hospital-info">
-        <span>病历号：{{ record.record_id }}</span>
-        <span>门诊编号：{{ record.outpatient_id }}</span>
+        <span>病历号：{{ currentRecord.record_id }}</span>
       </div>
     </div>
 
     <!-- 基本信息 -->
-    <el-descriptions :column="3" border>
-      <el-descriptions-item label="姓名">{{ record.name }}</el-descriptions-item>
-      <el-descriptions-item label="性别">{{ record.gender }}</el-descriptions-item>
-      <el-descriptions-item label="民族">{{ record.ethnicity }}</el-descriptions-item>
-      <el-descriptions-item label="证件号" :span="2">{{ record.id_number }}</el-descriptions-item>
-      <el-descriptions-item label="就诊时间">{{ formatDateTime(record.timestamp) }}</el-descriptions-item>
-    </el-descriptions>
+    <el-card class="basic-info-card">
+      <el-descriptions :column="2" border>
+        <el-descriptions-item label="姓名">{{ currentRecord.name }}</el-descriptions-item>
+        <el-descriptions-item label="性别">{{ currentRecord.sex }}</el-descriptions-item>
+        <el-descriptions-item label="民族">{{ currentRecord.ethnicity }}</el-descriptions-item>
+        <el-descriptions-item label="联系电话">{{ currentRecord.telno }}</el-descriptions-item>
+        <el-descriptions-item label="证件号" :span="1">{{ currentRecord.patient_id }}</el-descriptions-item>
+        <el-descriptions-item label="证件类型" >{{ currentRecord.idType }}</el-descriptions-item>
+        <el-descriptions-item label="就诊科室">{{ currentRecord.dname }}</el-descriptions-item>
+        <el-descriptions-item label="就诊时间">{{ formatDateTime(currentRecord.timestamp) }}</el-descriptions-item>
+      </el-descriptions>
+    </el-card>
 
     <!-- 诊断主区域 -->
     <div class="diagnosis-area">
       <div class="diagnosis-row">
-        <label>初诊/复诊/急诊：</label>
-        <el-tag type="danger">{{ record.type }}</el-tag>
+        <label><b>初诊/复诊/急诊：</b></label>
+        <el-tag type="danger">{{ currentRecord.type }}</el-tag>
       </div>
       
       <div class="diagnosis-section">
         <h4>主要症状和体征：</h4>
-        <p>{{ record.chief_complaint }}</p>
+        <p>{{ currentRecord.chief_complaint }}</p>
       </div>
 
       <div class="diagnosis-section">
         <h4>现病史：</h4>
-        <pre>{{ record.present_illness }}</pre>
+        <pre>{{ currentRecord.present_illness }}</pre>
       </div>
 
       <div class="diagnosis-grid">
         <div class="grid-item">
-          <h4>体格检查：</h4>
-          <p>{{ record.physical_exam }}</p>
-        </div>
-        <div class="grid-item">
-          <h4>辅助检查：</h4>
-          <p>{{ record.auxiliary_exam }}</p>
+          <h4>体征信息：</h4>
+          <el-descriptions :column="3" border>
+            <el-descriptions-item label="体温（℃）">{{ currentRecord.temperature }}</el-descriptions-item>
+            <el-descriptions-item label="脉搏（次/分）">{{ currentRecord.pulse }}</el-descriptions-item>
+            <el-descriptions-item label="收缩压（mmHg）">{{ currentRecord.sbp }}</el-descriptions-item>
+            <el-descriptions-item label="舒张压（mmHg）">{{ currentRecord.dbp }}</el-descriptions-item>
+            <el-descriptions-item label="呼吸（次/分）">{{ currentRecord.pulmonary }}</el-descriptions-item>
+          </el-descriptions>
         </div>
       </div>
 
+      <el-divider></el-divider>
+
       <div class="diagnosis-section">
         <h4>诊断：</h4>
-        <el-alert :title="record.diagnosis" type="warning" :closable="false"/>
+        <el-alert :title="currentRecord.assessment" type="warning" :closable="false" />
       </div>
 
       <div class="treatment-plan">
         <h4>处理措施：</h4>
         <ul>
-          <li v-for="(item,index) in record.measures.split('，')" :key="index">
+          <!-- 检查 measures 是否为非空字符串 -->
+          <li v-for="(item, index) in (currentRecord.measures ? currentRecord.measures.split('，') : [])" :key="index">
             <el-icon><caret-right /></el-icon>
             {{ item }}
           </li>
@@ -63,73 +72,24 @@
     </div>
 
     <!-- 医师信息 -->
-    <div class="signature-area">
-      <div class="signature-row">
-        <span>是否留观：{{ record.observation }}</span>
-        <span>医师签名：{{ record.doctor }}</span>
+    <el-card class="signature-card">
+      <div class="signature-area">
+        <div class="signature-row">
+          <span>是否留观：{{ currentRecord.observation }}</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <span>医师签名：{{ currentRecord.wname }}</span>
+        </div>
+        <div class="signature-line"></div>
       </div>
-      <div class="signature-line"></div>
-    </div>
+    </el-card>
   </div>
 </template>
 
 <script setup>
 import { CaretRight } from '@element-plus/icons-vue'
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, watch } from 'vue';
 import dayjs from 'dayjs'
 
-const record = {
-  record_id: 14991264,
-  name: '陈乐',
-  gender: '女',
-  ethnicity: '汉族',
-  id_number: '320581200308281686',
-  outpatient_id: 14991264,
-  type: '急诊',
-  timestamp: '2024-02-18T15:10:00',
-  chief_complaint: '右足外伤2小时',
-  present_illness: '患者自述右足外伤2h，否认其他外伤。',
-  physical_exam: '神清，精神可，右足轻压痛。',
-  auxiliary_exam: '尿常规++，胸片正常。',
-  diagnosis: '右足骰骨外侧缘撕脱骨折可能',
-  measures: '休息，左肢石膏固定，每日换药，观察伤口',
-  observation: '否',
-  doctor: '彭陈瑶'
-}
-
-const formatDateTime = (val) => {
-  return dayjs(val).format('YYYY年MM月DD日 HH时mm分')
-}
-
-// 声明接收的props
-// const props = defineProps({
-//   records: {  // 完整病历列表
-//     type: Array,
-//     default: () => []
-//   },
-//   currentRecord: {  // 当前选中病历
-//     type: Object,
-//     default: () => ({})
-//   }
-// })
-
-
-// const props = defineProps({
-//   records: {
-//     type: Array,
-//     default: () => []
-//   }
-// });
-
-// 当前查看的门诊记录详情
-const currentRecord = ref({});
-
-// 查看记录详情
-/*eslint-disable*/
-const viewRecordDetails = (record) => {
-  currentRecord.value = { ...record };
-};
-/*eslint-disable*/
+// 接收父组件传来的 records
 const props = defineProps({
   records: {
     type: Array,
@@ -137,92 +97,97 @@ const props = defineProps({
   }
 });
 
-// 打印传递过来的数据
-console.log("接收到的门诊记录:", props.records);
+// 获取当前门诊记录
+const currentRecord = ref({});  // 初始为空对象
 
+console.log("接收到的门诊记录:", props.records);
+// 监听 records 的变化
+watch(
+  () => props.records,
+  (newRecords) => {
+    // 解包 Proxy 对象
+    const rawRecords = JSON.parse(JSON.stringify(newRecords));
+    console.log("解包后记录:", rawRecords);
+    
+    if (rawRecords) {
+      currentRecord.value = rawRecords;
+      console.log("当前门诊记录:", currentRecord.value);
+    } else {
+      currentRecord.value = {};
+    }
+  },
+  { immediate: true, deep: true } // 添加深度监听
+);
+
+
+
+// 日期格式化
+const formatDateTime = (val) => {
+  return dayjs(val).format('YYYY年MM月DD日 HH时mm分')
+}
 </script>
 
+
 <style scoped>
+/* 样式优化部分 */
 .medical-record {
-  width: 794px; /* A4纸宽度 */
-  min-height: 1123px;
-  padding: 40px;
-  background: white;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  padding: 20px;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 30px;
-  h2 {
-    font-size: 24px;
-    color: #1c3e6e;
-    margin: 20px 0;
-  }
-  .hospital-info {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 50px;
-  }
+  margin-bottom: 20px;
+}
+
+.hospital-info {
+  text-align: center;
+}
+
+.basic-info-card,
+.signature-card {
+  margin-top: 20px;
 }
 
 .diagnosis-area {
   margin-top: 30px;
-  .diagnosis-row {
-    display: flex;
-    align-items: center;
-    margin: 15px 0;
-    label {
-      width: 120px;
-      font-weight: bold;
-    }
-  }
-  h4 {
-    color: #409eff;
-    margin: 12px 0;
-  }
+}
+
+.diagnosis-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.diagnosis-section h4 {
+  color: #409eff;
+  margin-bottom: 10px;
 }
 
 .diagnosis-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-  margin: 20px 0;
+  gap: 20px;
 }
 
-.treatment-plan {
-  ul {
-    padding-left: 30px;
-    li {
-      margin: 8px 0;
-      display: flex;
-      align-items: center;
-      .el-icon {
-        color: #67c23a;
-        margin-right: 8px;
-      }
-    }
-  }
+.treatment-plan ul {
+  padding-left: 20px;
 }
 
 .signature-area {
-  margin-top: 50px;
-  .signature-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 0 60px;
-  }
-  .signature-line {
-    width: 200px;
-    border-bottom: 2px solid #000;
-    margin: 30px auto;
-  }
+  text-align: center;
+  margin-top: 30px;
 }
 
-pre {
-  white-space: pre-wrap;
-  background: #f8f8f8;
-  padding: 10px;
-  border-radius: 4px;
+.signature-line {
+  width: 200px;
+  border-bottom: 2px solid #000;
+  margin: 20px auto;
+}
+
+.el-tag {
+  font-weight: bold;
+}
+
+.el-descriptions-item {
+  font-size: 14px;
 }
 </style>
