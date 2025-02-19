@@ -2,9 +2,9 @@
   <div class="medical-record">
     <!-- 标题区 -->
     <div class="header">
-      <h2>门诊病历</h2>
+      <h2>住院病历</h2>
       <div class="hospital-info">
-        <span>病历号：{{ currentRecord.record_id }}</span>
+        <span>病历号：{{ currentRecord.case_id }}</span>
       </div>
     </div>
 
@@ -16,76 +16,43 @@
         <el-descriptions-item label="民族">{{ currentRecord.ethnicity }}</el-descriptions-item>
         <el-descriptions-item label="联系电话">{{ currentRecord.telno }}</el-descriptions-item>
         <el-descriptions-item label="证件号" :span="1">{{ currentRecord.patient_id }}</el-descriptions-item>
-        <el-descriptions-item label="证件类型" >{{ currentRecord.idType }}</el-descriptions-item>
-        <el-descriptions-item label="就诊科室">{{ currentRecord.dname }}</el-descriptions-item>
-        <el-descriptions-item label="就诊时间">{{ formatDateTime(currentRecord.timestamp) }}</el-descriptions-item>
+        <el-descriptions-item label="证件类型">{{ currentRecord.idType }}</el-descriptions-item>
       </el-descriptions>
     </el-card>
 
+    <!-- 病历信息 -->
+    <el-card class="medical-record-card">
+      <el-descriptions :column="2" border>
+        <el-descriptions-item label="所在医院">{{ currentRecord.hospital }}</el-descriptions-item>
+        <el-descriptions-item label="科室">{{ currentRecord.dname }}</el-descriptions-item>
+        <el-descriptions-item label="主治医师">{{ currentRecord.wname }}</el-descriptions-item>
+        <el-descriptions-item label="备注">{{ currentRecord.remark }}</el-descriptions-item>
+        <el-descriptions-item label="入院时间">{{ formatDateTime(currentRecord.admission_time) }}</el-descriptions-item>
+        <el-descriptions-item label="出院时间">{{ formatDateTime(currentRecord.discharge_time) }}</el-descriptions-item>
+      </el-descriptions>
+    </el-card>
+
+    <el-divider></el-divider>
+
     <!-- 诊断主区域 -->
     <div class="diagnosis-area">
-      <div class="diagnosis-row">
-        <label><b>初诊/复诊/急诊：</b></label>
-        <el-tag type="danger">{{ currentRecord.type }}</el-tag>
+      <div class="diagnosis-section">
+        <h4>入院病情：</h4>
+        <p>{{ currentRecord.in_assessment }}</p>
       </div>
       
       <div class="diagnosis-section">
-        <h4>主要症状和体征：</h4>
-        <p>{{ currentRecord.chief_complaint }}</p>
-      </div>
-
-      <div class="diagnosis-section">
-        <h4>现病史：</h4>
-        <pre>{{ currentRecord.present_illness }}</pre>
-      </div>
-
-      <div class="diagnosis-grid">
-        <div class="grid-item">
-          <h4>体征信息：</h4>
-          <el-descriptions :column="3" border>
-            <el-descriptions-item label="体温（℃）">{{ currentRecord.temperature }}</el-descriptions-item>
-            <el-descriptions-item label="脉搏（次/分）">{{ currentRecord.pulse }}</el-descriptions-item>
-            <el-descriptions-item label="收缩压（mmHg）">{{ currentRecord.sbp }}</el-descriptions-item>
-            <el-descriptions-item label="舒张压（mmHg）">{{ currentRecord.dbp }}</el-descriptions-item>
-            <el-descriptions-item label="呼吸（次/分）">{{ currentRecord.pulmonary }}</el-descriptions-item>
-          </el-descriptions>
-        </div>
-      </div>
-
-      <el-divider></el-divider>
-
-      <div class="diagnosis-section">
-        <h4>诊断：</h4>
-        <el-alert :title="currentRecord.assessment" type="warning" :closable="false" />
-      </div>
-
-      <div class="treatment-plan">
-        <h4>处理措施：</h4>
-        <ul>
-          <!-- 检查 measures 是否为非空字符串 -->
-          <li v-for="(item, index) in (currentRecord.measures ? currentRecord.measures.split('，') : [])" :key="index">
-            <el-icon><caret-right /></el-icon>
-            {{ item }}
-          </li>
-        </ul>
+        <h4>出院诊断：</h4>
+        <p>{{ currentRecord.out_result }}</p>
       </div>
     </div>
 
-    <!-- 医师信息 -->
-    <el-card class="signature-card">
-      <div class="signature-area">
-        <div class="signature-row">
-          <span>是否留观：{{ currentRecord.observation }}</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <span>医师签名：{{ currentRecord.wname }}</span>
-        </div>
-        <div class="signature-line"></div>
-      </div>
-    </el-card>
+    <!-- 相关的medicine/check没有放进来,后面有空可以再加 -->
+
   </div>
 </template>
 
 <script setup>
-import { CaretRight } from '@element-plus/icons-vue'
 import { ref, defineProps, watch } from 'vue';
 import dayjs from 'dayjs'
 

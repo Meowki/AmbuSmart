@@ -13,7 +13,9 @@ class CaseHistoryService:
     def get_case_history_by_patient(self, db: Session, patient_id: str):
         result = db.query(CaseHistory).options(
             joinedload(CaseHistory.check_relationship).joinedload(CheckRelationship.check_histories),
-            joinedload(CaseHistory.medicine_relationship).joinedload(MedicineRelationship.medicine_histories)
+            joinedload(CaseHistory.medicine_relationship).joinedload(MedicineRelationship.medicine_histories),
+            joinedload(CaseHistory.department),
+            joinedload(CaseHistory.health_personnel)
         ).filter(CaseHistory.patient_id == patient_id).all()
 
         for case in result:
@@ -34,6 +36,26 @@ class CaseHistoryService:
             case_history_dict['medicine_histories'] = [
                 medicine_rel.medicine_histories for medicine_rel in record.medicine_relationship
             ]
+
+             # 添加科室信息
+            if record.department:
+                case_history_dict['department'] = {
+                    'dno': record.department.dno,
+                    'dname': record.department.dname,
+                    'type': record.department.type
+                }
+            else:
+                case_history_dict['department'] = None
+
+            # 添加医生信息
+            if record.health_personnel:
+                case_history_dict['doctor'] = {
+                    'wid': record.health_personnel.wid,
+                    'name': record.health_personnel.name,
+                    'job': record.health_personnel.job
+                }
+            else:
+                case_history_dict['doctor'] = None
             
             case_histories_with_checks_and_medicines.append(case_history_dict)
         

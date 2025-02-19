@@ -160,6 +160,8 @@ import { ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useStore } from "vuex";
 import api from "@/services/api";
+import dayjs from 'dayjs'
+
 import MedicalRecordTable from "@/components/CoreButtoms/medicalRecordTable.vue";
 import CaseHistoryTable from "@/components/CoreButtoms/caseHistoryTable.vue";
 
@@ -243,11 +245,9 @@ const caseHistories = ref([
     in_assessment: "",
     out_result: "",
     hospital: "",
-    room: "",
-    bed: "",
-    diagnosis: "",
-    treatment: "",
-    remark: "",
+    dname:"",
+    wname:"", 
+    remark:"",
   }, 
 ])
 
@@ -306,7 +306,7 @@ const fetchPatientInfo = async () => {
         console.log(response)
         medicalRecords.value = response.data.map(record => ({
         record_id: record.record_id || null,
-        timestamp: record.timestamp || "",
+        timestamp: formatDateTime(record.timestamp) || "",
         dname: record.department?.dname || "", // 科室名称
         wname: record.doctor?.name || "", // 医生姓名
         chief_complaint: record.chief_complaint || "",
@@ -334,16 +334,14 @@ const fetchPatientInfo = async () => {
         // console.log("caseHistories:"+JSON.stringify(response.data)) 
         caseHistories.value = response.data.map(record => ({
           case_id: record.case_id || null,
-          in_timestamp:  record.in_timestamp || "",
-          out_timestamp: record.out_timestamp || "",
+          in_timestamp:  formatDateTime(record.in_timestamp) || "",
+          out_timestamp: formatDateTime(record.out_timestamp) || "",
           in_assessment: record.in_assessment || "",
           out_result: record.out_result || "",
           hospital: record.hospital || "",
-          room: record.room || "",
-          bed: record.bed || "",
-          diagnosis: record.diagnosis || "",
-          treatment: record.treatment || "",
           remark: record.remark || "",
+          dname: record.department?.dname || "", // 科室名称
+          wname: record.doctor?.name || "", // 医生姓名
         }));
       }catch(error){
         console.error("获取住院记录失败:", error);
@@ -408,6 +406,11 @@ onMounted(() => {
     fetchPatientInfo();
   }
 });
+
+// 日期格式化
+const formatDateTime = (val) => {
+  return dayjs(val).format('YYYY年MM月DD日 HH时mm分')
+}
 </script>
 
 <style scoped>

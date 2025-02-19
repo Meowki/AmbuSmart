@@ -20,3 +20,5 @@ class CaseHistory(Base):
     patient = relationship("Patient", back_populates="case_histories")
     check_relationship = relationship("CheckRelationship", back_populates="case_history")
     medicine_relationship = relationship("MedicineRelationship", back_populates="case_history")
+    department = relationship("Department", back_populates="case_histories")
+    health_personnel = relationship("HealthPersonnel", back_populates="case_histories")
