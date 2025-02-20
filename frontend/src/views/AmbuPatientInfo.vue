@@ -404,9 +404,11 @@ const updateOperationHistory = async () => {
     );
     console.log("OperationHistoryData:" + operationHistoryData);
     console.log("更新成功:", response);
+    ElMessage.success("急救信息已更新");
     return true;
   } catch (error) {
     console.error("更新失败:", error);
+    ElMessage.error("更新急救信息失败，请稍后再试。");
     return false;
   }
 };

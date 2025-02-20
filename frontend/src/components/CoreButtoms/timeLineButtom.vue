@@ -43,7 +43,7 @@ const fetchOperationHistory = async () => {
     console.log(error);
     ElNotification.error({
       title: '错误',
-      message: '获取事件记录失败',
+      message: '获取时间线失败',
       duration: 3000,
     });
   }

@@ -7,10 +7,11 @@
       title="患者信息"
       v-model="dialogVisible"
       width="80%"
+      @close="handleDialogClose"
     >
       <el-tabs v-model="activeTab">
         <!-- Tab 1: 患者基本信息 -->
-        <el-tab-pane label="患者信息">
+        <el-tab-pane label="患者信息" name='1'>
           <el-form :model="patientInfo" label-width="120px">
             <!-- 身份证号 -->
             <el-row :gutter="20">
@@ -98,7 +99,7 @@
         </el-tab-pane>
 
         <!-- Tab 2 -->
-        <el-tab-pane label="门诊记录">
+        <el-tab-pane label="门诊记录" name='2'>
           <el-table :data="medicalRecords" style="width: 100%">
             <!-- 显示门诊记录的必要属性 -->
             <el-table-column label="就诊日期" prop="timestamp"></el-table-column>
@@ -113,7 +114,7 @@
         </el-tab-pane>
 
         <!-- Tab 3 -->
-        <el-tab-pane label="住院记录">
+        <el-tab-pane label="住院记录" name='3'>
           <el-table :data="caseHistories" style="width: 100%">
              <!-- 显示门诊记录的必要属性 -->
             <el-table-column label="入院时间" prop="in_timestamp"></el-table-column>
@@ -129,7 +130,7 @@
         </el-tab-pane>
 
         <!-- Tab 4 -->
-        <el-tab-pane label="急救记录">
+        <el-tab-pane label="急救记录" name='4'>
           <el-table :data="operationHistories" style="width: 100%">
              <!-- 显示门诊记录的必要属性 -->
             <el-table-column label="急救时间" prop="dispatch_time"></el-table-column>
@@ -183,7 +184,7 @@ const store = useStore();
 //保存的时候记得也要把patient_id存起来，有可能被改了
 const dialogVisible = ref(false); 
 const activeTab = ref("1"); // 默认显示的 tab
-const originalPatientId = ref(""); // 身份证号
+const originalPatientId = ref(store.state.patient_id || null); // 身份证号
 const patientInfo = ref({
   patient_id: store.state.patient_id || null,
   name: "",
@@ -574,6 +575,25 @@ onMounted(() => {
 const formatDateTime = (val) => {
   return dayjs(val).format('YYYY年MM月DD日 HH时mm分')
 }
+
+// 弹窗关闭时更新患者信息
+const handleDialogClose = async () => {
+  if (patientInfo.value.patient_id !== store.state.patient_id && patientInfo.value.patient_id) {
+    try {
+      const operationId = store.state.operation_id;
+      const response = await api.put(`/operation_histories/update/${operationId}`, {
+      patient_id: patientInfo.value.patient_id,
+      idType: patientInfo.value.idType,
+    });
+    console.log("更新后的操作记录:", response.data);
+      store.commit("setPatientId", patientInfo.value.patient_id); 
+      ElMessage.success("患者信息已更新");
+    } catch (error) {
+      ElMessage.error("更新患者信息失败");
+    }
+  }
+};
+
 </script>
 
 <style scoped>
