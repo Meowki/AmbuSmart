@@ -28,6 +28,13 @@ def get_by_patient_id(patient_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Operation History not found")
     return db_operation
 
+@router.get("/operationId/{operation_id}", response_model=OperationHistoryWithBasicCheck)
+def get_by_operation_id(operation_id: int, db: Session = Depends(get_db)):
+    db_operation = operation_histories_service.get_by_operation_id(db, operation_id)
+    if db_operation is None:
+        raise HTTPException(status_code=404, detail="Operation History not found")
+    return db_operation
+
 # 获取除了当前急救之外的所有记录
 @router.get("/withoutThis/{operation_id}/{patient_id}", response_model=list[OperationHistoryWithBasicCheck])
 def get_without_operation_id(operation_id: int, patient_id: str, db: Session = Depends(get_db)):

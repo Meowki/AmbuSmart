@@ -8,7 +8,7 @@
         <PatientInfo />
         <el-button @click="handleAction('action2')" type="success" class="sidebar-button">量化评估</el-button>
         <el-button @click="handleAction('action3')" type="info" class="sidebar-button">智能总结</el-button>
-        <el-button @click="handleAction('action4')" type="info" class="sidebar-button">时间节点</el-button>
+        <TimeLineButtom />
         <!-- 还要加基础检查结果 -->
       </el-card>
     </div>
@@ -27,6 +27,7 @@ import { applyReactInVue } from 'veaury';
 import NavigationBar from "@/components/NavigationBars.vue";
 import Independent from '@/components/Independent.jsx'; 
 import PatientInfo from "@/components/CoreButtoms/PatientInfo.vue";
+import TimeLineButtom from "@/components/CoreButtoms/timeLineButtom.vue";
 
 const IndependentInVue = applyReactInVue(Independent); 
 
@@ -44,7 +45,8 @@ export default {
   components: {
     NavigationBar,
     IndependentInVue, 
-    PatientInfo
+    PatientInfo,
+    TimeLineButtom,
   },
 };
 </script>

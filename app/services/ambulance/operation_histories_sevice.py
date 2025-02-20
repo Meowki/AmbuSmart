@@ -25,7 +25,16 @@ class OperationHistoryService:
         return crud_operation_histories.get_all(db, skip, limit)
     
     def get_by_operation_id(self, db: Session, operation_id: int):
-        return crud_operation_histories.get_by_operation_id(db, operation_id)
+        # return crud_operation_histories.get_by_operation_id(db, operation_id)
+        operation_history = db.query(OperationHistory).filter(OperationHistory.operation_id == operation_id).first()
+
+        if operation_history.initial_eid:
+            operation_history.initial_check = db.query(BasicCheck).filter(BasicCheck.eid == operation_history.initial_eid).first()
+        if operation_history.final_eid:
+            operation_history.final_check = db.query(BasicCheck).filter(BasicCheck.eid == operation_history.final_eid).first()
+    
+        return operation_history
+    
     
     def get_without_operation_id(self, db: Session, operation_id: int,patient_id: str):
         # return crud_operation_histories.get_without_operation_id(db, operation_id,patient_id)
