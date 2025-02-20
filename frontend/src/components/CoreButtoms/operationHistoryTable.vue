@@ -61,31 +61,32 @@
       </el-descriptions>
     </el-card>
 
+
     <!-- 检查记录 -->
     <el-card class="section-card">
       <div class="check-section">
-        <el-descriptions title="初始检查" :column="2" border>
-          <el-descriptions-item label="时间">{{ currentOperation.initial_check?.timestamp }}</el-descriptions-item>
+        <el-descriptions title="初始检查" :column="3" >
+          <el-descriptions-item >{{ currentOperation.initial_check?.timestamp }}</el-descriptions-item>
           <el-descriptions-item label="拒检">{{ currentOperation.initial_check?.reject === 1 ? '是' : '否' }}</el-descriptions-item>
           <el-descriptions-item label="神志">{{ currentOperation.initial_check?.consciousness }}</el-descriptions-item>
-          <el-descriptions-item label="瞳孔(左/右)">{{ currentOperation.initial_check?.pupil }}</el-descriptions-item>
+          <el-descriptions-item label="瞳孔（左/右）">{{ currentOperation.initial_check?.pupil }}</el-descriptions-item>
           <el-descriptions-item label="对光反射">{{ currentOperation.initial_check?.pupillary_light_reflex }}</el-descriptions-item>
-          <el-descriptions-item label="血压(mmHg)">{{ currentOperation.initial_check?.blood_pressure }}</el-descriptions-item>
-          <el-descriptions-item label="脉搏">{{ currentOperation.initial_check?.pulse }}</el-descriptions-item>
-          <el-descriptions-item label="呼吸">{{ currentOperation.initial_check?.respiration }}</el-descriptions-item>
-          <el-descriptions-item label="血氧">{{ currentOperation.initial_check?.oxygen_saturation }}</el-descriptions-item>
+          <el-descriptions-item label="血压（mmHg）">{{ currentOperation.initial_check?.blood_pressure }}</el-descriptions-item>
+          <el-descriptions-item label="脉搏（次/分）">{{ currentOperation.initial_check?.pulse }}</el-descriptions-item>
+          <el-descriptions-item label="呼吸（次/分）">{{ currentOperation.initial_check?.respiration }}</el-descriptions-item>
+          <el-descriptions-item label="血氧（%）">{{ currentOperation.initial_check?.oxygen_saturation }}</el-descriptions-item>
         </el-descriptions>
 
-        <el-descriptions title="最终检查" :column="2" border style="margin-top: 20px;">
-          <el-descriptions-item label="时间">{{ currentOperation.final_check?.timestamp }}</el-descriptions-item>
+        <el-descriptions title="最终检查" :column="3"  style="margin-top: 20px;" >
+          <el-descriptions-item >{{ currentOperation.final_check?.timestamp }}</el-descriptions-item>
           <el-descriptions-item label="拒检">{{ currentOperation.final_check?.reject === 1 ? '是' : '否' }}</el-descriptions-item>
           <el-descriptions-item label="神志">{{ currentOperation.final_check?.consciousness }}</el-descriptions-item>
-          <el-descriptions-item label="瞳孔(左/右)">{{ currentOperation.final_check?.pupil }}</el-descriptions-item>
+          <el-descriptions-item label="瞳孔（左/右）">{{ currentOperation.final_check?.pupil }}</el-descriptions-item>
           <el-descriptions-item label="对光反射">{{ currentOperation.final_check?.pupillary_light_reflex }}</el-descriptions-item>
-          <el-descriptions-item label="血压(mmHg)">{{ currentOperation.final_check?.blood_pressure }}</el-descriptions-item>
-          <el-descriptions-item label="脉搏">{{ currentOperation.final_check?.pulse }}</el-descriptions-item>
-          <el-descriptions-item label="呼吸">{{ currentOperation.final_check?.respiration }}</el-descriptions-item>
-          <el-descriptions-item label="血氧">{{ currentOperation.final_check?.oxygen_saturation }}</el-descriptions-item>
+          <el-descriptions-item label="血压（mmHg）">{{ currentOperation.final_check?.blood_pressure }}</el-descriptions-item>
+          <el-descriptions-item label="脉搏（次/分）">{{ currentOperation.final_check?.pulse }}</el-descriptions-item>
+          <el-descriptions-item label="呼吸（次/分）">{{ currentOperation.final_check?.respiration }}</el-descriptions-item>
+          <el-descriptions-item label="血氧（%）">{{ currentOperation.final_check?.oxygen_saturation }}</el-descriptions-item>
         </el-descriptions>
       </div>
     </el-card>
