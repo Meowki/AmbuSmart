@@ -29,7 +29,7 @@ import NavigationBar from "@/components/NavigationBars.vue";
 import Independent from '@/components/Independent.jsx'; 
 import PatientInfo from "@/components/CoreButtoms/PatientInfo.vue";
 import TimeLineButtom from "@/components/CoreButtoms/timeLineButtom.vue";
-import CheckPage from "@/components/CoreButtoms/baiscCheckDialogue.vue";
+import CheckPage from "@/components/CoreButtoms/basicCheckDialogue.vue";
 
 const IndependentInVue = applyReactInVue(Independent); 
 
