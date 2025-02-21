@@ -40,4 +40,22 @@ def get_basic_check_by_patient_id(patient_id: str, db: Session = Depends(get_db)
         raise HTTPException(status_code=404, detail="Basic check not found")
     return db_basic_check
 
+@router.put("/update/{eid}", response_model=BasicCheck)
+def update_basic_check(eid: int, basic_check: BasicCheckCreate, db: Session = Depends(get_db)):
+    # 获取现有记录
+    db_basic_check = basic_check_service.get_basic_check_by_eid(db, eid)
+    if db_basic_check is None:
+        raise HTTPException(status_code=404, detail="Basic Check not found")
+    
+    # 遍历传入的更新数据，只更新非空字段
+    for attr, value in vars(basic_check).items():
+        if value is not None:
+            setattr(db_basic_check, attr, value)
+    
+    # 提交更新后的对象
+    db.add(db_basic_check)
+    db.commit()
+    db.refresh(db_basic_check)
+    
+    return db_basic_check
 

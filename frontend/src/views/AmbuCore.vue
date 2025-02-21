@@ -8,6 +8,7 @@
         <PatientInfo />
         <el-button @click="handleAction('action2')" type="success" class="sidebar-button">量化评估</el-button>
         <el-button @click="handleAction('action3')" type="info" class="sidebar-button">智能总结</el-button>
+        <CheckPage />
         <TimeLineButtom />
         <!-- 还要加基础检查结果 -->
       </el-card>
@@ -28,6 +29,7 @@ import NavigationBar from "@/components/NavigationBars.vue";
 import Independent from '@/components/Independent.jsx'; 
 import PatientInfo from "@/components/CoreButtoms/PatientInfo.vue";
 import TimeLineButtom from "@/components/CoreButtoms/timeLineButtom.vue";
+import CheckPage from "@/components/CoreButtoms/baiscCheckDialogue.vue";
 
 const IndependentInVue = applyReactInVue(Independent); 
 
@@ -47,6 +49,7 @@ export default {
     IndependentInVue, 
     PatientInfo,
     TimeLineButtom,
+    CheckPage,
   },
 };
 </script>

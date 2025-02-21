@@ -15,7 +15,7 @@ class CRUDBasicCheck:
         return db_basic_check
     
     def get_by_eid(self, db: Session, eid: int):
-        return db.query(BasicCheck).filter(BasicCheck.eid == eid).all()
+        return db.query(BasicCheck).filter(BasicCheck.eid == eid).first()
     
     def get_by_patient_id(self, db: Session, patient_id: str):
         return db.query(BasicCheck).filter(BasicCheck.patient_id == patient_id).all()
