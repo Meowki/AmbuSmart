@@ -2,15 +2,26 @@
   <el-button type="primary" @click="openDialog">Open Check Form</el-button>
 
   <!-- 对话框 -->
-  <el-dialog title="Check Form" v-model="dialogVisible" width="60%">
-    <el-form :model="checkData.initial_check" ref="初始检查">
+  <el-dialog title="Check Form" v-model="dialogVisible" width="70%" :close-on-click-modal="false">
+    <el-form :model="checkData.initial_check" ref="initialCheckForm" label-width="120px" class="check-form">
       <h3>初始检查</h3>
-      <el-form-item label="是否拒检" :prop="`reject`">
-        <el-radio-group v-model="checkData.initial_check.reject">
-          <el-radio value="0">否</el-radio>
-          <el-radio value="1">是</el-radio>
-        </el-radio-group>
-      </el-form-item>
+      
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="检查时间" :prop="'timestamp'">
+            {{ formatDateTime(checkData.initial_check.timestamp) || "第一次提交后自动生成" }}
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="是否拒检" :prop="`reject`">
+            <el-radio-group v-model="checkData.initial_check.reject">
+              <el-radio :value="0">否</el-radio>
+              <el-radio :value="1">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
       <el-row>
         <el-col :span="8">
           <el-form-item label="神志" :prop="`consciousness`">
@@ -35,6 +46,9 @@
             </el-select>
           </el-form-item>
         </el-col>
+      </el-row>
+
+      <el-row>
         <el-col :span="8">
           <el-form-item label="血压（mmHg）" :prop="`blood_pressure`">
             <el-input v-model="checkData.initial_check.blood_pressure"></el-input>
@@ -50,33 +64,51 @@
             <el-input v-model="checkData.initial_check.respiration"></el-input>
           </el-form-item>
         </el-col>
+      </el-row>
+
+      <el-row>
         <el-col :span="8">
           <el-form-item label="血氧（%）" :prop="`oxygen_saturation`">
             <el-input v-model="checkData.initial_check.oxygen_saturation"></el-input>
           </el-form-item>
         </el-col>
-        <!-- 其他初始检查字段 -->
       </el-row>
 
-      <h3>最终检查</h3>
-      <el-form :model="checkData.final_check" ref="最终检查">
-        <el-form-item label="是否拒检" :prop="`reject`">
-        <el-radio-group v-model="checkData.final_check.reject">
-          <el-radio value="0">否</el-radio>
-          <el-radio value="1">是</el-radio>
-        </el-radio-group>
-      </el-form-item>
-        <el-row>
-          <el-col :span="8">
-            <el-form-item label="神志" :prop="`consciousness`">
+      <el-button type="primary" @click="submitInitialCheck" style="margin-top: 20px;">提交初始检查</el-button>
+      <el-button @click="dialogVisible = false" style="margin-top: 20px;">关闭</el-button>
+    </el-form>
+
+    <el-divider></el-divider>
+
+    <h3>最终检查</h3>
+    <el-form :model="checkData.final_check" ref="finalCheckForm" label-width="120px" class="check-form">
+      <el-row>
+        <el-col :span="12">
+          <el-form-item label="检查时间" :prop="'timestamp'">
+            {{ formatDateTime(checkData.final_check.timestamp) || "第一次提交后自动生成" }}
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="是否拒检" :prop="`reject`">
+            <el-radio-group v-model="checkData.final_check.reject">
+              <el-radio :value="0">否</el-radio>
+              <el-radio :value="1">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="神志" :prop="`consciousness`">
             <el-select v-model="checkData.final_check.consciousness" placeholder="请选择">
               <el-option label="清醒" value="清醒"></el-option>
               <el-option label="嗜睡" value="嗜睡"></el-option>
               <el-option label="昏迷" value="昏迷"></el-option>
             </el-select>
           </el-form-item>
-          </el-col>
-          <el-col :span="8">
+        </el-col>
+        <el-col :span="8">
           <el-form-item label="瞳孔（左/右）" :prop="`pupil`">
             <el-input v-model="checkData.final_check.pupil"></el-input>
           </el-form-item>
@@ -90,6 +122,9 @@
             </el-select>
           </el-form-item>
         </el-col>
+      </el-row>
+
+      <el-row>
         <el-col :span="8">
           <el-form-item label="血压（mmHg）" :prop="`blood_pressure`">
             <el-input v-model="checkData.final_check.blood_pressure"></el-input>
@@ -105,37 +140,39 @@
             <el-input v-model="checkData.final_check.respiration"></el-input>
           </el-form-item>
         </el-col>
+      </el-row>
+
+      <el-row>
         <el-col :span="8">
           <el-form-item label="血氧（%）" :prop="`oxygen_saturation`">
             <el-input v-model="checkData.final_check.oxygen_saturation"></el-input>
           </el-form-item>
         </el-col>
-        </el-row>
-      </el-form>
+      </el-row>
+
+      <el-button type="primary" @click="submitFinalCheck" style="margin-top: 20px;">提交最终检查</el-button>
+      <el-button @click="dialogVisible = false" style="margin-top: 20px;">关闭</el-button>
     </el-form>
 
-    <div class="dialog-footer">
-      <el-button @click="dialogVisible = false">Cancel</el-button>
-      <el-button type="primary" @click="submitForm">Submit</el-button>
-    </div>
   </el-dialog>
 </template>
 
 <script>
-/*eslint-disable*/
-import { ref, onMounted } from 'vue';
-import { useStore } from 'vuex';
-import axios from 'axios';
+import { ref, onMounted } from "vue";
+import { useStore } from "vuex";
+import axios from "axios";
+import dayjs from "dayjs";
+import { ElMessage } from 'element-plus'; // 引入 ElMessage
 
 export default {
   setup() {
     const store = useStore();
     const operation_id = store.state.operation_id || "20202";
-    const dialogVisible = ref(false);  // 控制对话框的显示与隐藏
+    const dialogVisible = ref(false);
     const checkData = ref({
       initial_check: {
         timestamp: "",
-        reject: "0",
+        reject: 0,
         consciousness: "",
         pupil: "",
         pupillary_light_reflex: "",
@@ -146,7 +183,7 @@ export default {
       },
       final_check: {
         timestamp: "",
-        reject: "0",
+        reject: 0,
         consciousness: "",
         pupil: "",
         pupillary_light_reflex: "",
@@ -157,64 +194,93 @@ export default {
       },
     });
 
-    // 获取操作数据
     const fetchOperationData = async () => {
       try {
-        const response = await axios.get(`/operation_histories/operationId/${operation_id}`);
+        const response = await axios.get(
+          `/operation_histories/operationId/${operation_id}`
+        );
         const data = response.data;
-        if (data.initial_check) checkData.value.initial_check = data.initial_check;
+        if (data.initial_check)
+          checkData.value.initial_check = data.initial_check;
         if (data.final_check) checkData.value.final_check = data.final_check;
-        console.log("basic_check_initial:"+ JSON.stringify(data.initial_check))
+        console.log(
+          "basic_check_initial:" + JSON.stringify(data.initial_check)
+        );
       } catch (error) {
         console.error(error);
       }
     };
 
-    // 打开对话框
     const openDialog = () => {
       dialogVisible.value = true;
       fetchOperationData();
     };
 
-    // 提交表单
-    //1. 更新逻辑不对
-    //2. 前端优化+放时间
-    const submitForm = async () => {
+    const submitInitialCheck = async () => {
       try {
-        // 处理 initial_check 的新增或更新
-        if (checkData.value.initial_check.timestamp && checkData.value.initial_check.eid) {
-          // 更新 initial_check
-          console.log("initial update")
-          await axios.put(`/basic_check/update/${checkData.value.initial_check.eid}`, checkData.value.initial_check);
+        checkData.value.initial_check.timestamp = new Date().toISOString();
+        if (checkData.value.initial_check.eid) {
+          await axios.put(
+            `/basic_check/update/${checkData.value.initial_check.eid}`,
+            checkData.value.initial_check
+          );
+          ElMessage.success('初始检查更新成功');
+          dialogVisible.value = false
         } else {
-          // 新增 initial_check
-          checkData.value.initial_check.timestamp = new Date().toISOString();
-          const initialResponse = await axios.post(`/basic_check/`, checkData.value.initial_check);
-          await axios.put(`/operation_histories/update/${operation_id}`, { initial_eid: initialResponse.data.eid });
+          const initialResponse = await axios.post(
+            `/basic_check/`,
+            checkData.value.initial_check
+          );
+          await axios.put(`/operation_histories/update/${operation_id}`, {
+            initial_eid: initialResponse.data.eid,
+          });
+          ElMessage.success('初始检查新增成功');
+          dialogVisible.value = false;
         }
-
-        // 处理 final_check 的新增或更新
-        if (checkData.value.final_check.timestamp) {
-          // 更新 final_check
-          await axios.put(`/basic_check/update/${checkData.value.final_check.eid}`);
-        } else {
-          // 新增 final_check
-          checkData.value.final_check.timestamp = new Date().toISOString();
-          const finalResponse = await axios.post(`/basic_check/`, checkData.value.final_check);
-          await axios.put(`/operation_histories/update/${operation_id}`, { final_eid: finalResponse.data.eid });
-        }
-
-        dialogVisible.value = false; // 提交后关闭对话框
       } catch (error) {
         console.error(error);
+        ElMessage.error('初始检查提交失败');
       }
+    };
+
+    const submitFinalCheck = async () => {
+      try {
+        checkData.value.final_check.timestamp = new Date().toISOString();
+        if (checkData.value.final_check.eid) {
+          await axios.put(
+            `/basic_check/update/${checkData.value.final_check.eid}`,
+            checkData.value.final_check
+          );
+          ElMessage.success('最终检查更新成功');
+          dialogVisible.value = false
+        } else {
+          const finalResponse = await axios.post(
+            `/basic_check/`,
+            checkData.value.final_check
+          );
+          await axios.put(`/operation_histories/update/${operation_id}`, {
+            final_eid: finalResponse.data.eid,
+          });
+          ElMessage.success('最终检查新增成功');
+          dialogVisible.value = false
+        }
+      } catch (error) {
+        console.error(error);
+        ElMessage.error('最终检查提交失败');
+      }
+    };
+
+    const formatDateTime = (val) => {
+      return dayjs(val).format("YYYY年MM月DD日 HH时mm分");
     };
 
     return {
       dialogVisible,
       checkData,
       openDialog,
-      submitForm,
+      submitInitialCheck,
+      submitFinalCheck,
+      formatDateTime,
     };
   },
 };
