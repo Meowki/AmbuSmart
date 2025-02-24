@@ -1,5 +1,5 @@
 <template>
-  <el-button type="primary" @click="openDialog">Open Check Form</el-button>
+  <el-button type="primary" @click="openDialog">基础检查</el-button>
 
   <!-- 对话框 -->
   <el-dialog title="Check Form" v-model="dialogVisible" width="70%" :close-on-click-modal="false">
@@ -158,7 +158,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref} from "vue";
 import { useStore } from "vuex";
 import axios from "axios";
 import dayjs from "dayjs";
