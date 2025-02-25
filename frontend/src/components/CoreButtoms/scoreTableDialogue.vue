@@ -12,7 +12,7 @@
     <el-collapse v-model="activeNames" accordion>
     <!-- 创伤指数评分折叠项 -->
   <el-collapse-item title="创伤指数评分 (TI)" name="1">
-    
+    <TiScore />
   </el-collapse-item>
 
       <!-- GCS评分折叠项 -->
@@ -90,8 +90,12 @@ import { ref } from "vue";
 import axios from "axios";
 import { ElMessage } from "element-plus";
 import { useStore } from "vuex";
+import TiScore from "@/components/ScoreValueForm/TiScore.vue";
 
 export default {
+  components: { // 添加 components 选项
+    TiScore
+  },
   setup() {
     const activeNames = ref(["1"]);
     const store = useStore();
@@ -238,6 +242,7 @@ export default {
       submitGCS,
       submitKillip,
       submitStroke,
+      TiScore,
     };
   },
 };

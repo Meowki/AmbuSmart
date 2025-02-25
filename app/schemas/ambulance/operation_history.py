@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from datetime import datetime
 from schemas.ambulance.basic_check import BasicCheck
 
@@ -28,13 +28,13 @@ class OperationHistoryBase(BaseModel):
     initial_eid: Optional[int] = None
     final_eid: Optional[int] = None
     ti_score: Optional[str] = None
-    ti_content: Optional[str] = None
+    ti_content: Optional[Dict[str, Any]] = None 
     gcs_score: Optional[str] = None
-    gcs_content: Optional[str] = None
+    gcs_content: Optional[Dict[str, Any]] = None 
     Killip_score: Optional[str] = None
-    Killip_content: Optional[str] = None
+    Killip_content: Optional[Dict[str, Any]] = None 
     Killip_diagnosis: Optional[str] = None
-    cerebral_stroke_content: Optional[str] = None
+    cerebral_stroke_content: Optional[Dict[str, Any]] = None 
 
 class OperationHistoryCreate(OperationHistoryBase):
     pass

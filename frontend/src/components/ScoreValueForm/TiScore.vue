@@ -1,5 +1,5 @@
-<el-form :model="scoreData.ti" ref="tiForm" label-width="120px">
-
+<template>
+  <el-form :model="scoreData.ti" ref="tiForm" label-width="120px">
       <!-- 受伤部位 -->
       <el-row>
         <el-col :span="12">
@@ -107,21 +107,20 @@
         提交创伤指数评分
       </el-button>
     </el-form>
+  </template>
 
 <script>
-import { ref } from "vue";
+import { defineComponent,ref} from "vue"; 
 import axios from "axios";
 import { ElMessage } from "element-plus";
 import { useStore } from "vuex";
 
-export default {
+export default defineComponent({ 
+  name: "TiScore", 
   setup() {
     const activeNames = ref(["1"]);
     const store = useStore();
     const operation_id = store.state.operation_id || "20202";
-
-    // 控制对话框显示与否
-    const dialogVisibleScore = ref(false);
 
     const scoreData = ref({
        ti: {
@@ -151,37 +150,31 @@ export default {
       },
     });
 
-    const openScoreDialog = () => {
-      dialogVisibleScore.value = true;
-      // 此处可以填充已有数据
-      fetchScoreData();
-    };
-
-    const fetchScoreData = async () => {
-      try {
-        const response = await axios.get(`/operation_histories/operationId/${operation_id}`);
-        const data = response.data;
-        // 填充表单数据
-        scoreData.value.ti = {
-          ti_score: data.ti_score || "",
-          ti_content: data.ti_content || "",
-        };
-        scoreData.value.gcs = {
-          gcs_score: data.gcs_score || "",
-          gcs_content: data.gcs_content || "",
-        };
-        scoreData.value.killip = {
-          killip_score: data.killip_score || "",
-          killip_content: data.killip_content || "",
-          killip_diagnosis: data.killip_diagnosis || "",
-        };
-        scoreData.value.stroke = {
-          cerebral_stroke_content: data.cerebral_stroke_content || "",
-        };
-      } catch (error) {
-        console.error("fetchScoreData error:", error);
-      }
-    };
+    // const fetchScoreData = async () => {
+    //   try {
+    //     const response = await axios.get(`/operation_histories/operationId/${operation_id}`);
+    //     const data = response.data;
+    //     // 填充表单数据
+    //     scoreData.value.ti = {
+    //       ti_score: data.ti_score || "",
+    //       ti_content: data.ti_content || "",
+    //     };
+    //     scoreData.value.gcs = {
+    //       gcs_score: data.gcs_score || "",
+    //       gcs_content: data.gcs_content || "",
+    //     };
+    //     scoreData.value.killip = {
+    //       killip_score: data.killip_score || "",
+    //       killip_content: data.killip_content || "",
+    //       killip_diagnosis: data.killip_diagnosis || "",
+    //     };
+    //     scoreData.value.stroke = {
+    //       cerebral_stroke_content: data.cerebral_stroke_content || "",
+    //     };
+    //   } catch (error) {
+    //     console.error("fetchScoreData error:", error);
+    //   }
+    // };
 
     // 更新TI评分，计算每个部分的得分-----------------------------------------------
    // 更新总得分
@@ -209,10 +202,11 @@ export default {
         updateTotalScore();
         const jsonData = JSON.stringify(scoreData.value.ti);
         console.log(operation_id)
+        console.log("scoreDate:"+scoreData.value.ti)
         console.log("TI_jsonData:" + jsonData);
-        await axios.put(`/operation_histories/update/{operation_id}`, {
-          ti_score: scoreData.value.ti_total_score,
-          ti_content: jsonData,
+        await axios.put(`/operation_histories/update/${operation_id}`, {
+          ti_score: scoreData.value.ti_total_score.toString(),
+          ti_content: scoreData.value.ti,
         });
         ElMessage.success("创伤指数评分提交成功");
       } catch (error) {
@@ -222,14 +216,12 @@ export default {
     };
 
     return {
-      dialogVisibleScore,
       activeNames,
       scoreData,
-      openScoreDialog,
       submitTI,
     };
   },
-};
+});
 </script>
 
 <style scoped>
