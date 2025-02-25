@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text
+from sqlalchemy import JSON, Column, Integer, String, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from db.base import Base
 
@@ -30,13 +30,13 @@ class OperationHistory(Base):
     initial_eid = Column(Integer, comment='初检id')
     final_eid = Column(Integer, comment='终检id')
     ti_score = Column(String(255), comment='创伤指数评分')
-    ti_content = Column(String(255), comment='ti具体内容')
+    ti_content = Column(JSON, comment='ti具体内容')
     gcs_score = Column(String(255), comment='gcs评分')
-    gcs_content = Column(String(255), comment='gcs具体内容')
+    gcs_content = Column(JSON, comment='gcs具体内容')
     Killip_score = Column(String(255), comment='Killip分级')
-    Killip_content = Column(String(255), comment='表格里的胸痛高位状态评估')
+    Killip_content = Column(JSON, comment='表格里的胸痛高位状态评估')
     Killip_diagnosis = Column(String(255), comment='胸痛初步判断')
-    cerebral_stroke_content = Column(String(255), comment='脑卒中评估')
+    cerebral_stroke_content = Column(JSON, comment='脑卒中评估')
 
     # initial_exam = relationship("BasicCheck", foreign_keys=[initial_eid], backref="initial_operation_history")
     # final_exam = relationship("BasicCheck", foreign_keys=[final_eid], backref="final_operation_history")
