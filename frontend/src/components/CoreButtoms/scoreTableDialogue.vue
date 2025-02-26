@@ -16,7 +16,7 @@
       </el-collapse-item>
 
       <!-- GCS评分折叠项 -->
-      <el-collapse-item title="GCS评分" name="2">
+      <el-collapse-item title="格拉斯哥昏迷评分（GCS）" name="2">
         <GcsScore />
       </el-collapse-item>
 
