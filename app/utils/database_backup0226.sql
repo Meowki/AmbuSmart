@@ -11,7 +11,7 @@
  Target Server Version : 90100 (9.1.0)
  File Encoding         : 65001
 
- Date: 14/02/2025 18:31:58
+ Date: 26/02/2025 11:34:17
 */
 
 SET NAMES utf8mb4;
@@ -50,7 +50,7 @@ CREATE TABLE `ambulance`  (
   `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`aid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ambulance
@@ -75,13 +75,19 @@ CREATE TABLE `basic_check`  (
   PRIMARY KEY (`eid`) USING BTREE,
   INDEX `basicCheck_patient`(`patient_id` ASC) USING BTREE,
   CONSTRAINT `basicCheck_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 12003 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 12009 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of basic_check
 -- ----------------------------
 INSERT INTO `basic_check` VALUES (12001, '2025-02-08 07:58:34', 0, '反正我上班上的神志不清', 'string', 'string', 'string', 'string', 'string', 'string', NULL);
-INSERT INTO `basic_check` VALUES (12002, '2025-02-08 08:06:15', 0, '测试', 'string', 'string', 'string', 'string', 'string', 'string', NULL);
+INSERT INTO `basic_check` VALUES (12002, '2025-02-08 08:06:15', 0, '测试', 'string', 'string', 'string', 'okok', 'nonono', 'stri34234ng', NULL);
+INSERT INTO `basic_check` VALUES (12003, '2025-02-19 17:09:32', 0, '测试1', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `basic_check` VALUES (12004, '2025-02-19 17:09:48', 0, '测试2', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `basic_check` VALUES (12005, '2025-02-19 18:25:23', 1, '清醒', '3/3', '灵敏', '110/70', '75', '16', '98', '123123200308281234');
+INSERT INTO `basic_check` VALUES (12006, '2025-02-19 18:26:45', 0, '昏迷', '2/2', '迟钝', '80/70', '50', '10', '95', '123123200308281234');
+INSERT INTO `basic_check` VALUES (12007, '2025-02-26 03:32:22', 0, '清醒', '2/2', '灵敏', '120', '70', '20', '98', NULL);
+INSERT INTO `basic_check` VALUES (12008, '2025-02-26 03:32:29', 1, '', '', '', '', '', '', '', NULL);
 
 -- ----------------------------
 -- Table structure for case_histories
@@ -110,9 +116,9 @@ CREATE TABLE `case_histories`  (
 -- ----------------------------
 -- Records of case_histories
 -- ----------------------------
-INSERT INTO `case_histories` VALUES (10300, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `case_histories` VALUES (10300, '123123123412341234', NULL, NULL, NULL, NULL, NULL, 'test', NULL, 'test');
 INSERT INTO `case_histories` VALUES (10301, '123123123412341234', 'w10001', 'b1', 'string', '2025-02-06 06:30:01', '2025-02-06 06:30:01', '入院病情', '测试1，仅有medicine', 'string');
-INSERT INTO `case_histories` VALUES (10302, '123123123412341234', 'w1027', 'j1', NULL, NULL, NULL, NULL, '测试2，各有2', NULL);
+INSERT INTO `case_histories` VALUES (10302, '123123123412341234', 'w1027', 'j1', NULL, '2025-02-19 15:14:10', '2025-02-19 15:14:13', '入院1', '测试2，各有2', '出院1');
 
 -- ----------------------------
 -- Table structure for check_histories
@@ -633,7 +639,7 @@ CREATE TABLE `medical_record`  (
   CONSTRAINT `med_department` FOREIGN KEY (`dno`) REFERENCES `department` (`dno`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `med_hp` FOREIGN KEY (`wid`) REFERENCES `health_personnel` (`wid`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `med_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 10029 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10031 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of medical_record
@@ -642,6 +648,8 @@ INSERT INTO `medical_record` VALUES (10010, '123123123412341234', NULL, NULL, NU
 INSERT INTO `medical_record` VALUES (10025, '123123123412341234', 'w10001', 'b1', 'string', 'string', 'string', 'string', 'string', '2025-02-06 06:23:14', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', '别管了，玩一下智能手机');
 INSERT INTO `medical_record` VALUES (10027, '123123123412341234', 'w10001', 'b1', 'string', 'string', 'string', 'string', 'string', '2025-02-06 07:22:00', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
 INSERT INTO `medical_record` VALUES (10028, '123123123412341234', 'w10001', 'b1', 'string', 'string', 'string', 'string', 'string', '2025-02-07 10:07:07', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
+INSERT INTO `medical_record` VALUES (10029, '123123123412341234', 'd5205', 'f2', '人民医院', '门诊', '无', '腹痛', '无', '2025-02-19 10:59:03', '36.5', NULL, NULL, NULL, NULL, '清醒', '阿奇霉素一日三顿，每天睡觉，不要上班', '无', '上班上的', NULL);
+INSERT INTO `medical_record` VALUES (10030, '123123200308281234', 'd5206', 'g1', 'xx市第二人民医院', '急诊', '有', '右足外伤2h。', '患者自述右足外伤2h。否认其他外伤。', '2025-02-19 11:45:29', '36.5', '无', '无', '无', '无', '清醒', '足.正斜位（DR），PET拍片，手足外科会诊', '否', '右足骰骨外侧缘撕脱骨折可能，下肢损伤', NULL);
 
 -- ----------------------------
 -- Table structure for medicine
@@ -1231,40 +1239,39 @@ CREATE TABLE `operation_histories`  (
   `initial_eid` int NULL DEFAULT NULL COMMENT '初检id',
   `final_eid` int NULL DEFAULT NULL COMMENT '终检id',
   `ti_score` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '创伤指数评分',
-  `ti_content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'ti具体内容，参考表格\r\n',
+  `ti_content` json NULL COMMENT 'ti具体内容，参考表格\r\n',
   `gcs_score` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'gcs评分',
-  `gcs_content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'gcs具体内容',
+  `gcs_content` json NULL COMMENT 'gcs具体内容',
   `Killip_score` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'Killip分级',
-  `Killip_content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '表格里的胸痛高位状态评估',
+  `Killip_content` json NULL COMMENT '表格里的胸痛高位状态评估',
   `Killip_diagnosis` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '胸痛初步判断',
-  `cerebral_stroke_content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '脑卒中评估',
+  `cerebral_stroke_content` json NULL COMMENT '脑卒中评估',
   PRIMARY KEY (`operation_id`) USING BTREE,
   INDEX `operation_patient`(`patient_id` ASC) USING BTREE,
-  INDEX `initial_exam`(`initial_eid` ASC) USING BTREE,
   INDEX `final_exam`(`final_eid` ASC) USING BTREE,
-  CONSTRAINT `operation_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  INDEX `initial_exam`(`initial_eid` ASC) USING BTREE,
   CONSTRAINT `final_exam` FOREIGN KEY (`final_eid`) REFERENCES `basic_check` (`eid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `initial_exam` FOREIGN KEY (`initial_eid`) REFERENCES `basic_check` (`eid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 20236 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+  CONSTRAINT `initial_exam` FOREIGN KEY (`initial_eid`) REFERENCES `basic_check` (`eid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `operation_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE = InnoDB AUTO_INCREMENT = 20246 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of operation_histories
 -- ----------------------------
-INSERT INTO `operation_histories` VALUES (20202, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20202, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '院前急救', 0x737472696E67, 0x737472696E67, 0x737472696E67, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `operation_histories` VALUES (20204, '123456123112311231', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 12001, 12002, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20206, '123123123412341234', '本人', '翻斗花园小区', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '人民医院', '1级', '院前急救', 0xE4B88AE78FADE4B88AE7B4AFE4BA86, 0xE99C80E8A681E4B88BE78FAD, 0xE697A0, 0xE69C8DE794A86B6F69E6B586E69E9CE985A5E985AAE5A5B6E88CB6E4B880E4BBBD, 0xE6988EE5A4A9E591A8E697A5E5B0B1E883BDE6B4BBE4BA86, '渥子集', '无', '斡梓级', '无', '无', '无', NULL, NULL, '无', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
-INSERT INTO `operation_histories` VALUES (20207, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x706174636855706461746554657374, NULL, 0x737472696E67, 0x746573743233, 0x737472696E67, 'string', 'string', 'string', '1234341', 'string', 'string', NULL, NULL, NULL, 'contentPatchUpdate', NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20211, NULL, NULL, NULL, '2025-02-11 07:17:56', '2025-02-11 07:17:56', '2025-02-11 07:17:56', '2025-02-11 07:17:56', 'string', 'string', 'string', 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 'string', 'string', 'string', 'string', 'string', 'string', NULL, NULL, 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
-INSERT INTO `operation_histories` VALUES (20212, NULL, NULL, NULL, '2025-02-11 08:02:09', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20216, '123123123412341234', 'string', 'string', '2025-02-12 10:36:15', '2025-02-12 10:36:15', '2025-02-12 10:36:15', '2025-02-12 10:36:15', 'string', 'string', 'string', 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 'string', 'string', 'string', 'string', 'string', 'string', NULL, NULL, 'string', 'string', 'string', 'string', 'string', 'string', 'string', 'string');
-INSERT INTO `operation_histories` VALUES (20228, NULL, NULL, NULL, '2025-02-13 08:03:15', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', '', '周所龄', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20229, NULL, NULL, NULL, '2025-02-13 10:49:22', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20230, '123123123412341234', NULL, NULL, '2025-02-13 10:53:09', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20231, '123123123412341234', NULL, NULL, '2025-02-14 09:18:46', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', '', '黎白卉', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20232, NULL, NULL, NULL, '2025-02-14 09:57:58', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', '', '周所龄', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20233, NULL, NULL, '测试地址', NULL, '2025-02-14 10:17:45', NULL, NULL, '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20234, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x706174636874657374, 0x74657374323331, 0x6E61, 'na', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20235, '123123123412341234', NULL, '测试地址', '2025-02-14 10:27:39', '2025-02-14 10:28:04', NULL, NULL, '', '', '', NULL, NULL, NULL, NULL, NULL, '', '', '黎白卉', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20206, '123123123412341234', '本人', '翻斗花园小区', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '人民医院', '1级', '院前急救', 0xE4B88AE78FADE4B88AE7B4AFE4BA86, 0xE99C80E8A681E4B88BE78FAD, 0xE697A0, 0xE69C8DE794A86B6F69E6B586E69E9CE985A5E985AAE5A5B6E88CB6E4B880E4BBBD, 0xE6988EE5A4A9E591A8E697A5E5B0B1E883BDE6B4BBE4BA86, '渥子集', '无', '斡梓级', '无', '无', '无', NULL, NULL, '无', NULL, 'string', NULL, 'string', NULL, 'string', NULL);
+INSERT INTO `operation_histories` VALUES (20207, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x706174636855706461746554657374, NULL, 0x737472696E67, 0x746573743233, 0x737472696E67, 'string', 'string', 'string', '1234341', 'string', 'string', 12001, 12002, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20216, '123123123412341234', 'string', 'string', '2025-02-12 10:36:15', '2025-02-12 10:36:15', '2025-02-12 10:36:15', '2025-02-12 10:36:15', 'string', 'string', 'string', 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 0x737472696E67, 'string', 'string', 'string', 'string', 'string', 'string', NULL, NULL, 'string', NULL, 'string', NULL, 'string', NULL, 'string', NULL);
+INSERT INTO `operation_histories` VALUES (20237, '123123123412341234', '本人', 'filled', '2025-02-17 02:27:45', NULL, NULL, NULL, '第一人民医院', 'Ⅳ级（非急症）', '转院', 0xE697A0, NULL, NULL, NULL, NULL, '缑安雁', '籍觅珍', '周所龄', '', '', NULL, 12003, 12004, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20238, '123123200308281234', '本人', '白玉兰广场', '2025-02-19 10:21:32', '2025-02-19 10:21:32', '2025-02-19 10:21:32', '2025-02-19 10:21:32', '人民医院', 'Ⅳ级（非急症）', '院前急救', 0xE5BF83E7B4AF3268EFBC8CE5969DE5A5B6E88CB6E4B88DE883BDE5A5BDE8BDACE38082, 0xE4B88AE78FADE4B88AE79A84, 0xE9809FE9809FE4B88BE78FADE59B9EE5AEB6E8BABAE59CA8E5BA8AE4B88AE5B0B1E5A5BDE4BA86, 0xE99CB8E78E8BE88CB6E5A7ACEFBC8C6B6F69EFBC8CE88C89E88E89E5A5B6E799BD, 0xE8BF98E6B2A1E4B88BE78FAD, '张三', '李四', '王五', '赵六', '钱八', '陈九', 12006, 12005, 'string', NULL, 'string', NULL, 'string', NULL, 'string', NULL);
+INSERT INTO `operation_histories` VALUES (20239, NULL, '', '', '2025-02-20 12:46:18', NULL, NULL, NULL, '', '', '', '', NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20240, NULL, '', '', '2025-02-20 12:55:14', NULL, NULL, NULL, '', '', '', '', NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20241, '123123123412341234', '', '', '2025-02-20 13:01:45', NULL, NULL, NULL, '', '', '', '', NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20242, '123123123412341234', '', '', '2025-02-20 13:03:28', NULL, NULL, NULL, '', '', '', '', NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20243, NULL, '', '', '2025-02-20 13:10:37', '2025-02-20 13:11:21', '2025-02-20 13:11:41', '2025-02-20 13:11:59', '', '', '', '', NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20244, '123123123412341234', '本人', '', '2025-02-20 13:25:11', NULL, NULL, NULL, '', '', '', '', NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20245, '123123123412341234', '本人', '现场', '2025-02-26 03:31:18', '2025-02-26 03:31:46', '2025-02-26 03:33:19', '2025-02-26 03:33:19', '', 'Ⅳ级（非急症）', '院前急救', 0xE697A03132333132333132, NULL, NULL, NULL, NULL, '', '', '阮新巧', '', '', NULL, 12007, 12008, '18', '{\"circulation\": \"正常\", \"injury_site\": \"其他\", \"injury_type\": \"其他\", \"respiration\": \"正常\", \"consciousness\": \"清醒\", \"circulation_score\": 5, \"injury_site_score\": 1, \"injury_type_score\": 2, \"respiration_score\": 5, \"consciousness_score\": 5}', NULL, 'null', NULL, 'null', NULL, 'null');
 
 -- ----------------------------
 -- Table structure for operation_relating
@@ -1308,6 +1315,7 @@ CREATE TABLE `patient`  (
 -- ----------------------------
 INSERT INTO `patient` VALUES ('NA', 'NA', '护照', 'NA', 'NA', 'NA', '123123000000000000');
 INSERT INTO `patient` VALUES ('张三', NULL, '身份证', NULL, '测试用户', NULL, '123123123412341234');
+INSERT INTO `patient` VALUES ('乐', '女', '身份证', '15151799630', '白玉兰广场', '汉', '123123200308281234');
 INSERT INTO `patient` VALUES ('测试0', '男', '身份证', '12312312312', '无', '无', '123456123112311231');
 INSERT INTO `patient` VALUES ('Mark', 'male', '身份证', '12345678912', 'string', 'string', '789789200101251234');
 
