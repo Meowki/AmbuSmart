@@ -1,20 +1,15 @@
 <template>
-<!-- 创伤指数（TI）：是以患者生命体征为基础研究的创伤计分法，它包括受伤部位、损伤类型、循环、呼吸和意识5个方面的评定。
-该评分方法根据每个方面的异常程度计以1、3、5或6分，5项计分相加即为TI总分：
-注:TI≤9为轻度或中度伤，需普通急诊治疗；
-10-16为中度伤，需住院治疗，多为单一系统损伤，无生命危险；
->17为极重伤，常为多发伤，有死亡可能。-->
   <el-form :model="scoreData.ti" ref="tiForm" label-width="120px">
     <!-- 受伤部位 -->
     <el-row>
       <el-col :span="12">
         <el-form-item label="受伤部位" prop="injury_site">
           <el-select v-model="scoreData.ti.injury_site" @change="updateInjurySiteScore" placeholder="请选择">
-            <el-option label="无" value="无"></el-option>
-            <el-option label="四肢" value="四肢"></el-option>
-            <el-option label="背部" value="背部"></el-option>
+            <el-option label="头部" value="头部"></el-option>
             <el-option label="胸部" value="胸部"></el-option>
-            <el-option label="头、颈、腹" value="头、颈、腹"></el-option>
+            <el-option label="腹部" value="腹部"></el-option>
+            <el-option label="四肢" value="四肢"></el-option>
+            <el-option label="其他" value="其他"></el-option>
           </el-select>
         </el-form-item>
       </el-col>
@@ -30,11 +25,10 @@
       <el-col :span="12">
         <el-form-item label="损伤类型" prop="injury_type">
           <el-select v-model="scoreData.ti.injury_type" @change="updateInjuryTypeScore" placeholder="请选择">
-            <el-option label="无" value="无"></el-option>
-            <el-option label="撕裂伤" value="撕裂伤"></el-option>
-            <el-option label="挫伤" value="挫伤"></el-option>
-            <el-option label="刺伤" value="刺伤"></el-option>
-            <el-option label="钝器伤、子弹伤" value="钝器伤、子弹伤"></el-option>
+            <el-option label="创伤" value="创伤"></el-option>
+            <el-option label="出血" value="出血"></el-option>
+            <el-option label="骨折" value="骨折"></el-option>
+            <el-option label="其他" value="其他"></el-option>
           </el-select>
         </el-form-item>
       </el-col>
@@ -51,10 +45,8 @@
         <el-form-item label="意识状态" prop="consciousness">
           <el-select v-model="scoreData.ti.consciousness" @change="updateConsciousnessScore" placeholder="请选择">
             <el-option label="清醒" value="清醒"></el-option>
+            <el-option label="昏迷" value="昏迷"></el-option>
             <el-option label="嗜睡" value="嗜睡"></el-option>
-            <el-option label="恍惚" value="恍惚"></el-option>
-            <el-option label="半昏迷" value="半昏迷"></el-option>
-            <el-option label="深昏迷" value="深昏迷"></el-option>
           </el-select>
         </el-form-item>
       </el-col>
@@ -70,11 +62,9 @@
       <el-col :span="12">
         <el-form-item label="循环状态" prop="circulation">
           <el-select v-model="scoreData.ti.circulation" @change="updateCirculationScore" placeholder="请选择">
-            <el-option label="常规" value="常规"></el-option>
-            <el-option label="外出血" value="外出血"></el-option>
-            <el-option label="收缩压 70~100" value="收缩压 70~100"></el-option>
-            <el-option label="收缩压 50~70" value="收缩压 50~70"></el-option>
-            <el-option label="收缩压 <50" value="收缩压 <50"></el-option>
+            <el-option label="正常" value="正常"></el-option>
+            <el-option label="低血压" value="低血压"></el-option>
+            <el-option label="休克" value="休克"></el-option>
           </el-select>
         </el-form-item>
       </el-col>
@@ -91,10 +81,8 @@
         <el-form-item label="呼吸状态" prop="respiration">
           <el-select v-model="scoreData.ti.respiration" @change="updateRespirationScore" placeholder="请选择">
             <el-option label="正常" value="正常"></el-option>
-            <el-option label="胸痛" value="胸痛"></el-option>
-            <el-option label="呼吸困难" value="呼吸困难"></el-option>
-            <el-option label="发绀" value="发绀"></el-option>
-            <el-option label="无呼吸" value="无呼吸"></el-option>
+            <el-option label="呼吸急促" value="呼吸急促"></el-option>
+            <el-option label="呼吸衰竭" value="呼吸衰竭"></el-option>
           </el-select>
         </el-form-item>
       </el-col>
@@ -180,11 +168,11 @@ export default defineComponent({
     // 更新scoreData的得分
     const updateInjurySiteScore = () => {
       const injurySiteScoreMapping = {
-        "头、颈、腹": 6,
-        "胸部": 5,
-        "背部": 3,
-        "四肢": 1,
-        "无": 0
+        "头部": 5,
+        "胸部": 4,
+        "腹部": 3,
+        "四肢": 2,
+        "其他": 1
       };
       scoreData.value.ti.injury_site_score = injurySiteScoreMapping[scoreData.value.ti.injury_site] || 0;
       updateTotalScore();
@@ -192,11 +180,10 @@ export default defineComponent({
 
     const updateInjuryTypeScore = () => {
       const injuryTypeScoreMapping = {
-        "钝器伤、子弹伤": 6,
-        "刺伤": 5,
-        "挫伤": 3,
-        "撕裂伤": 1,
-        "无": 0
+        "创伤": 5,
+        "出血": 4,
+        "骨折": 3,
+        "其他": 2
       };
       scoreData.value.ti.injury_type_score = injuryTypeScoreMapping[scoreData.value.ti.injury_type] || 0;
       updateTotalScore();
@@ -204,11 +191,9 @@ export default defineComponent({
 
     const updateConsciousnessScore = () => {
       const consciousnessScoreMapping = {
-        "深昏迷": 6,
-        "半昏迷": 5,
-        "恍惚": 3,
-        "嗜睡": 1,
-        "清醒": 0
+        "清醒": 5,
+        "昏迷": 2,
+        "嗜睡": 3
       };
       scoreData.value.ti.consciousness_score = consciousnessScoreMapping[scoreData.value.ti.consciousness] || 0;
       updateTotalScore();
@@ -216,11 +201,9 @@ export default defineComponent({
 
     const updateCirculationScore = () => {
       const circulationScoreMapping = {
-        "收缩压 <50": 6,
-        "收缩压 50~70": 5,
-        "收缩压 70~100": 3,
-        "外出血": 1,
-        "常规": 0
+        "正常": 5,
+        "低血压": 3,
+        "休克": 1
       };
       scoreData.value.ti.circulation_score = circulationScoreMapping[scoreData.value.ti.circulation] || 0;
       updateTotalScore();
@@ -228,11 +211,9 @@ export default defineComponent({
 
     const updateRespirationScore = () => {
       const respirationScoreMapping = {
-        "无呼吸": 6,
-        "发绀": 5,
-        "呼吸困难": 3,
-        "胸痛": 1,
-        "正常": 0
+        "正常": 5,
+        "呼吸急促": 3,
+        "呼吸衰竭": 1
       };
       scoreData.value.ti.respiration_score = respirationScoreMapping[scoreData.value.ti.respiration] || 0;
       updateTotalScore();
