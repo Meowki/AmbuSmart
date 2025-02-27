@@ -446,7 +446,7 @@ const fetchPatientInfo = async () => {
 
       //--------------------填充急救记录
       try{
-        const operation_id= store.state.operation_id || "20202";
+        const operation_id= store.state.operation_id || "20206";
         const response = await api.get(`/operation_histories/withoutThis/${operation_id}/${patientId}`); 
         // console.log("response:"+JSON.stringify(response.data))
         operationHistories.value = response.data.map(record => ({
