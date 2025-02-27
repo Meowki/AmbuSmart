@@ -199,14 +199,6 @@ export default defineComponent({
       updateTotalScore();
     };
 
-    // 更新总得分
-    // const updateTotalScore = () => {
-    //   scoreData.value.gcs_total_score =
-    //     scoreData.value.gcs.gcs_e_score +
-    //     scoreData.value.gcs.gcs_m_score +
-    //     scoreData.value.gcs.gcs_v_score;
-    // };
-
     function updateTotalScore() {
         console.log("raw data of gcs:"+JSON.stringify(scoreData.value.gcs));
       // 提取数字部分并计算总分

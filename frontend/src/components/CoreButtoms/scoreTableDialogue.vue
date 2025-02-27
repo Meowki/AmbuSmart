@@ -21,7 +21,8 @@
       </el-collapse-item>
 
       <!-- Killip评分折叠项 -->
-      <el-collapse-item title="Killip评分" name="3">
+      <el-collapse-item title="胸痛评估" name="3">
+        <KillipScore />
       </el-collapse-item>
 
       <!-- 脑卒中评估折叠项 -->
@@ -40,11 +41,13 @@
 import { ref } from "vue";
 import TiScore from "@/components/ScoreValueForm/TiScore.vue";
 import GcsScore from "@/components/ScoreValueForm/GcsScore.vue";
+import KillipScore from "@/components/ScoreValueForm/KillipScore.vue";
 
 export default {
   components: {
     TiScore,
     GcsScore,
+    KillipScore,
   },
   setup() {
     const activeNames = ref(["1"]);
