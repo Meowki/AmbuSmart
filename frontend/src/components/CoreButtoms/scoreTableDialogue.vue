@@ -27,7 +27,7 @@
 
       <!-- 脑卒中评估折叠项 -->
       <el-collapse-item title="脑卒中评估" name="4">
-        
+        <CerebralStroke />
       </el-collapse-item>
     </el-collapse>
 
@@ -42,12 +42,14 @@ import { ref } from "vue";
 import TiScore from "@/components/ScoreValueForm/TiScore.vue";
 import GcsScore from "@/components/ScoreValueForm/GcsScore.vue";
 import KillipScore from "@/components/ScoreValueForm/KillipScore.vue";
+import CerebralStroke from "@/components/ScoreValueForm/CerebralStroke.vue";
 
 export default {
   components: {
     TiScore,
     GcsScore,
     KillipScore,
+    CerebralStroke,
   },
   setup() {
     const activeNames = ref(["1"]);

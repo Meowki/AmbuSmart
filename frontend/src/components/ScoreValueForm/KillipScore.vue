@@ -6,21 +6,33 @@
       <el-form-item label="高危状态评估">
         <el-checkbox-group v-model="assessmentData.highRisk">
           <el-row>
-            <el-col v-for="option in highRiskOptions" :key="option.value" :span="8">
-              <el-checkbox :label="option.value">{{ option.label }}</el-checkbox>
+            <el-col
+              v-for="option in highRiskOptions"
+              :key="option.value"
+              :span="8"
+            >
+              <el-checkbox :label="option.value">{{
+                option.label
+              }}</el-checkbox>
             </el-col>
           </el-row>
         </el-checkbox-group>
       </el-form-item>
       <!-- 如果选中“其它”，显示附加说明输入框 -->
-      <el-form-item v-if="assessmentData.highRisk.includes('其它')" label="其它说明">
+      <el-form-item
+        v-if="assessmentData.highRisk.includes('其它')"
+        label="其它说明"
+      >
         <el-input v-model="assessmentData.otherHighRisk"></el-input>
       </el-form-item>
 
       <!-- 2. Killip 分级 -->
       <h3>Killip 分级</h3>
       <el-form-item label="Killip 分级">
-        <el-select v-model="assessmentData.Killip_score" placeholder="请选择 Killip 分级">
+        <el-select
+          v-model="assessmentData.Killip_score"
+          placeholder="请选择 Killip 分级"
+        >
           <el-option
             v-for="option in killipOptions"
             :key="option.value"
@@ -41,7 +53,12 @@
       </el-form-item>
 
       <!-- 提交按钮 -->
-      <el-button type="primary" @click="submitAssessment" style="margin-top: 20px;">提交评估</el-button>
+      <el-button
+        type="primary"
+        @click="submitAssessment"
+        style="margin-top: 20px"
+        >提交评估</el-button
+      >
     </el-form>
   </div>
 </template>
@@ -58,10 +75,10 @@ export default {
     const operation_id = store.state.operation_id || "20202";
 
     const assessmentData = ref({
-      highRisk: [],               // 复选结果（数组）
-      otherHighRisk: "",          // “其它”说明
-      Killip_score: "",           // Killip 分级（下拉选项）
-      Killip_diagnosis: ""        // 初步诊断（自动补全）
+      highRisk: [], // 复选结果（数组）
+      otherHighRisk: "", // “其它”说明
+      Killip_score: "", // Killip 分级（下拉选项）
+      Killip_diagnosis: "", // 初步诊断（自动补全）
     });
 
     // 高危状态选项（仅显示选项名称）
@@ -76,29 +93,59 @@ export default {
       { value: "恶性心律失常", label: "恶性心律失常" },
       { value: "心肺复苏", label: "心肺复苏" },
       { value: "合并出血", label: "合并出血" },
-      { value: "其它", label: "其它" }
+      { value: "其它", label: "其它" },
     ];
 
     // Killip 分级选项（下拉框），每个选项带有具体说明
     const killipOptions = [
       { value: "Killip I", label: "Killip I", description: "无明显心衰迹象" },
-      { value: "Killip II", label: "Killip II", description: "轻度心衰：少量肺部湿罗音" },
-      { value: "Killip III", label: "Killip III", description: "重度心衰：大量湿罗音/肺水肿" },
-      { value: "Killip IV", label: "Killip IV", description: "心源性休克" }
+      {
+        value: "Killip II",
+        label: "Killip II",
+        description: "轻度心衰：少量肺部湿罗音",
+      },
+      {
+        value: "Killip III",
+        label: "Killip III",
+        description: "重度心衰：大量湿罗音/肺水肿",
+      },
+      { value: "Killip IV", label: "Killip IV", description: "心源性休克" },
     ];
 
     // 初步诊断建议数据（静态示例，可动态获取）
     const diagnosisOptions = [
-      { value: "急性心肌梗死" },
+      // 致命性胸痛
+      { value: "急性心肌梗死（STEMI/NSTEMI）" },
+      { value: "主动脉夹层（Stanford A/B型）" },
+      { value: "急性肺栓塞（高危）" },
+      { value: "张力性气胸" },
+      { value: "心脏压塞" },
+      { value: "食管破裂" },
+
+      // 非致命性胸痛
       { value: "不稳定型心绞痛" },
+      { value: "稳定性心绞痛" },
+      { value: "心肌炎" },
+      { value: "心包炎" },
       { value: "胸膜炎" },
+      { value: "肺炎" },
+      { value: "肺癌（胸膜侵犯）" },
+      { value: "胃食管反流病（GERD）" },
       { value: "食管痉挛" },
-      { value: "其它" }
+      { value: "急性胆囊炎（牵涉痛）" },
+      { value: "消化性溃疡" },
+      { value: "肋软骨炎（Tietze综合征）" },
+      { value: "肋骨骨折" },
+      { value: "带状疱疹（早期无皮疹期）" },
+      { value: "焦虑/惊恐障碍" },
+      { value: "过度通气综合征" },
+      { value: "颈椎病（神经根性痛）" },
+      { value: "其它" },
     ];
 
     // 辅助输入建议函数
     const querySearch = (queryString, cb) => {
-      const results = diagnosisOptions.filter(item => {
+      const results = diagnosisOptions.filter((item) => {
         return item.value.toLowerCase().includes(queryString.toLowerCase());
       });
       cb(results);
@@ -111,10 +158,10 @@ export default {
         await axios.put(`/operation_histories/update/${operation_id}`, {
           Killip_content: {
             highRisk: assessmentData.value.highRisk,
-            otherHighRisk: assessmentData.value.otherHighRisk
+            otherHighRisk: assessmentData.value.otherHighRisk,
           },
           Killip_score: assessmentData.value.Killip_score,
-          Killip_diagnosis: assessmentData.value.Killip_diagnosis
+          Killip_diagnosis: assessmentData.value.Killip_diagnosis,
         });
         ElMessage.success("评估提交成功");
       } catch (error) {
@@ -126,9 +173,11 @@ export default {
     // 从后端获取数据并展示到前端
     const fetchScoreData = async () => {
       try {
-        const response = await axios.get(`/operation_histories/operationId/${operation_id}`);
+        const response = await axios.get(
+          `/operation_histories/operationId/${operation_id}`
+        );
         const data = response.data;
-        console.log("fetchData:"+data.Killip_content);
+        console.log("fetchData:" + data.Killip_content);
 
         // 如果后端返回了 Killip_content，则解析并填充高危状态部分
         if (data.Killip_content) {
@@ -140,8 +189,12 @@ export default {
         // 填充 Killip_score
         if (data.Killip_score) {
           // 如果返回的 Killip_score 与下拉选项匹配，则直接赋值；否则依然赋值，但下拉框可能只显示值而无描述
-          const found = killipOptions.find(option => option.value === data.Killip_score);
-          assessmentData.value.Killip_score = found ? found.value : data.Killip_score;
+          const found = killipOptions.find(
+            (option) => option.value === data.Killip_score
+          );
+          assessmentData.value.Killip_score = found
+            ? found.value
+            : data.Killip_score;
         }
         // 填充初步诊断
         assessmentData.value.Killip_diagnosis = data.Killip_diagnosis || "";
@@ -162,7 +215,7 @@ export default {
       querySearch,
       submitAssessment,
     };
-  }
+  },
 };
 </script>
 
