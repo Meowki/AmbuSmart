@@ -11,7 +11,7 @@
  Target Server Version : 90100 (9.1.0)
  File Encoding         : 65001
 
- Date: 26/02/2025 11:34:17
+ Date: 27/02/2025 18:51:02
 */
 
 SET NAMES utf8mb4;
@@ -50,7 +50,7 @@ CREATE TABLE `ambulance`  (
   `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   PRIMARY KEY (`aid`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ambulance
@@ -1258,7 +1258,7 @@ CREATE TABLE `operation_histories`  (
 -- ----------------------------
 -- Records of operation_histories
 -- ----------------------------
-INSERT INTO `operation_histories` VALUES (20202, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '院前急救', 0x737472696E67, 0x737472696E67, 0x737472696E67, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `operation_histories` VALUES (20202, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '院前急救', 0x737472696E67, 0x737472696E67, 0x737472696E67, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '13', '{\"circulation\": \"收缩压 70~100\", \"injury_site\": \"四肢\", \"injury_type\": \"挫伤\", \"respiration\": \"呼吸困难\", \"consciousness\": \"恍惚\", \"circulation_score\": 3, \"injury_site_score\": 1, \"injury_type_score\": 3, \"respiration_score\": 3, \"consciousness_score\": 3}', 'GCS 10 + T = E4 + VT + M6 at 18:58', '{\"gcs_e\": \"自发\", \"gcs_m\": \"执行口令\", \"gcs_v\": \"气管因素\", \"gcs_e_score\": 4, \"gcs_m_score\": 6, \"gcs_v_score\": \"T\"}', 'Killip II', '{\"highRisk\": [\"持续性胸闷/胸痛\", \"腹痛\", \"心衰\", \"休克\", \"恶性心律失常\", \"其它\"], \"otherHighRisk\": \"1231231\"}', '急性心肌梗死ok', '{\"other\": \"\", \"selected\": [\"面部不对称(F)\", \"上肢无力(A)\"]}');
 INSERT INTO `operation_histories` VALUES (20204, '123456123112311231', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 12001, 12002, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `operation_histories` VALUES (20206, '123123123412341234', '本人', '翻斗花园小区', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '2025-02-08 08:39:03', '人民医院', '1级', '院前急救', 0xE4B88AE78FADE4B88AE7B4AFE4BA86, 0xE99C80E8A681E4B88BE78FAD, 0xE697A0, 0xE69C8DE794A86B6F69E6B586E69E9CE985A5E985AAE5A5B6E88CB6E4B880E4BBBD, 0xE6988EE5A4A9E591A8E697A5E5B0B1E883BDE6B4BBE4BA86, '渥子集', '无', '斡梓级', '无', '无', '无', NULL, NULL, '无', NULL, 'string', NULL, 'string', NULL, 'string', NULL);
 INSERT INTO `operation_histories` VALUES (20207, '123123123412341234', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0x706174636855706461746554657374, NULL, 0x737472696E67, 0x746573743233, 0x737472696E67, 'string', 'string', 'string', '1234341', 'string', 'string', 12001, 12002, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
@@ -1271,7 +1271,7 @@ INSERT INTO `operation_histories` VALUES (20241, '123123123412341234', '', '', '
 INSERT INTO `operation_histories` VALUES (20242, '123123123412341234', '', '', '2025-02-20 13:03:28', NULL, NULL, NULL, '', '', '', '', NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `operation_histories` VALUES (20243, NULL, '', '', '2025-02-20 13:10:37', '2025-02-20 13:11:21', '2025-02-20 13:11:41', '2025-02-20 13:11:59', '', '', '', '', NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `operation_histories` VALUES (20244, '123123123412341234', '本人', '', '2025-02-20 13:25:11', NULL, NULL, NULL, '', '', '', '', NULL, NULL, NULL, NULL, '', '', '', '', '', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `operation_histories` VALUES (20245, '123123123412341234', '本人', '现场', '2025-02-26 03:31:18', '2025-02-26 03:31:46', '2025-02-26 03:33:19', '2025-02-26 03:33:19', '', 'Ⅳ级（非急症）', '院前急救', 0xE697A03132333132333132, NULL, NULL, NULL, NULL, '', '', '阮新巧', '', '', NULL, 12007, 12008, '18', '{\"circulation\": \"正常\", \"injury_site\": \"其他\", \"injury_type\": \"其他\", \"respiration\": \"正常\", \"consciousness\": \"清醒\", \"circulation_score\": 5, \"injury_site_score\": 1, \"injury_type_score\": 2, \"respiration_score\": 5, \"consciousness_score\": 5}', NULL, 'null', NULL, 'null', NULL, 'null');
+INSERT INTO `operation_histories` VALUES (20245, '123123123412341234', '本人', '现场', '2025-02-26 03:31:18', '2025-02-26 03:31:46', '2025-02-26 03:33:19', '2025-02-26 03:33:19', '', 'Ⅳ级（非急症）', '院前急救', 0xE697A03132333132333132, NULL, NULL, NULL, NULL, '', '', '阮新巧', '', '', NULL, 12007, 12008, '18', '{\"circulation\": \"正常\", \"injury_site\": \"其他\", \"injury_type\": \"其他\", \"respiration\": \"正常\", \"consciousness\": \"清醒\", \"circulation_score\": 5, \"injury_site_score\": 1, \"injury_type_score\": 2, \"respiration_score\": 5, \"consciousness_score\": 5}', NULL, 'null', NULL, 'null', NULL, NULL);
 
 -- ----------------------------
 -- Table structure for operation_relating
@@ -1314,7 +1314,7 @@ CREATE TABLE `patient`  (
 -- Records of patient
 -- ----------------------------
 INSERT INTO `patient` VALUES ('NA', 'NA', '护照', 'NA', 'NA', 'NA', '123123000000000000');
-INSERT INTO `patient` VALUES ('张三', NULL, '身份证', NULL, '测试用户', NULL, '123123123412341234');
+INSERT INTO `patient` VALUES ('张三', '男', '身份证', '12312312312', '测试用户', '汉族', '123123123412341234');
 INSERT INTO `patient` VALUES ('乐', '女', '身份证', '15151799630', '白玉兰广场', '汉', '123123200308281234');
 INSERT INTO `patient` VALUES ('测试0', '男', '身份证', '12312312312', '无', '无', '123456123112311231');
 INSERT INTO `patient` VALUES ('Mark', 'male', '身份证', '12345678912', 'string', 'string', '789789200101251234');
