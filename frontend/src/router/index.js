@@ -30,6 +30,16 @@ const routes = [
     component:()=>import('../views/AmbuCore.vue')
   },
   {
+    path:'/AmbuStat',
+    name:'AmbuStat',
+    component:()=>import('../views/AmbuStat.vue')
+  },
+  {
+    path:'/AmbuEnd',
+    name:'AmbuEnd',
+    component:()=>import('../views/AmbuFin.vue')
+  },
+  {
     path: '/chat',
     name: 'ChatWindow',
     component: ChatWindow
