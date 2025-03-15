@@ -1,6 +1,6 @@
 <template>
   <!-- 触发弹窗按钮 -->
-  <el-button type="primary" @click="openScoreDialog">评估评分</el-button>
+  <el-button class="uniform-button" type="primary" @click="openScoreDialog">评估评分</el-button>
 
   <!-- 评估评分的对话框 -->
   <el-dialog
@@ -73,4 +73,11 @@ export default {
 .score-form {
   margin-top: 20px;
 }
+
+.uniform-button {
+  width: 100%;      
+  min-height: 40px;  
+  font-size: 14px;   
+}
+
 </style>

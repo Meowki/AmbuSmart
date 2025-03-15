@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button  type="success" :loading="loading" @click="handleButtonClick">{{ buttonText }}</el-button>
+    <el-button class="uniform-button"  type="success" :loading="loading" @click="handleButtonClick">{{ buttonText }}</el-button>
   </div>
 </template>
 
@@ -155,8 +155,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 按钮样式 */
-.el-button {
-  margin: 20px;
+
+.uniform-button {
+  width: 100%;      
+  min-height: 40px;  
+  font-size: 14px;   
 }
+
 </style>

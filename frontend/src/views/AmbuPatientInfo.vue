@@ -333,6 +333,9 @@ const validatePatientId = async () => {
           formData.value.patient_id = originalPatientId.value;
           fetchPatientInfo();
           sceneData.value.patient_id = originalPatientId.value;
+           // 记录到 Vuex 中
+          store.commit("setPatientId", formData.value.patient_id); // 使用 useStore 来提交 mutation
+          console.log("Patient ID stored in Vuex:", store.state.patient_id);
         } else {
           ElMessage.error("请校验患者证件类型");
         }

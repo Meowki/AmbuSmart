@@ -4,16 +4,19 @@
   <div class="main-container">
     <!-- 左侧功能区 -->
     <div class="sidebar">
+      <!--患者信息、基础检查、量化评估、时间线-->
       <el-card class="sidebar-card">
-        <PatientInfo />
-        <el-button @click="handleAction('action2')" type="success" class="sidebar-button">量化评估</el-button>
-        <el-button @click="handleAction('action3')" type="info" class="sidebar-button">智能总结</el-button>
+      <div class="button-container">
+        <PatientInfo /> 
         <CheckPage />
         <ScoreTableDialogue />
         <TimeLineButtom />
-        <!-- 还要加基础检查结果 -->
-      </el-card>
+      </div>
+    </el-card>
     </div>
+
+  
+
 
     <!-- 右侧聊天区 -->
     <div class="chat-area">
@@ -126,5 +129,12 @@ html, body {
     width: 100%;
   }
 }
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* 设置组件之间的统一间距 */
+}
+
 </style>
 

@@ -1,5 +1,5 @@
 <template>
-  <el-button type="primary" @click="openDialog">基础检查</el-button>
+  <el-button class="uniform-button" type="primary" @click="openDialog">基础检查</el-button>
 
   <!-- 对话框 -->
   <el-dialog title="Check Form" v-model="dialogVisible" width="70%" :close-on-click-modal="false">
@@ -285,3 +285,13 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+.uniform-button {
+  width: 100%;      
+  min-height: 40px;  
+  font-size: 14px;   
+}
+
+</style>

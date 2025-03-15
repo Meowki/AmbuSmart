@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-button type="primary" @click="openDialog">查看患者信息</el-button>
+    <el-button class="uniform-button" type="primary" @click="openDialog">查看患者信息</el-button>
 
     <!-- 患者信息弹出框 -->
     <el-dialog
@@ -566,6 +566,7 @@ const validatePatientId = async () => {
 
 // 页面加载时预加载患者信息
 onMounted(() => {
+  console.log("present store:"+store.state.patient_id)
   if (patientInfo.value.patient_id) {
     fetchPatientInfo();
   }
@@ -600,4 +601,11 @@ const handleDialogClose = async () => {
 .dialog-footer {
   text-align: right;
 }
+
+.uniform-button {
+  width: 100%;     
+  min-height: 40px;  
+  font-size: 14px;   
+}
+
 </style>
