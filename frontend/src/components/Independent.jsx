@@ -24,6 +24,15 @@ import {
     SmileOutlined,
   } from '@ant-design/icons';
   import { Badge, Button, Space } from 'antd';
+  import OpenAI from 'openai';
+  
+  // Initialize OpenAI client with API key from environment variables
+  const client = new OpenAI({
+    baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+    apiKey: 'sk-064e010c57b547cd945cc0d5944a7007', // 使用环境变量中的API密钥
+    dangerouslyAllowBrowser: true,
+  });
+  
   const renderTitle = (icon, title) => (
     <Space align="start">
       {icon}
@@ -261,8 +270,25 @@ import {
   
     // ==================== Runtime ====================
     const [agent] = useXAgent({
-      request: async ({ message }, { onSuccess }) => {
-        onSuccess(`Mock success return. You said: ${message}`);
+      request: async ({ message }, { onSuccess, onUpdate, onError }) => {
+        let content = '';
+        try {
+          const stream = await client.chat.completions.create({
+            model: 'qwen-plus',
+            messages: [{ role: 'user', content: message }],
+            stream: true,
+          });
+  
+          for await (const chunk of stream) {
+            content += chunk.choices[0]?.delta?.content || '';
+            onUpdate(content);
+          }
+  
+          onSuccess(content);
+        } catch (error) {
+          console.error("API request error:", error);
+          onError();
+        }
       },
     });
     const { onRequest, messages, setMessages } = useXChat({
