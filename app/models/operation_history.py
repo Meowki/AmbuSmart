@@ -42,3 +42,4 @@ class OperationHistory(Base):
     # final_exam = relationship("BasicCheck", foreign_keys=[final_eid], backref="final_operation_history")
     patient = relationship("Patient", back_populates="operation_histories")
     # basic_check = relationship("BasicCheck", back_populates="operation_histories")
+    chat_histories = relationship("ChatHistory", back_populates="operation")

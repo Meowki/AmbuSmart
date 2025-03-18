@@ -19,6 +19,8 @@ from api.medicine.medicine_histories_routers import router as medicine_histories
 from api.ambulance.ambulance_routers import router as ambulance_routers
 from api.ambulance.basic_check_routers import router as basic_check_routers
 from api.ambulance.operation_histories_routers import router as operation_history_routers
+from api.chat_router import chat_router
+
 
 from db.base import Base
 from db.session import engine
@@ -38,6 +40,7 @@ app.add_middleware(
 )
 
 # 配置日志记录
+logging.basicConfig(level=logging.DEBUG)
 logger = setup_logger("chat_app")
 logger.info("应用启动中...")
 
@@ -63,6 +66,9 @@ app.include_router(medicine_histories_routers, prefix="/api")
 # app.include_router(ambulance_routers, prefix="/api")
 app.include_router(basic_check_routers, prefix="/api")
 app.include_router(operation_history_routers, prefix="/api")
+
+# 注册 AI 对话 API
+app.include_router(chat_router, prefix="/api")
 
 
 # 记录应用启动事件
