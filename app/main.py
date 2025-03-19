@@ -76,9 +76,7 @@ app.include_router(chat_router, prefix="/api")
 # def startup_event():
 #     logger.info("Chat 应用已启动")
 
-# 你可以在这里包含更多的路由，例如：
-# from routers import other_router
-# app.include_router(other_router, prefix="/api")
+
 @app.get("/")
 def read_root():
     return {"message": "欢迎使用 AmbuSmart API"}
