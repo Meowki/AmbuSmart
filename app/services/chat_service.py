@@ -2,35 +2,60 @@ import openai
 import os
 import logging
 from sqlalchemy.orm import Session
-from crud.chat import create_chat_record
+from crud.chat import create_chat_record, get_chat_history
 from openai import OpenAI
 
 # 设置日志
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+# 读取 OpenAI API 配置
+openai.api_key = os.getenv("DASHSCOPE_API_KEY")
+openai.api_base = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
 async def chat_with_ai(db: Session, operation_id: int, message: str):
     try:
-        logger.info(f"发送 AI 请求：{message}")
+        logger.info(f"用户输入：{message} (operation_id: {operation_id})")
 
         client = OpenAI(
-            api_key=os.getenv("DASHSCOPE_API_KEY"), 
+            api_key=os.getenv("DASHSCOPE_API_KEY"),
             base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         )
 
+        # 1️⃣ **获取当前 `operation_id` 相关的对话历史**
+        chat_history = get_chat_history(db, operation_id)
+        
+         # 2️⃣ **如果没有历史记录，初始化会话**
+        if not chat_history:
+            logger.info(f"operation_id {operation_id} 是新的会话，初始化对话")
+            messages = [
+                {"role": "system", "content": "你是一个专业的医疗急救助手，请根据用户的问题提供帮助。"},
+                {"role": "user", "content": message}  # **第一轮用户输入**
+            ]
+        else:
+            # 3️⃣ **如果有历史记录，加载历史对话**
+            logger.info(f"operation_id {operation_id} 载入历史记录")
+            messages = [{"role": "system", "content": "你是一个专业的医疗急救助手，请根据用户的问题提供帮助。"}]
+            for chat in chat_history:
+                messages.append({"role": "user", "content": chat.user_message})
+                messages.append({"role": "assistant", "content": chat.ai_response})
+
+            # 追加当前用户输入
+            messages.append({"role": "user", "content": message})
+
+        # 4️⃣ **调用 AI 获取回复**
         completion = client.chat.completions.create(
-            model="qwen-max-0125", 
-            messages=[
-                {'role': 'system', 'content': '你是一个专业的医疗急救助手，请根据用户的问题提供帮助。'},
-                {'role': 'user', 'content': message}  
-            ],
+            model="qwen-max-0125",
+            messages=messages,
         )
 
-        ai_response = completion.choices[0].message.content  
-        logger.info(f"AI 返回：{ai_response}")
+        ai_response = completion.choices[0].message.content
+        logger.info(f"AI 回复: {ai_response}")
 
-        return { "operation_id": operation_id, "response": ai_response }
+        # 5️⃣ **存入数据库**
+        chat_record = create_chat_record(db, operation_id, message, ai_response)
+
+        return {"operation_id": operation_id, "response": ai_response}
 
     except openai.OpenAIError as oe:
         logger.error(f"OpenAI API 错误: {oe}")
