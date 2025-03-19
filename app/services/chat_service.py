@@ -22,18 +22,18 @@ async def chat_with_ai(db: Session, operation_id: int, message: str):
             base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         )
 
-        # 1️⃣ **获取当前 `operation_id` 相关的对话历史**
+        # 获取当前 `operation_id` 相关的对话历史
         chat_history = get_chat_history(db, operation_id)
         
-         # 2️⃣ **如果没有历史记录，初始化会话**
+         # 如果没有历史记录，初始化会话
         if not chat_history:
             logger.info(f"operation_id {operation_id} 是新的会话，初始化对话")
             messages = [
                 {"role": "system", "content": "你是一个专业的医疗急救助手，请根据用户的问题提供帮助。"},
-                {"role": "user", "content": message}  # **第一轮用户输入**
+                {"role": "user", "content": message}  # 第一轮用户输入
             ]
         else:
-            # 3️⃣ **如果有历史记录，加载历史对话**
+            # 如果有历史记录，加载历史对话
             logger.info(f"operation_id {operation_id} 载入历史记录")
             messages = [{"role": "system", "content": "你是一个专业的医疗急救助手，请根据用户的问题提供帮助。"}]
             for chat in chat_history:
@@ -43,7 +43,7 @@ async def chat_with_ai(db: Session, operation_id: int, message: str):
             # 追加当前用户输入
             messages.append({"role": "user", "content": message})
 
-        # 4️⃣ **调用 AI 获取回复**
+        # 调用 AI 获取回复
         completion = client.chat.completions.create(
             model="qwen-max-0125",
             messages=messages,
@@ -52,7 +52,7 @@ async def chat_with_ai(db: Session, operation_id: int, message: str):
         ai_response = completion.choices[0].message.content
         logger.info(f"AI 回复: {ai_response}")
 
-        # 5️⃣ **存入数据库**
+        # 存入数据库
         chat_record = create_chat_record(db, operation_id, message, ai_response)
 
         return {"operation_id": operation_id, "response": ai_response}

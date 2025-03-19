@@ -21,16 +21,19 @@
     <!-- 右侧聊天区 -->
     <div class="chat-area">
       <div class="react-container">
-        <IndependentInVue />
+        <IndependentInVue :operationId="operationIdFromStore" />
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import { applyReactInVue } from 'veaury'; 
+<script setup>
+import { computed } from "vue";
+import { useStore } from "vuex"; // Vuex 版
+// import { useSomeStore } from "@/store"; // Pinia 版
+import { applyReactInVue } from "veaury"; 
 import NavigationBar from "@/components/NavigationBars.vue";
-import Independent from '@/components/Independent.jsx'; 
+import Independent from "@/components/Independent.jsx"; 
 import PatientInfo from "@/components/CoreButtoms/PatientInfo.vue";
 import TimeLineButtom from "@/components/CoreButtoms/timeLineButtom.vue";
 import CheckPage from "@/components/CoreButtoms/basicCheckDialogue.vue";
@@ -38,26 +41,12 @@ import ScoreTableDialogue from "@/components/CoreButtoms/scoreTableDialogue.vue"
 
 const IndependentInVue = applyReactInVue(Independent); 
 
-export default {
-  data() {
-    return {
-      currentStep: "决策系统",
-    };
-  },
-  methods: {
-    handleAction(action) {
-      console.log("执行动作:", action);
-    },
-  },
-  components: {
-    NavigationBar,
-    IndependentInVue, 
-    PatientInfo,
-    TimeLineButtom,
-    CheckPage,
-    ScoreTableDialogue,
-  },
-};
+const store = useStore();
+const operationIdFromStore = computed(() => store.state.operation_id || "20202");
+
+// const handleAction = (action) => {
+//   console.log("执行动作:", action);
+// };
 </script>
 
 <style scoped>
