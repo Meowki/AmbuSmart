@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex"; // Vuex 版
 // import { useSomeStore } from "@/store"; // Pinia 版
 import { applyReactInVue } from "veaury"; 
@@ -40,6 +40,8 @@ import CheckPage from "@/components/CoreButtoms/basicCheckDialogue.vue";
 import ScoreTableDialogue from "@/components/CoreButtoms/scoreTableDialogue.vue";
 
 const IndependentInVue = applyReactInVue(Independent); 
+
+const currentStep = ref('决策系统')
 
 const store = useStore();
 const operationIdFromStore = computed(() => store.state.operation_id || "20202");

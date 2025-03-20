@@ -4,6 +4,7 @@ import logging
 from sqlalchemy.orm import Session
 from crud.chat import create_chat_record, get_chat_history
 from openai import OpenAI
+from utils.prompts import get_prompt
 
 # 设置日志
 logging.basicConfig(level=logging.DEBUG)
@@ -24,18 +25,21 @@ async def chat_with_ai(db: Session, operation_id: int, message: str):
 
         # 获取当前 `operation_id` 相关的对话历史
         chat_history = get_chat_history(db, operation_id)
+
+        # 获取 AI 系统 Prompt
+        system_prompt = get_prompt()  # 统一管理的 Prompt
         
          # 如果没有历史记录，初始化会话
         if not chat_history:
             logger.info(f"operation_id {operation_id} 是新的会话，初始化对话")
             messages = [
-                {"role": "system", "content": "你是一个专业的医疗急救助手，请根据用户的问题提供帮助。"},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": message}  # 第一轮用户输入
             ]
         else:
             # 如果有历史记录，加载历史对话
             logger.info(f"operation_id {operation_id} 载入历史记录")
-            messages = [{"role": "system", "content": "你是一个专业的医疗急救助手，请根据用户的问题提供帮助。"}]
+            messages = [{"role": "system", "content": system_prompt}]
             for chat in chat_history:
                 messages.append({"role": "user", "content": chat.user_message})
                 messages.append({"role": "assistant", "content": chat.ai_response})

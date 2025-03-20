@@ -131,6 +131,8 @@ const Independent = ({ operationId }) => {
   const { onRequest } = useXChat({ agent });
 
   // ✅ 监听 operationId 变化，清空历史对话
+  // 1. 需要把开场白自动改成根据operation histories 生成的结果
+  // 2. chat service 的prompt engineering
   useEffect(() => {
     if (operationId) {
       setMessages([
