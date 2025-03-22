@@ -32,6 +32,7 @@ async def chat_with_ai(db: Session, operation_id: int, message: str):
 
          # 将 operation_data 中的关键信息格式化为 AI 可理解的消息格式
         formatted_data = f"""
+        患者基本信息：{operation_data['patient_info']},
         主诉：{operation_data['chief_complaint']}。
         急救类型：{operation_data['emergency_type']}，病情分级：{operation_data['severity_level']}。
         初步诊断：{operation_data['initial_diagnosis']}，急救处理：{operation_data['procedures']}，用药：{operation_data['medicine']}。

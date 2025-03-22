@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
+from datetime import datetime
 from models.chat import ChatHistory
 from models.operation_history import OperationHistory
 from models.basic_check import BasicCheck
+from models.patient import Patient
 
 def create_chat_record(db: Session, operation_id: int, user_message: str, ai_response: str):
     # 确保 operation_id 存在
@@ -22,11 +24,54 @@ def create_chat_record(db: Session, operation_id: int, user_message: str, ai_res
 def get_chat_history(db: Session, operation_id: int):
     return db.query(ChatHistory).filter_by(operation_id=operation_id).order_by(ChatHistory.created_at).all()
 
+# 通过 patient_id 提取出生日期并计算年龄
+def extract_birthdate_from_id(patient_id: str):
+    # 检查身份证号长度是否有效（18位身份证号）
+    if len(patient_id) == 18:
+        birthdate_str = patient_id[6:14]  # 身份证号第7到14位是出生日期，格式为YYYYMMDD
+        birthdate = datetime.strptime(birthdate_str, '%Y%m%d')
+        return birthdate
+    else:
+        return None
+# 计算年龄
+def calculate_age(patient_id: str):
+    birthdate = extract_birthdate_from_id(patient_id)
+    if birthdate:
+        today = datetime.today()
+        age = today.year - birthdate.year
+        if today.month < birthdate.month or (today.month == birthdate.month and today.day < birthdate.day):
+            age -= 1
+        return age
+    else:
+        return None
+
+def get_patient_data(db: Session, patient_id: str):
+    # 从数据库查询患者信息
+    patient = db.query(Patient).filter(Patient.patient_id == patient_id).first()
+    
+    if patient:
+        # 假设 Patient 模型中有出生日期字段 `birth_date`
+        # 如果有出生日期字段，则计算年龄
+        if patient.idType == '身份证':
+            age = calculate_age(patient.patient_id)
+        else:
+            age = None  # 如果没有出生日期信息，则无法计算年龄
+        
+        # 返回格式化的患者信息
+        patient_info = f"姓名：{patient.name}，性别：{patient.sex}，年龄：{age}"
+        
+        return patient_info
+    return None
+
+
 # 获取 `operation_id` 相关的急救数据，包括初检与终检数据
 def get_operation_data(db: Session, operation_id: int):
     # 根据 `operation_id` 查询数据库获取所有的急救信息
     operation = db.query(OperationHistory).filter(OperationHistory.operation_id == operation_id).first()
     if operation:
+
+        # 获取患者基本信息
+        patient_info = get_patient_data(db, operation.patient_id)
 
         if operation.initial_eid:
             initial_check = db.query(BasicCheck).filter(BasicCheck.eid == operation.initial_eid).first()
@@ -43,6 +88,7 @@ def get_operation_data(db: Session, operation_id: int):
             """
 
         return {
+            "patient_info": patient_info,  # 患者基本信息
             "patient_id": operation.patient_id,
             "informant": operation.informant,
             "scene_address": operation.scene_address,
