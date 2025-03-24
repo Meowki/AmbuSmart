@@ -83,6 +83,7 @@ async def chat_with_ai(db: Session, operation_id: int, message: str):
                 content = chunk.choices[0].delta.content
                 full_response += content  # 累积完整响应
                 yield f"data: {json.dumps({'response': content}, ensure_ascii=False)}\n\n"
+                await asyncio.sleep(0.05)  # 控制流式速度
         
          # 流结束后写入数据库（需异步处理）
         asyncio.create_task(save_chat_record(db, operation_id, message, full_response))
