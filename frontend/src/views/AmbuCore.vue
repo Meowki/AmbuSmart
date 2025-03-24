@@ -44,7 +44,7 @@ const IndependentInVue = applyReactInVue(Independent);
 const currentStep = ref('决策系统')
 
 const store = useStore();
-const operationIdFromStore = computed(() => store.state.operation_id || "20202");
+const operationIdFromStore = computed(() => store.state.operation_id || "20249");
 
 // const handleAction = (action) => {
 //   console.log("执行动作:", action);

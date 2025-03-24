@@ -108,18 +108,43 @@ const Independent = ({ operationId }) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ operation_id: operationId, message }),
         });
-        const data = await response.json();
-        if (data.response) {
-          aiResponse = data.response;
-          onSuccess(aiResponse);
-          setMessages((prev) =>
-            prev.map((msg, index) =>
-              index === prev.length - 1 && msg.role === "ai"
-                ? { role: "ai", content: aiResponse }
-                : msg
-            )
-          );
+
+        if (!response.body) throw new Error("后端无流式返回");
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+
+        // eslint-disable-next-line
+        while (true) { 
+          const { done, value } = await reader.read();
+          if (done) break;
+  
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split("\n\n").filter(Boolean);
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const jsonStr = line.replace("data: ", "");
+              try {
+                const data = JSON.parse(jsonStr);
+                if (data.response) {
+                  aiResponse += data.response; // 累积响应内容
+                  setMessages((prev) => {
+                    const lastMsg = prev[prev.length - 1];
+                    return [
+                      ...prev.slice(0, -1),
+                      { ...lastMsg, content: aiResponse }, // 实时更新内容
+                    ];
+                  });
+                }
+              } catch (e) {
+                console.error("流解析错误:", e);
+              }
+            }
+          }
         }
+
+        onSuccess(aiResponse);
       } catch (error) {
         console.error("API 请求失败:", error);
         onError();
@@ -182,6 +207,10 @@ const Independent = ({ operationId }) => {
           }))}
           roles={roles}
           className={styles.messages}
+          typing={{
+            step: 2,
+            interval: 50,
+          }}
         />
 
         {/* 🌟 输入框 */}

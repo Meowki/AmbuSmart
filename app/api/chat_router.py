@@ -5,6 +5,7 @@ from services.chat_service import chat_with_ai
 from crud.chat import get_chat_history
 from db.session import SessionLocal
 from typing import List
+from fastapi.responses import StreamingResponse
 
 chat_router = APIRouter(
     prefix="/chat",
@@ -18,12 +19,17 @@ def get_db():
     finally:
         db.close()
 
-@chat_router.post("/", response_model=ChatResponse)
+@chat_router.post("/")
 async def chat(request: ChatRequest, db: Session = Depends(get_db)):
-    result = await chat_with_ai(db, request.operation_id, request.message)  
-    if "error" in result:
-        raise HTTPException(status_code=400, detail=result["error"])
-    return result
+    try:
+        return StreamingResponse(
+            chat_with_ai(db, request.operation_id, request.message),
+            media_type="text/event-stream"  # 或 "application/x-ndjson"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
 
 @chat_router.get("/history/{operation_id}", response_model=List[ChatHistoryResponse])

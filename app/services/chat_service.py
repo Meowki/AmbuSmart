@@ -1,9 +1,12 @@
+import asyncio
+import json
+from fastapi import HTTPException
 import openai
 import os
 import logging
 from sqlalchemy.orm import Session
 from crud.chat import create_chat_record, get_chat_history, get_operation_data
-from openai import OpenAI
+from openai import AsyncOpenAI, OpenAI
 from utils.prompts import get_prompt
 
 # 设置日志
@@ -18,7 +21,8 @@ async def chat_with_ai(db: Session, operation_id: int, message: str):
     try:
         logger.info(f"用户输入：{message} (operation_id: {operation_id})")
 
-        client = OpenAI(
+         # 初始化异步客户端
+        client = AsyncOpenAI(
             api_key=os.getenv("DASHSCOPE_API_KEY"),
             base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         )
@@ -65,23 +69,46 @@ async def chat_with_ai(db: Session, operation_id: int, message: str):
             messages.append({"role": "user", "content": message})
 
         # 调用 AI 获取回复
-        completion = client.chat.completions.create(
+        completion =  await client.chat.completions.create(
             model="qwen-max-0125",
             messages=messages,
+            stream=True,
         )
 
-        ai_response = completion.choices[0].message.content
-        logger.info(f"AI 回复: {ai_response}")
+        response_text = ""
+        full_response = ""  
+        # 流式处理部分
+        async for chunk in completion:
+            if chunk.choices and chunk.choices[0].delta.content:
+                content = chunk.choices[0].delta.content
+                full_response += content  # 累积完整响应
+                yield f"data: {json.dumps({'response': content}, ensure_ascii=False)}\n\n"
+        
+         # 流结束后写入数据库（需异步处理）
+        asyncio.create_task(save_chat_record(db, operation_id, message, full_response))
+
+        # logger.info(f"AI 回复: {response_text}")
 
         # 存入数据库
-        chat_record = create_chat_record(db, operation_id, message, ai_response)
+        # chat_record = create_chat_record(db, operation_id, message, response_text)
 
-        return {"operation_id": operation_id, "response": ai_response}
+        # return {"operation_id": operation_id, "response": response_text}
 
     except openai.OpenAIError as oe:
         logger.error(f"OpenAI API 错误: {oe}")
-        return {"error": f"OpenAI API 错误: {str(oe)}"}
-
+        yield f"data: {json.dumps({'error': f'API错误: {str(oe)}'})}\n\n"
     except Exception as e:
         logger.exception("未知错误")
-        return {"error": f"未知错误: {str(e)}"}
+        yield f"data: {json.dumps({'error': f'系统错误: {str(e)}'})}\n\n"
+    
+# 异步保存记录
+async def save_chat_record(db: Session, operation_id: int, message: str, response: str):
+    try:
+        # 假设create_chat_record是同步函数，需用线程池包装
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(
+            None, 
+            lambda: create_chat_record(db, operation_id, message, response)
+        )
+    except Exception as e:
+        logger.error(f"异步保存失败: {str(e)}")
