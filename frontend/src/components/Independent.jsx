@@ -25,6 +25,14 @@ import markdownit from "markdown-it";
 const userAvatar = { color: "#fff", backgroundColor: "#1677ff" }; // 用户头像
 const robotAvatar = { color: "#f56a00", backgroundColor: "#fde3cf" }; // AI 头像
 
+// 下一步：把患者的所有基本信息导进来，生成患者情况
+// 加入患者主诉得到初步诊断并保存进数据库，message提示
+// 如何能在vue timeline跳转之前，实现对 药物、操作流程的输出和保存，
+// 还有最终结果的保存（让ai只能从一些范围内选择，不能长）
+// 然后 chat就先到这里，后面再回头加数据集模拟优化。做Stats去。Stats后面就是最终报告生成。
+// 再下面就是知识图谱，看能不能放到core页面。
+
+
 // prompts 按钮
 const items = [
   {
@@ -288,11 +296,11 @@ const Independent = ({ operationId }) => {
           value={content}
           onSubmit={onSubmit}
           onChange={setContent}
-          loading={loading} // ✅ 绑定明确的状态
+          loading={loading} // 绑定明确的状态
           onCancel={() => {
             setIsAborted(true);
             abortControllerRef.current.abort();
-            setLoading(false); // ✅ 明确停止loading动画
+            setLoading(false); // 明确停止loading动画
           }}
           className={styles.sender}
         />
