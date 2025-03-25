@@ -23,9 +23,9 @@ def get_db():
 async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     try:
         return StreamingResponse(
-            # chat_with_ai(db, request.operation_id, request.message),
+            chat_with_ai(db, request.operation_id, request.message, request.prompt_type),
             media_type="text/event-stream",  # 或 "application/x-ndjson"
-            headers={"X-Accel-Buffering": "no"}
+            headers={"X-Accel-Buffering": "no"},
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

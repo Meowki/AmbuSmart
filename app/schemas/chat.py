@@ -4,6 +4,7 @@ from datetime import datetime
 class ChatRequest(BaseModel):
     operation_id: int  # 绑定急救操作ID
     message: str
+    prompt_type: str = "standard"
 
 class ChatResponse(BaseModel):
     operation_id: int

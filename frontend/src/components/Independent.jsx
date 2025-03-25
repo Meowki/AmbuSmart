@@ -13,13 +13,41 @@ import {
   PaperClipOutlined,
   UserOutlined,
   RobotOutlined,
+  MedicineBoxOutlined,
+  FileDoneOutlined,
+  HeartOutlined,
+  PlusCircleOutlined,
 } from "@ant-design/icons";
-import { Avatar, Badge, Button, Space, Flex, Typography } from "antd";
+import { Avatar, Badge, Button, Typography } from "antd";
 import markdownit from "markdown-it";
 
 // 头像与气泡位置
 const userAvatar = { color: "#fff", backgroundColor: "#1677ff" }; // 用户头像
 const robotAvatar = { color: "#f56a00", backgroundColor: "#fde3cf" }; // AI 头像
+
+// prompts 按钮
+const items = [
+  {
+    key: "initial_diagnosis",
+    icon: (<MedicineBoxOutlined style={{ color: "#FF4D4F" }} />),
+    label: "初步诊断",
+  },
+  {
+    key: "procedures_medicine_summary",
+    icon: (<FileDoneOutlined style={{ color: "#1890FF" }} />),
+    label: "整理急救操作与药物记录",
+  },
+  {
+    key: "final_emergency_result",
+    icon: (<HeartOutlined style={{ color: "#52C41A" }} />),
+    label: "生成最终急救结果总结",
+  },
+  {
+    key: "standard_advice",
+    icon: (<PlusCircleOutlined style={{ color: "#FAAD14" }} />),
+    label: "快速生成标准急救建议",
+  },
+];
 
 // 样式定义
 const useStyle = createStyles(({ token, css }) => ({
@@ -70,22 +98,12 @@ const roles = {
 const Independent = ({ operationId }) => {
   const { styles } = useStyle();
   const [content, setContent] = useState("");
-  // 加载样式
   const [loading, setLoading] = useState(false);
-
-  // Markdown 解析器
-  const md = markdownit({
-    html: true,
-    breaks: true,
-  });
+  const md = markdownit({ html: true, breaks: true });
 
   const renderMarkdown = (content) => (
     <Typography>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: md.render(content),
-        }}
-      />
+      <div dangerouslySetInnerHTML={{ __html: md.render(content) }} />
     </Typography>
   );
 
@@ -97,67 +115,71 @@ const Independent = ({ operationId }) => {
   ]);
   const [attachedFiles, setAttachedFiles] = useState([]);
 
-  // AI 代理
-  const [agent] = useXAgent({
-    request: async ({ message }, { onSuccess, onUpdate, onError }) => {
-      let aiResponse = "";
-      setLoading(true); // 开启加载动画
-      try {
-        const response = await fetch(`/chat/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ operation_id: operationId, message }),
-        });
+  // AI 请求函数
+  const requestAI = async ({ message, prompt_type }, { onSuccess, onError }) => {
+    let aiResponse = "";
+    setLoading(true);
 
-        if (!response.body) throw new Error("后端无流式返回");
+    const payload = {
+      operation_id: parseInt(operationId, 10),
+      message: message,
+      prompt_type: prompt_type || "standard",
+    };
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
+    console.log("payload:"+ JSON.stringify(payload));
 
-        // eslint-disable-next-line
-        while (true) { 
-          const { done, value } = await reader.read();
-          if (done) break;
-  
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split("\n\n").filter(Boolean);
+    try {
+      const response = await fetch(`/chat/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-          for (const line of lines) {
-            if (line.startsWith("data: ")) {
-              const jsonStr = line.replace("data: ", "");
-              try {
-                const data = JSON.parse(jsonStr);
-                if (data.response) {
-                  aiResponse += data.response; // 累积响应内容
-                  setMessages((prev) => {
-                    const lastMsg = prev[prev.length - 1];
-                    return [
-                      ...prev.slice(0, -1),
-                      { ...lastMsg, content: aiResponse }, // 实时更新内容
-                    ];
-                  });
-                }
-              } catch (e) {
-                console.error("流解析错误:", e);
+      if (!response.body) throw new Error("后端无流式返回");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+
+      // eslint-disable-next-line
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n\n").filter(Boolean);
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const jsonStr = line.replace("data: ", "");
+            try {
+              const data = JSON.parse(jsonStr);
+              if (data.response) {
+                aiResponse += data.response;
+                setMessages((prev) => {
+                  const lastMsg = prev[prev.length - 1];
+                  return [
+                    ...prev.slice(0, -1),
+                    { ...lastMsg, content: aiResponse },
+                  ];
+                });
               }
+            } catch (e) {
+              console.error("流解析错误:", e);
             }
           }
         }
-
-        onSuccess(aiResponse);
-      } catch (error) {
-        console.error("API 请求失败:", error);
-        onError();
       }
-      setLoading(false); // 关闭加载动画
-    },
-  });
+      onSuccess(aiResponse);
+    } catch (error) {
+      console.error("API 请求失败:", error);
+      onError();
+    }
+    setLoading(false);
+  };
 
+  const [agent] = useXAgent({ request: requestAI });
   const { onRequest } = useXChat({ agent });
 
-  // ✅ 监听 operationId 变化，清空历史对话
-  // 1. 需要把开场白自动改成根据operation histories 生成的结果
-  // 2. chat service 的prompt engineering
   useEffect(() => {
     if (operationId) {
       setMessages([
@@ -169,25 +191,56 @@ const Independent = ({ operationId }) => {
     }
   }, [operationId]);
 
-  // ✅ 处理用户提交
   const onSubmit = (nextContent) => {
     if (!nextContent) return;
-    setMessages((prev) => [...prev, { role: "user", content: nextContent }]);
-    // 立即添加 AI 占位气泡 (正在输入...)
-    setMessages((prev) => [...prev, { role: "ai", content: "..." }]);
-    onRequest(nextContent);
+  
+    setMessages((prev) => [
+      ...prev, 
+      { role: "user", content: nextContent },
+      { role: "ai", content: "..." },
+    ]);
+  
+    // 确保消息更新完毕后再发送请求
+    setTimeout(() => {
+      onRequest(nextContent, "standard_advice" );
+    }, 0);
+  
     setContent("");
   };
+  
 
-  // ✅ 处理提示词点击
-  const onPromptsItemClick = (info) => {
-    onRequest(info.data.description);
+  // 新增 Prompt 按钮的选择事件
+  const onPromptSelect = (item) => {
+    const promptType = item.data.key;
+    const promptDescription = item.data.label;
+  
+    if (!operationId) {
+      console.error("operationId不存在，无法发送请求");
+      return;
+    }
+
+    console.log("promptDescription:"+ promptDescription +"promptType:"+ promptType);
+
+    // 1. 先更新用户气泡和AI占位气泡
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", content: promptDescription },
+      { role: "ai", content: "..." },
+    ]);
+  
+    // 2. 确保state已更新后再发送请求
+    setTimeout(() => {
+      onRequest(
+        item.data.label,item.data.key,
+      );
+    }, 0);
   };
+  
+  
+  
+  // 暂停键不生效
 
-  // ✅ 处理文件上传
   const handleFileChange = (info) => setAttachedFiles(info.fileList);
-
-  // ✅ 附件上传按钮
   const attachmentsNode = (
     <Badge dot={attachedFiles.length > 0}>
       <Button type="text" icon={<PaperClipOutlined />} />
@@ -197,23 +250,24 @@ const Independent = ({ operationId }) => {
   return (
     <div className={styles.layout}>
       <div className={styles.chat}>
-        {/* 🌟 消息列表 */}
         <Bubble.List
           items={messages.map((msg, index) => ({
             ...msg,
             messageRender: msg.role === "ai" ? renderMarkdown : undefined,
-            loading:
-              msg.role === "ai" && index === messages.length - 1 && loading, // ✅ 仅最后一个 AI 消息显示加载
+            loading: msg.role === "ai" && index === messages.length - 1 && loading,
           }))}
           roles={roles}
           className={styles.messages}
-          typing={{
-            step: 2,
-            interval: 50,
-          }}
+          typing={{ step: 2, interval: 50 }}
         />
 
-        {/* 🌟 输入框 */}
+        <Prompts
+          title="✨ Inspirational Sparks and Marvelous Tips"
+          items={items}
+          wrap
+          onItemClick={onPromptSelect} 
+        />
+
         <Sender
           value={content}
           onSubmit={onSubmit}

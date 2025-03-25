@@ -7,19 +7,17 @@ import logging
 from sqlalchemy.orm import Session
 from crud.chat import create_chat_record, get_chat_history, get_operation_data
 from openai import AsyncOpenAI, OpenAI
-from utils.prompts import get_prompt
+from utils.prompts import get_prompt_by_type
 
-# 设置日志
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# 读取 OpenAI API 配置
 openai.api_key = os.getenv("DASHSCOPE_API_KEY")
 openai.api_base = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
-async def chat_with_ai(db: Session, operation_id: int, message: str):
+async def chat_with_ai(db: Session, operation_id: int, message: str, prompt_type: str):
     try:
-        logger.info(f"用户输入：{message} (operation_id: {operation_id})")
+        logger.info(f"收到请求参数: operation_id={operation_id}, message='{message}', prompt_type='{prompt_type}'")
 
          # 初始化异步客户端
         client = AsyncOpenAI(
@@ -27,16 +25,23 @@ async def chat_with_ai(db: Session, operation_id: int, message: str):
             base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         )
 
+        # 1. 根据患者目前情况总结出初步诊断
+        # 2. 根据历史记录获取急救处理和用药记录
+        # 3. 生成最终急救结果
+        # ---> 添加prompt key
+
          # 获取当前 `operation_id` 相关的对话历史和急救数据
         chat_history = get_chat_history(db, operation_id)
         operation_data = get_operation_data(db, operation_id)
 
-        # 获取 AI 系统 Prompt
-        system_prompt = get_prompt()  # 统一管理的 Prompt
+        # 统一管理 Prompt
+        system_prompt = get_prompt_by_type(prompt_type) 
+        logger.info(f"使用的prompt: operation_id={prompt_type}")
 
-         # 将 operation_data 中的关键信息格式化为 AI 可理解的消息格式
+
+         # 将 operation_data 中的关键信息格式化为 AI 可理解的消息格式,patient 还要加过敏原和既往史。
         formatted_data = f"""
-        患者基本信息：{operation_data['patient_info']},
+        患者基本信息：{operation_data['patient_info']}, 
         主诉：{operation_data['chief_complaint']}。
         急救类型：{operation_data['emergency_type']}，病情分级：{operation_data['severity_level']}。
         初步诊断：{operation_data['initial_diagnosis']}，急救处理：{operation_data['procedures']}，用药：{operation_data['medicine']}。
@@ -87,13 +92,6 @@ async def chat_with_ai(db: Session, operation_id: int, message: str):
         
          # 流结束后写入数据库（需异步处理）
         asyncio.create_task(save_chat_record(db, operation_id, message, full_response))
-
-        # logger.info(f"AI 回复: {response_text}")
-
-        # 存入数据库
-        # chat_record = create_chat_record(db, operation_id, message, response_text)
-
-        # return {"operation_id": operation_id, "response": response_text}
 
     except openai.OpenAIError as oe:
         logger.error(f"OpenAI API 错误: {oe}")
