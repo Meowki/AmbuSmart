@@ -1,11 +1,13 @@
 import asyncio
 import json
 from fastapi import HTTPException
+from fastapi.encoders import jsonable_encoder
 import openai
 import os
 import logging
 from sqlalchemy.orm import Session
-from crud.chat import create_chat_record, get_chat_history, get_operation_data
+from crud.chat import create_chat_record, get_chat_history, get_operation_data, get_patient_history
+from models.operation_history import OperationHistory
 from openai import AsyncOpenAI, OpenAI
 from utils.prompts import get_prompt_by_type
 
@@ -16,6 +18,8 @@ openai.api_key = os.getenv("DASHSCOPE_API_KEY")
 openai.api_base = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
 async def chat_with_ai(db: Session, operation_id: int, message: str, prompt_type: str):
+    operation = db.query(OperationHistory).filter(OperationHistory.operation_id == operation_id).first()
+    patient_id = operation.patient_id if operation and operation.patient_id else None
     try:
         logger.info(f"收到请求参数: operation_id={operation_id}, message='{message}', prompt_type='{prompt_type}'")
 
@@ -39,19 +43,29 @@ async def chat_with_ai(db: Session, operation_id: int, message: str, prompt_type
         logger.info(f"使用的prompt: operation_id={prompt_type}")
 
 
-         # 将 operation_data 中的关键信息格式化为 AI 可理解的消息格式,patient 还要加过敏原和既往史。
-        formatted_data = f"""
-        患者基本信息：{operation_data['patient_info']}, 
-        主诉：{operation_data['chief_complaint']}。
-        急救类型：{operation_data['emergency_type']}，病情分级：{operation_data['severity_level']}。
-        初步诊断：{operation_data['initial_diagnosis']}，急救处理：{operation_data['procedures']}，用药：{operation_data['medicine']}。
-        初检：{operation_data['initial_check']}
-        终检：{operation_data['final_check']}
-        TI 内容：{operation_data['ti_content']}
-        GCS 评分：{operation_data['gcs_score']}，GCS 内容：{operation_data['gcs_content']}
-        Killip 分级：{operation_data['Killip_score']}，Killip 内容：{operation_data['Killip_content']}，Killip 诊断：{operation_data['Killip_diagnosis']}
-        脑卒中评估：{operation_data['cerebral_stroke_content']}
-        """
+         # 特殊逻辑：患者基础分析 prompt
+        if prompt_type == "patient_basic_analysis" and patient_id:
+            logger.info(f"operation_id {operation_id} 是患者基础分析场景")
+            patient_data = get_patient_history(db, patient_id)
+
+            if patient_data:
+                formatted_data = json.dumps(patient_data, ensure_ascii=False)
+            else:
+                raise HTTPException(status_code=404, detail="无法获取患者历史数据")
+        else:
+            # 其他所有场景
+            formatted_data = f"""
+            患者基本信息：{operation_data['patient_info']}, 
+            主诉：{operation_data['chief_complaint']}。
+            急救类型：{operation_data['emergency_type']}，病情分级：{operation_data['severity_level']}。
+            初步诊断：{operation_data['initial_diagnosis']}，急救处理：{operation_data['procedures']}，用药：{operation_data['medicine']}。
+            初检：{operation_data['initial_check']}
+            终检：{operation_data['final_check']}
+            TI 内容：{operation_data['ti_content']}
+            GCS 评分：{operation_data['gcs_score']}，GCS 内容：{operation_data['gcs_content']}
+            Killip 分级：{operation_data['Killip_score']}，Killip 内容：{operation_data['Killip_content']}，Killip 诊断：{operation_data['Killip_diagnosis']}
+            脑卒中评估：{operation_data['cerebral_stroke_content']}
+            """
         
          # 如果没有历史记录，初始化会话
         if not chat_history:

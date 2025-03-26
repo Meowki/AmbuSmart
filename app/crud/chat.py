@@ -1,9 +1,15 @@
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from datetime import datetime
 from models.chat import ChatHistory
 from models.operation_history import OperationHistory
 from models.basic_check import BasicCheck
 from models.patient import Patient
+from services.patient_service import patient_service
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 def create_chat_record(db: Session, operation_id: int, user_message: str, ai_response: str):
     # 确保 operation_id 存在
@@ -24,7 +30,7 @@ def create_chat_record(db: Session, operation_id: int, user_message: str, ai_res
 def get_chat_history(db: Session, operation_id: int):
     return db.query(ChatHistory).filter_by(operation_id=operation_id).order_by(ChatHistory.created_at).all()
 
-# 通过 patient_id 提取出生日期并计算年龄
+# 通过 patient_id 提取出生日期并计算年龄 
 def extract_birthdate_from_id(patient_id: str):
     # 检查身份证号长度是否有效（18位身份证号）
     if len(patient_id) == 18:
@@ -43,6 +49,14 @@ def calculate_age(patient_id: str):
             age -= 1
         return age
     else:
+        return None
+    
+def get_patient_history(db: Session, patient_id: str):
+    patient = patient_service.get_patient(db, patient_id)
+    if patient:
+        return jsonable_encoder(patient)
+    else:
+        logger.error(f"未找到患者数据: patient_id={patient_id}")
         return None
 
 def get_patient_data(db: Session, patient_id: str):
@@ -71,7 +85,10 @@ def get_operation_data(db: Session, operation_id: int):
     if operation:
 
         # 获取患者基本信息
-        patient_info = get_patient_data(db, operation.patient_id)
+        if operation.patient_id:
+            patient_info = get_patient_data(db, operation.patient_id)
+        else:
+            patient_info = "未找到患者信息"    
 
         if operation.initial_eid:
             initial_check = db.query(BasicCheck).filter(BasicCheck.eid == operation.initial_eid).first()
