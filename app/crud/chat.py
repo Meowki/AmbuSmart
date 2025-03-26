@@ -1,5 +1,5 @@
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 from datetime import datetime
 from models.chat import ChatHistory
 from models.operation_history import OperationHistory
@@ -52,9 +52,24 @@ def calculate_age(patient_id: str):
         return None
     
 def get_patient_history(db: Session, patient_id: str):
-    patient = patient_service.get_patient(db, patient_id)
+    patient = (
+        db.query(Patient)
+        .options(
+            selectinload(Patient.allergies),
+            selectinload(Patient.medical_histories),
+            selectinload(Patient.medical_record),
+            selectinload(Patient.case_histories),
+            selectinload(Patient.operation_histories),
+        )
+        .filter(Patient.patient_id == patient_id)
+        .first()
+    )
     if patient:
-        return jsonable_encoder(patient)
+        # 计算年龄
+        age = calculate_age(patient.patient_id) if patient.idType == "身份证" else None
+        patient_data = jsonable_encoder(patient)
+        patient_data["age"] = age
+        return patient_data
     else:
         logger.error(f"未找到患者数据: patient_id={patient_id}")
         return None
