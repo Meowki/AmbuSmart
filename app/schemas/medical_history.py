@@ -3,8 +3,8 @@ from datetime import date
 from typing import Optional
 
 class MedicalHistoryBase(BaseModel):
-    condition_name: str
-    diagnosis_date: date
+    condition_name: Optional[str] = None
+    diagnosis_date: Optional[date] = None
     remark: Optional[str] = None
 
 class MedicalHistoryCreate(MedicalHistoryBase):

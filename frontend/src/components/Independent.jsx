@@ -36,6 +36,11 @@ const robotAvatar = { color: "#f56a00", backgroundColor: "#fde3cf" }; // AI 头�
 // prompts 按钮
 const items = [
   {
+    key: "patient_basic_analysis",
+    icon: <UserOutlined style={{ color: "#722ed1" }} />, // 可以换其他图标
+    label: "分析患者基础信息", // 你可以自定义更贴切的文案
+  },
+  {
     key: "initial_diagnosis",
     icon: <MedicineBoxOutlined style={{ color: "#FF4D4F" }} />,
     label: "初步诊断",
@@ -131,16 +136,16 @@ const Independent = ({ operationId }) => {
   const [attachedFiles, setAttachedFiles] = useState([]);
 
   // AI 请求函数
-  const requestAI = async (
-    { message, prompt_type },
-    { onSuccess, onError }
-  ) => {
+  const requestAI = async (payload, { onSuccess, onError }) => {
+    const { message, prompt_type } = payload.message;
     let aiResponse = "";
     setLoading(true);
     setIsAborted(false);
 
     abortControllerRef.current = new AbortController();
 
+    console.log("requestAI", { message, prompt_type });
+    console.log("payload.message", payload.message);
     try {
       const response = await fetch(`/chat/`, {
         method: "POST",
@@ -210,7 +215,17 @@ const Independent = ({ operationId }) => {
   };
 
   const [agent] = useXAgent({ request: requestAI });
-  const { onRequest } = useXChat({ agent });
+  const { onRequest } = useXChat({
+    agent,
+    getMessage: (payload) => payload.message.message,
+    getMeta: (payload) => ({ prompt_type: payload.message.prompt_type }),
+  });
+  
+  
+  
+  
+   
+  const [currentPromptType, setCurrentPromptType] = useState("standard_advice");
 
   useEffect(() => {
     if (operationId) {
@@ -223,6 +238,7 @@ const Independent = ({ operationId }) => {
     }
   }, [operationId]);
 
+  // 提交事件
   const onSubmit = (nextContent) => {
     if (!nextContent) return;
 
@@ -232,40 +248,48 @@ const Independent = ({ operationId }) => {
       { role: "ai", content: "..." },
     ]);
 
-    // 确保消息更新完毕后再发送请求
-    setTimeout(() => {
-      onRequest(nextContent, "standard_advice");
-    }, 0);
+
+    onRequest({
+      message: nextContent,
+      prompt_type: currentPromptType || "standard_advice",
+    });
+        
+    console.log(
+      "nextContent:" + nextContent + "currentPromptType:" + currentPromptType 
+    )
 
     setContent("");
   };
+  
 
   // 新增 Prompt 按钮的选择事件
   const onPromptSelect = (item) => {
     const promptType = item.data.key;
     const promptDescription = item.data.label;
-
-    if (!operationId) {
-      console.error("operationId不存在，无法发送请求");
-      return;
-    }
+  
+    setCurrentPromptType(promptType);
 
     console.log(
       "promptDescription:" + promptDescription + "promptType:" + promptType
     );
-
-    // 1. 先更新用户气泡和AI占位气泡
+  
+    if (!operationId) {
+      console.error("operationId不存在，无法发送请求");
+      return;
+    }
+  
     setMessages((prev) => [
       ...prev,
       { role: "user", content: promptDescription },
       { role: "ai", content: "..." },
     ]);
-
-    // 2. 确保state已更新后再发送请求
-    setTimeout(() => {
-      onRequest(item.data.label, item.data.key);
-    }, 0);
+  
+    onRequest({
+      message: promptDescription,
+      prompt_type: promptType,
+    });    
   };
+  
 
   // 暂停键不生效
 

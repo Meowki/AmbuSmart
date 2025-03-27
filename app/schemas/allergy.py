@@ -2,8 +2,8 @@ from pydantic import BaseModel
 from typing import Optional
 
 class AllergyBase(BaseModel):
-    allergy_name: str
-    severity: str
+    allergy_name: Optional[str] = None
+    severity: Optional[str] = None
     remark: Optional[str] = None
 
 class AllergyCreate(AllergyBase):
