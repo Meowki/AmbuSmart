@@ -18,7 +18,7 @@ import {
   HeartOutlined,
   PlusCircleOutlined,
 } from "@ant-design/icons";
-import { Avatar, Badge, Button, Typography } from "antd";
+import { Avatar, Badge, Button, Typography, message} from "antd";
 import markdownit from "markdown-it";
 
 // 头像与气泡位置
@@ -55,11 +55,11 @@ const items = [
     icon: <HeartOutlined style={{ color: "#52C41A" }} />,
     label: "生成最终急救结果总结",
   },
-  {
-    key: "standard_advice",
-    icon: <PlusCircleOutlined style={{ color: "#FAAD14" }} />,
-    label: "快速生成标准急救建议",
-  },
+  // {
+  //   key: "standard_advice",
+  //   icon: <PlusCircleOutlined style={{ color: "#FAAD14" }} />,
+  //   label: "快速生成标准急救建议",
+  // },
 ];
 
 // 样式定义
@@ -220,23 +220,82 @@ const Independent = ({ operationId }) => {
     getMessage: (payload) => payload.message.message,
     getMeta: (payload) => ({ prompt_type: payload.message.prompt_type }),
   });
-  
-  
-  
-  
    
   const [currentPromptType, setCurrentPromptType] = useState("standard_advice");
 
   useEffect(() => {
     if (operationId) {
-      setMessages([
-        {
-          role: "ai",
-          content: "你好，我是你的医疗 AI 助手，请问有什么需要帮助的吗？",
-        },
+    setMessages([
+      {
+        role: "ai",
+        content: "你好，我是你的医疗 AI 助手，请问有什么需要帮助的吗？",
+      },
+    ]);
+
+    const triggerPatientBasicAnalysis = async () => {
+      // 添加占位消息
+      setMessages((prev) => [
+        ...prev,
+        { role: "ai", content: "正在自动分析患者基础信息..." },
       ]);
-    }
+      setLoading(true);
+      setIsAborted(false);
+  
+      try {
+        const res = await fetch(`/chat/auto/${operationId}`);
+        if (!res.ok) {
+          const errorData = await res.json();
+          if (res.status === 400) {
+            message.warning("未录入患者信息，无法生成基础分析。");
+          } else {
+            message.warning(`AI 分析失败：${errorData.detail}`);
+          }
+          return;
+        }
+  
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let aiResponse = "";
+  
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done || isAborted) break;
+  
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split("\n\n").filter(Boolean);
+  
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const jsonStr = line.replace("data: ", "");
+              const data = JSON.parse(jsonStr);
+              if (data.response) {
+                aiResponse += data.response;
+                setMessages((prev) => {
+                  const lastMsg = prev[prev.length - 1];
+                  return [
+                    ...prev.slice(0, -1),
+                    { ...lastMsg, content: aiResponse },
+                  ];
+                });
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error("自动分析请求失败：", error);
+        message.error("AI 自动分析失败，请稍后重试");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    // 延迟触发更自然
+    setTimeout(() => {
+      triggerPatientBasicAnalysis();
+    }, 600);
+  }
   }, [operationId]);
+   
 
   // 提交事件
   const onSubmit = (nextContent) => {
