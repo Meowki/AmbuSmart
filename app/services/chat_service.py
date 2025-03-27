@@ -30,6 +30,9 @@ async def chat_with_ai(
 
     operation = db.query(OperationHistory).filter(OperationHistory.operation_id == operation_id).first()
     patient_id = operation.patient_id if operation and operation.patient_id else None
+
+    completion = None
+    abort_flag = asyncio.Event()
     
     # 初始化 OpenAI 客户端
     client = AsyncOpenAI(
@@ -74,7 +77,7 @@ async def chat_with_ai(
     
     logger.info(f"[BACKEND] 生成消息 {messages}")
 
-    # 创建监听任务
+    # # 创建监听任务
     abort_flag = asyncio.Event()
     disconnect_flag = asyncio.Event()
     
@@ -82,31 +85,47 @@ async def chat_with_ai(
         try:
             while True:
                 signal = await abort_queue.get()
+                logger.info(f"🟢 [BACKEND] 收到信号: {signal}")
+            
                 if signal == "ABORT":
-                    logger.info(f"🔴 收到终止信号 {operation_id}")
+                    logger.info(f"🔴 [BACKEND] 终止操作 {operation_id}")
                     abort_flag.set()
+                
+                    # 安全关闭 OpenAI 连接
+                    if completion:  # 直接检查对象是否存在
+                        await completion.aclose()  # 无需检查 closed 状态
+                        logger.debug("🛑 已关闭 OpenAI 连接")
                     break
+                
                 if signal is StopAsyncIteration:
                     return
+                
         except Exception as e:
-            logger.error(f"中止监听异常: {str(e)}")
+            logger.error(f"[BACKEND] 监听异常: {str(e)}")
+    
 
     async def watch_disconnect():
         try:
             while not abort_flag.is_set():
                 if await request.is_disconnected():
-                    logger.info(f"🔌 客户端断开连接 {operation_id}")
+                    logger.info(f"[BACKEND]🔌 客户端断开连接 {operation_id}")
                     disconnect_flag.set()
                     break
                 await asyncio.sleep(0.1)
         except Exception as e:
-            logger.error(f"连接监听异常: {str(e)}")
+            logger.error(f"[BACKEND] watch_disconnect 连接监听异常: {str(e)}")
 
     # 启动监听任务
-    abort_task = asyncio.create_task(watch_abort())
-    disconnect_task = asyncio.create_task(watch_disconnect())
+    # abort_task = asyncio.create_task(watch_abort())
+    # disconnect_task = asyncio.create_task(watch_disconnect())
 
     try:
+        # 在发送请求前增加更严格的检查
+        if abort_flag.is_set():
+            logger.warning("🛑 请求已被主动终止")
+            if completion is not None:  # 防御性检查
+                await completion.aclose()
+            return  # 直接返回，不继续处理
         # 发送AI请求
         completion = await client.chat.completions.create(
             model="qwen-max-0125",
@@ -114,12 +133,22 @@ async def chat_with_ai(
             stream=True,
         )
 
+        # 请求发送成功后启动监听
+        abort_task = asyncio.create_task(watch_abort())
+        disconnect_task = asyncio.create_task(watch_disconnect())
+
+        # 添加预检点
+        if abort_flag.is_set():
+            logger.info("[BACKEND]⚠️ 请求已被终止，放弃发送")
+            await completion.aclose()
+            return
+
         # 处理响应流
         full_response = ""
         async for chunk in completion:
             # 检查终止条件
             if abort_flag.is_set() or disconnect_flag.is_set():
-                logger.warning(f"⏹️ 终止生成 {operation_id}")
+                logger.warning(f"[BACKEND]⏹️ 终止生成 {operation_id}")
                 yield "event: abort\ndata: 操作已终止\n\n"
                 break
 
@@ -131,25 +160,55 @@ async def chat_with_ai(
                 await asyncio.sleep(0.03)  # 控制流速度
 
         # 保存记录（仅在正常完成时）
-        if not (abort_flag.is_set() or disconnect_flag.is_set()):
-            await save_chat_record(db, operation_id, message, full_response)
-            logger.info(f"💾 保存聊天记录 {operation_id}")
+        try:
+            logger.info(f"[BACKEND] abort_flag: {abort_flag}, disconnect_flag: {disconnect_flag}")
+            if not (abort_flag.is_set() or disconnect_flag.is_set()):
+                await save_chat_record(db, operation_id, message, full_response)
+                logger.info(f"💾 保存聊天记录 {operation_id}")
+        except Exception as e:
+            logger.error(f"保存失败: {str(e)}")
+            await db.rollback()  # 显式回滚
+        finally:
+            await db.close()
 
     except Exception as e:
         logger.error(f"AI处理异常: {str(e)}")
         yield f"event: error\ndata: {str(e)}\n\n"
     finally:
-        # 清理资源
-        logger.debug(f"🧹 清理资源 {operation_id}")
+        logger.debug(f"🧹 开始清理资源 {operation_id}")
+        
+        # 1. 先关闭 OpenAI 连接
+        close_errors = []
+        try:
+            if completion is not None:
+                await completion.aclose()  # 直接关闭，不检查 closed
+                logger.debug(f"🛑 已关闭 OpenAI 流: {operation_id}")
+        except Exception as e:
+            close_errors.append(str(e))
+        
+        # 2. 设置终止标志
         abort_flag.set()
-        abort_task.cancel()
-        disconnect_task.cancel()
-        await asyncio.gather(
-            abort_task,
-            disconnect_task,
-            return_exceptions=True
-        )
-        logger.info(f"✅ 完成操作 {operation_id}")
+        
+        # 3. 安全取消任务
+        tasks = []
+        if abort_task and not abort_task.done():
+            abort_task.cancel()
+            tasks.append(abort_task)
+        if disconnect_task and not disconnect_task.done():
+            disconnect_task.cancel()
+            tasks.append(disconnect_task)
+        
+        # 4. 等待任务结束
+        if tasks:
+            try:
+                await asyncio.gather(*tasks, return_exceptions=True)
+            except Exception as e:
+                close_errors.append(str(e))
+        
+        # 5. 确保最终日志输出
+        if close_errors:
+            logger.error(f"清理过程中出现错误: {', '.join(close_errors)}")
+        logger.info(f"✅ 操作 {operation_id} 完成")  
 
 # 生成格式化的患者数据
 def format_patient_data(db: Session, operation_data: dict, patient_id:str, prompt_type: str) -> str:

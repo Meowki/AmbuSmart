@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, logger
+from fastapi import APIRouter, Depends, HTTPException, Request, logger, status 
+from grpc import Status
 from sqlalchemy.orm import Session
-from typing import Dict, AsyncGenerator, List
+from typing import Dict, AsyncGenerator, List, Optional
 import asyncio
 from fastapi.responses import StreamingResponse
 from contextlib import asynccontextmanager
@@ -10,6 +11,14 @@ from db.session import SessionLocal
 from models.operation_history import OperationHistory
 from schemas.chat import ChatHistoryResponse, ChatRequest
 import logging
+# import threading
+# active_lock = threading.Lock()  # 添加在路由文件顶部
+# 将线程锁改为异步锁
+import asyncio
+from contextlib import asynccontextmanager
+
+# 初始化异步锁
+active_lock = asyncio.Lock()
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -18,7 +27,7 @@ chat_router = APIRouter(
     prefix="/chat",
     tags=["Chat AI"]
 )
-active_generators: Dict[str, asyncio.Queue] = {}
+active_generators: Dict[int, asyncio.Queue] = {}
 
 def get_db():
     db = SessionLocal()
@@ -28,27 +37,52 @@ def get_db():
         db.close()
 
 @asynccontextmanager
-async def create_abort_channel(operation_id: str):
-    queue = asyncio.Queue()
-    active_generators[operation_id] = queue
+async def create_abort_channel(operation_id: int):
+    queue = asyncio.Queue(maxsize=1)
+    
+    # 使用异步锁的正确方式
+    async with active_lock:
+        # 清理旧请求
+        if operation_id in active_generators:
+            old_queue = active_generators[operation_id]
+            try:
+                await old_queue.put("ABORT")
+                logger.info(f"♻️ 终止旧请求: {operation_id}")
+            except Exception as e:
+                logger.error(f"旧请求终止失败: {str(e)}")
+        
+        # 注册新队列
+        active_generators[operation_id] = queue
+        logger.info(f"📝 注册新队列: {operation_id}")
+
     try:
         yield queue
     finally:
-        active_generators.pop(operation_id, None)
-        await queue.put(StopAsyncIteration)
+        async with active_lock:
+            if operation_id in active_generators and active_generators[operation_id] is queue:
+                del active_generators[operation_id]
+                logger.info(f"🧹 清理队列: {operation_id}")
 
-@chat_router.post("/abort/{operation_id}")
-async def abort_chat(operation_id: str):
-    if operation_id in active_generators:
+# 修改后的终止端点
+@chat_router.post("/abort/{operation_id}",  status_code=status.HTTP_202_ACCEPTED)
+async def abort_chat(operation_id: int):
+    logger.info(f"🔴 收到终止请求: {operation_id}")
+    logger.info(f"当前活跃队列: {list(active_generators.keys())}")
+    async with active_lock:  # 正确使用异步锁
+        logger.info(f"当前活跃队列: {list(active_generators.keys())}")
+        if operation_id not in active_generators:
+            logger.warning(f"❌ 操作不存在: {operation_id}")
+            return {"status": "not_found"}
+        
         queue = active_generators[operation_id]
-        try:
-            await queue.put("ABORT")
-            logger.info(f"🚨 已发送终止信号到操作 {operation_id}")
-            return {"status": "aborted", "operation_id": operation_id}
-        except Exception as e:
-            logger.error(f"终止操作失败: {str(e)}")
-            raise HTTPException(500, detail="终止请求失败")
-    return {"status": "not_found", "operation_id": operation_id}
+
+    try:
+        await queue.put("ABORT")
+        logger.info(f"✅ 终止信号已发送: {operation_id}")
+        return {"status": "aborted"}
+    except Exception as e:
+        logger.error(f"终止异常: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @chat_router.post("/")
 async def chat_endpoint(request: Request, chat_request: ChatRequest, db: Session = Depends(get_db)):
