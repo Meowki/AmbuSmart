@@ -54,6 +54,7 @@ def calculate_age(patient_id: str):
 def get_patient_history(db: Session, patient_id: str):
     patient = patient_service.get_patient(db, patient_id)
     if patient:
+        logger.info(f"获取患者数据: patient={patient}")
         return jsonable_encoder(patient)
     else:
         logger.error(f"未找到患者数据: patient_id={patient_id}")
