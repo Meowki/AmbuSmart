@@ -1,5 +1,5 @@
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 # from api import chat_router, users
 # from api import users
@@ -24,6 +24,7 @@ from api.chat_router import chat_router
 
 from db.base import Base
 from db.session import engine
+import time
 
 app = FastAPI(
     title="医疗项目API",
@@ -43,6 +44,15 @@ app.add_middleware(
 logging.basicConfig(level=logging.DEBUG)
 logger = setup_logger("chat_app")
 logger.info("应用启动中...")
+
+# 中间件，记录流式响应生成耗时
+@app.middleware("http")
+async def log_process_time(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    logger.info(f"请求耗时 | {request.url} | {process_time:.2f}s")
+    return response
 
 # 包含所有路由
 # app.include_router(chat_router, prefix="/api")

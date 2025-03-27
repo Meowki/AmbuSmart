@@ -32,6 +32,8 @@ const robotAvatar = { color: "#f56a00", backgroundColor: "#fde3cf" }; // AI 头�
 // 然后 chat就先到这里，后面再回头加数据集模拟优化。做Stats去。Stats后面就是最终报告生成。
 // 再下面就是知识图谱，看能不能放到core页面。
 
+// 主诉这一块可以用ai来优化病人的描述。（放Stat里吧）
+
 
 // prompts 按钮
 const items = [
@@ -114,6 +116,7 @@ const Independent = ({ operationId }) => {
   const [loading, setLoading] = useState(false);
   const [isAborted, setIsAborted] = useState(false);
   const md = markdownit({ html: true, breaks: true });
+  
 
   //打断流式输出
   const abortControllerRef = useRef(new AbortController());
@@ -138,14 +141,17 @@ const Independent = ({ operationId }) => {
   // AI 请求函数
   const requestAI = async (payload, { onSuccess, onError }) => {
     const { message, prompt_type } = payload.message;
+    console.log("[FRONT] 🌐 开始请求:", { prompt_type, message });
     let aiResponse = "";
     setLoading(true);
     setIsAborted(false);
 
     abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
 
     console.log("requestAI", { message, prompt_type });
     console.log("payload.message", payload.message);
+    console.log("[FRONT] 开始请求，携带 signal:", !!abortControllerRef.current.signal);
     try {
       const response = await fetch(`/chat/`, {
         method: "POST",
@@ -155,20 +161,27 @@ const Independent = ({ operationId }) => {
           message,
           prompt_type,
         }),
-        signal: abortControllerRef.current.signal,
+        signal,
       });
+
+      console.log("[FRONT] 🔌 连接已建立，状态:", response.status);
 
       if (!response.body) throw new Error("后端无流式返回");
 
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-
-      // eslint-disable-next-line
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done || isAborted) break;
+       // 强化流处理
+       const processStream = async (reader) => {
+        // let aiResponse = "";
+        const decoder = new TextDecoder();
+        
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done || signal.aborted) {
+            console.log("[FRONT] 🔚 流式传输结束，状态:", done ? "自然结束" : "强制终止");
+            break;
+          }
 
         const chunk = decoder.decode(value, { stream: true });
+        console.log("[FRONT] 📥 收到数据块:", chunk.length);
         const lines = chunk.split("\n\n").filter(Boolean);
 
         for (const line of lines) {
@@ -194,7 +207,9 @@ const Independent = ({ operationId }) => {
           }
         }
       }
-      if (!isAborted) onSuccess(aiResponse);
+      if (!signal.aborted) onSuccess(aiResponse);
+    }
+      await processStream(response.body.getReader());
     } catch (error) {
       if (error.name === "AbortError") {
         console.log("请求已取消");
@@ -257,6 +272,7 @@ const Independent = ({ operationId }) => {
         const decoder = new TextDecoder("utf-8");
         let aiResponse = "";
   
+        // eslint-disable-next-line
         while (true) {
           const { done, value } = await reader.read();
           if (done || isAborted) break;
@@ -349,8 +365,43 @@ const Independent = ({ operationId }) => {
     });    
   };
   
+  // const onCancel = () => {
+  //   console.log("[FRONT] 用户点击取消按钮", new Date().toISOString());
+  //   setIsAborted(true);
+  //   abortControllerRef.current.abort();
+  //   console.log("[FRONT] AbortController 已触发 abort()");
+  //   setLoading(false);
+  // };
 
-  // 暂停键不生效
+    // 强化版取消逻辑
+    const onCancel = () => {
+      console.log("[FRONT] 🚫 用户取消操作");
+      
+      // 终止当前请求
+      abortControllerRef.current.abort();
+      
+      // 重置状态
+      setIsAborted(true);
+      setLoading(false);
+      
+      // 强制关闭所有连接
+      if (typeof EventSource !== 'undefined') {
+        EventSource.closeAll();
+      }
+      
+      // 发送显式中断信号到后端
+      fetch(`/chat/abort/${operationId}`, { method: 'POST' })
+        .catch(e => console.log("中断信号发送失败:", e));
+  
+      // 更新消息状态
+      setMessages(prev => {
+        const lastMsg = prev[prev.length - 1];
+        return prev.slice(0, -1).concat({
+          ...lastMsg,
+          content: `${lastMsg.content}\n(请求已主动取消)`
+        });
+      });
+    };
 
   const handleFileChange = (info) => setAttachedFiles(info.fileList);
   const attachmentsNode = (
@@ -381,11 +432,7 @@ const Independent = ({ operationId }) => {
           onSubmit={onSubmit}
           onChange={setContent}
           loading={loading} // 绑定明确的状态
-          onCancel={() => {
-            setIsAborted(true);
-            abortControllerRef.current.abort();
-            setLoading(false); // 明确停止loading动画
-          }}
+          onCancel={onCancel} // 绑定取消事件
           className={styles.sender}
         />
       </div>

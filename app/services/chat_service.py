@@ -1,6 +1,6 @@
 import asyncio
 import json
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 import openai
 import os
@@ -17,17 +17,42 @@ logger = logging.getLogger(__name__)
 openai.api_key = os.getenv("DASHSCOPE_API_KEY")
 openai.api_base = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
-async def chat_with_ai(db: Session, operation_id: int, message: str, prompt_type: str):
+async def chat_with_ai(db: Session, request: Request, operation_id: int, message: str, prompt_type: str):
     operation = db.query(OperationHistory).filter(OperationHistory.operation_id == operation_id).first()
     patient_id = operation.patient_id if operation and operation.patient_id else None
-    try:
-        logger.info(f"收到请求参数: operation_id={operation_id}, message='{message}', prompt_type='{prompt_type}'")
+    client = None
+    disconnect_task = None
+    stream_completed = False  # 新增流完成标记
 
-         # 初始化异步客户端
+    try:
+        logger.info(f"[BACKEND] 收到请求: operation_id={operation_id}, prompt_type={prompt_type}")
+
+        # 初始化客户端
         client = AsyncOpenAI(
             api_key=os.getenv("DASHSCOPE_API_KEY"),
             base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         )
+
+        should_abort = asyncio.Event()
+
+        # 增强版连接监听
+        async def watch_disconnect():
+            logger.debug("[BACKEND] 启动连接状态监听器")
+            while not should_abort.is_set() and not stream_completed:
+                try:
+                    # 实时连接检查
+                    if await request.is_disconnected():
+                        logger.warning("[BACKEND] 🔴 检测到客户端断开连接!")
+                        should_abort.set()
+                        break
+                    await asyncio.sleep(0.3)  # 300ms检测间隔
+                except Exception as e:
+                    logger.error(f"[BACKEND] 监听异常: {str(e)}")
+                    break
+            logger.debug("[BACKEND] 退出连接监听")
+
+        disconnect_task = asyncio.create_task(watch_disconnect())
+
 
         # 1. 根据患者目前情况总结出初步诊断
         # 2. 根据历史记录获取急救处理和用药记录
@@ -87,32 +112,54 @@ async def chat_with_ai(db: Session, operation_id: int, message: str, prompt_type
             # 追加当前用户输入
             messages.append({"role": "user", "content": message})
 
-        # 调用 AI 获取回复
-        completion =  await client.chat.completions.create(
+        # 调用 AI 接口
+        logger.debug(f"[BACKEND] 开始调用AI接口，prompt长度: {len(str(messages))}")
+        completion = await client.chat.completions.create(
             model="qwen-max-0125",
             messages=messages,
             stream=True,
         )
 
-        response_text = ""
-        full_response = ""  
-        # 流式处理部分
+        # 流处理
+        full_response = ""
+        # if operation_id in abort_requests:
+        #     abort_requests.remove(operation_id)
+        #     logger.warning(f"[BACKEND] 请求已被标记为终止 operation_id={operation_id}")
+        #     yield f"data: {json.dumps({'error': '请求已终止'})}\n\n"
+        #     return
+        
         async for chunk in completion:
+            if should_abort.is_set():
+                logger.warning("[BACKEND] ⚠️ 收到终止信号，中止流式传输")
+                break
+
             if chunk.choices and chunk.choices[0].delta.content:
                 content = chunk.choices[0].delta.content
-                full_response += content  # 累积完整响应
+                full_response += content
+                logger.debug(f"[BACKEND] 发送数据块 size={len(content)}")
                 yield f"data: {json.dumps({'response': content}, ensure_ascii=False)}\n\n"
-                await asyncio.sleep(0.05)  # 控制流式速度
-        
-         # 流结束后写入数据库（需异步处理）
-        asyncio.create_task(save_chat_record(db, operation_id, message, full_response))
+                await asyncio.sleep(0.03)
 
-    except openai.OpenAIError as oe:
-        logger.error(f"OpenAI API 错误: {oe}")
-        yield f"data: {json.dumps({'error': f'API错误: {str(oe)}'})}\n\n"
+        stream_completed = True
+
+        # 数据库存储 (仅在正常完成时保存)
+        if not should_abort.is_set():
+            logger.info(f"[BACKEND] 准备保存数据，长度: {len(full_response)}")
+            await save_chat_record(db, operation_id, message, full_response)
+            logger.debug("[BACKEND] 数据保存完成")
+        else:
+            logger.warning("[BACKEND] 请求已中止，跳过数据保存")
+
     except Exception as e:
-        logger.exception("未知错误")
-        yield f"data: {json.dumps({'error': f'系统错误: {str(e)}'})}\n\n"
+        logger.error(f"[BACKEND] 处理异常: {str(e)}")
+        yield f"data: {json.dumps({'error': '处理失败'})}\n\n"
+    finally:
+        # 资源清理
+        if disconnect_task:
+            disconnect_task.cancel()
+        if client:
+            await client.close()
+        logger.debug("[BACKEND] 资源清理完成")
     
 # 异步保存记录
 async def save_chat_record(db: Session, operation_id: int, message: str, response: str):

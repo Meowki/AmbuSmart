@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, logger
 from sqlalchemy.orm import Session
 from schemas.chat import ChatRequest, ChatResponse, ChatHistoryResponse
 from services.chat_service import chat_with_ai
@@ -21,10 +21,16 @@ def get_db():
         db.close()
 
 @chat_router.post("/")
-async def chat(request: ChatRequest, db: Session = Depends(get_db)):
+async def chat(request: Request, chat_request: ChatRequest, db: Session = Depends(get_db)):
     try:
         return StreamingResponse(
-            chat_with_ai(db, request.operation_id, request.message, request.prompt_type),
+            chat_with_ai(
+                db=db,
+                request=request,  # 传递 request 对象
+                operation_id=chat_request.operation_id,
+                message=chat_request.message,
+                prompt_type=chat_request.prompt_type
+            ),
             media_type="text/event-stream",  # 或 "application/x-ndjson"
             headers={"X-Accel-Buffering": "no"},
         )
@@ -63,3 +69,13 @@ async def auto_patient_basic_analysis(operation_id: int, db: Session = Depends(g
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"生成分析失败: {str(e)}")
+    
+
+
+abort_requests = set()
+
+@chat_router.post("/abort/{operation_id}")
+async def abort_processing(operation_id: int):
+    abort_requests.add(operation_id)
+    logger.info(f"[BACKEND] 收到中断请求 operation_id={operation_id}")
+    return {"status": "abort_signal_received"}
