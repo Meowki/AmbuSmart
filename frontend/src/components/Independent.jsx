@@ -158,6 +158,7 @@ const Independent = ({ operationId }) => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
 
+      // eslint-disable-next-line
       while (true) {
         const { done, value } = await reader.read();
         if (done || isAborted) break;
