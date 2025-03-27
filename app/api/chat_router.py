@@ -48,7 +48,7 @@ def get_history(operation_id: int, db: Session = Depends(get_db)):
 
 # 自动触发患者基础信息分析
 @chat_router.get("/auto/{operation_id}")
-async def auto_patient_basic_analysis(operation_id: int, db: Session = Depends(get_db)):
+async def auto_patient_basic_analysis(request: Request, operation_id: int, db: Session = Depends(get_db)):
     operation = db.query(OperationHistory).filter(OperationHistory.operation_id == operation_id).first()
     if not operation:
         raise HTTPException(status_code=404, detail="找不到对应的急救记录")
@@ -60,6 +60,7 @@ async def auto_patient_basic_analysis(operation_id: int, db: Session = Depends(g
         return StreamingResponse(
             chat_with_ai(
                 db=db,
+                request=request,  # 传递 request 对象
                 operation_id=operation_id,
                 message="分析患者基础信息",
                 prompt_type="patient_basic_analysis"
@@ -70,12 +71,3 @@ async def auto_patient_basic_analysis(operation_id: int, db: Session = Depends(g
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"生成分析失败: {str(e)}")
     
-
-
-abort_requests = set()
-
-@chat_router.post("/abort/{operation_id}")
-async def abort_processing(operation_id: int):
-    abort_requests.add(operation_id)
-    logger.info(f"[BACKEND] 收到中断请求 operation_id={operation_id}")
-    return {"status": "abort_signal_received"}

@@ -10,9 +10,6 @@ from crud.chat import create_chat_record, get_chat_history, get_operation_data, 
 from models.operation_history import OperationHistory
 from openai import AsyncOpenAI, OpenAI
 from utils.prompts import get_prompt_by_type
-from typing import Set
-
-abort_requests: Set[int] = set()
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -36,19 +33,20 @@ async def chat_with_ai(db: Session, request: Request, operation_id: int, message
             base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
         )
 
+
         should_abort = asyncio.Event()
 
         # 增强版连接监听
         async def watch_disconnect():
             logger.debug("[BACKEND] 启动连接状态监听器")
-            while not should_abort.is_set() and not stream_completed:
+            while not should_abort.is_set():
                 try:
                     # 实时连接检查
                     if await request.is_disconnected():
                         logger.warning("[BACKEND] 🔴 检测到客户端断开连接!")
                         should_abort.set()
                         break
-                    await asyncio.sleep(0.3)  # 300ms检测间隔
+                    await asyncio.sleep(0.1) 
                 except Exception as e:
                     logger.error(f"[BACKEND] 监听异常: {str(e)}")
                     break
@@ -125,21 +123,14 @@ async def chat_with_ai(db: Session, request: Request, operation_id: int, message
 
         # 流处理
         full_response = ""
-        if operation_id in abort_requests:
-            abort_requests.remove(operation_id)
-            logger.warning(f"[BACKEND] 请求已被标记为终止 operation_id={operation_id}")
-            yield f"data: {json.dumps({'error': '请求已终止'})}\n\n"
-            return
-        
-        async for chunk in completion:
-            if operation_id in abort_requests:
-                abort_requests.remove(operation_id)
-                logger.warning(f"[BACKEND] 流处理中途终止 operation_id={operation_id}")
-                yield f"data: {json.dumps({'error': '请求处理中途被终止'})}\n\n"
-                break  # 终止循环
 
-            if should_abort.is_set():
-                logger.warning("[BACKEND] ⚠️ 收到终止信号，中止流式传输")
+        client_ip = request.client.host if request.client else "unknown"
+        logger.info(f"[BACKEND] 新连接 | 客户端: {client_ip} | 操作ID: {operation_id}")
+
+        async for chunk in completion:
+            # 关键检查点
+            if await request.is_disconnected() or should_abort.is_set():
+                logger.error(f"[BACKEND] 🔴 连接已断开 | 操作ID: {operation_id}")
                 break
 
             if chunk.choices and chunk.choices[0].delta.content:
@@ -162,12 +153,13 @@ async def chat_with_ai(db: Session, request: Request, operation_id: int, message
     except Exception as e:
         logger.error(f"[BACKEND] 处理异常: {str(e)}")
         yield f"data: {json.dumps({'error': '处理失败'})}\n\n"
+        if "client disconnected" in str(e).lower():
+            logger.warning(f"[BACKEND] 客户端强制断开 | 操作ID: {operation_id}")
     finally:
         # 资源清理
+        should_abort.set()
         if disconnect_task:
             disconnect_task.cancel()
-        if client:
-            await client.close()
         logger.debug("[BACKEND] 资源清理完成")
     
 # 异步保存记录
