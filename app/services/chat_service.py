@@ -10,6 +10,9 @@ from crud.chat import create_chat_record, get_chat_history, get_operation_data, 
 from models.operation_history import OperationHistory
 from openai import AsyncOpenAI, OpenAI
 from utils.prompts import get_prompt_by_type
+from typing import Set
+
+abort_requests: Set[int] = set()
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -122,13 +125,19 @@ async def chat_with_ai(db: Session, request: Request, operation_id: int, message
 
         # 流处理
         full_response = ""
-        # if operation_id in abort_requests:
-        #     abort_requests.remove(operation_id)
-        #     logger.warning(f"[BACKEND] 请求已被标记为终止 operation_id={operation_id}")
-        #     yield f"data: {json.dumps({'error': '请求已终止'})}\n\n"
-        #     return
+        if operation_id in abort_requests:
+            abort_requests.remove(operation_id)
+            logger.warning(f"[BACKEND] 请求已被标记为终止 operation_id={operation_id}")
+            yield f"data: {json.dumps({'error': '请求已终止'})}\n\n"
+            return
         
         async for chunk in completion:
+            if operation_id in abort_requests:
+                abort_requests.remove(operation_id)
+                logger.warning(f"[BACKEND] 流处理中途终止 operation_id={operation_id}")
+                yield f"data: {json.dumps({'error': '请求处理中途被终止'})}\n\n"
+                break  # 终止循环
+
             if should_abort.is_set():
                 logger.warning("[BACKEND] ⚠️ 收到终止信号，中止流式传输")
                 break
