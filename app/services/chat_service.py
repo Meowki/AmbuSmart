@@ -51,6 +51,7 @@ async def chat_with_ai(
     # 准备数据
     chat_history = get_chat_history(db, operation_id)
     system_prompt = get_prompt_by_type(prompt_type) 
+    logger.info(f"使用的prompt: {system_prompt}")
     logger.info(f"使用的prompt: operation_id={prompt_type}")
     operation_data = get_operation_data(db, operation_id)
     formatted_data = format_patient_data(db, operation_data, patient_id, prompt_type)

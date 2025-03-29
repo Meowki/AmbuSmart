@@ -1,155 +1,179 @@
 <template>
   <div class="operation-form">
-  <NavigationBar :activeStep="currentStep" @exit="() => console.log('退出')" />
-  <div class="container">
-    <!-- 1. 急救记录录入表单（含 AI 优化按钮） -->
-    <el-card class="form-card" shadow="hover">
-  <el-form :model="form" label-width="120px">
-    <!-- 分组1：主诉与初步诊断 -->
-    <el-divider content-position="left">
-      <el-icon><EditPen /></el-icon>
-      主诉与初步诊断
-    </el-divider>
+    <NavigationBar
+      :activeStep="currentStep"
+      @exit="() => console.log('退出')"
+    />
+    <div class="container">
+      <!-- 1. 急救记录录入表单（含 AI 优化按钮） -->
+      <el-card class="form-card" shadow="hover">
+        <el-form :model="form" label-width="120px">
+          <!-- 分组1：主诉与初步诊断 -->
+          <el-divider content-position="left">
+            <el-icon><EditPen /></el-icon>
+            主诉与初步诊断
+          </el-divider>
 
-    <el-form-item label="患者主诉">
-      <el-input
-        type="textarea"
-        v-model="form.chief_complaint"
-        rows="3"
-        placeholder="填写患者主诉..."
-      />
-    </el-form-item>
+          <el-form-item label="患者主诉">
+            <el-input
+              type="textarea"
+              v-model="form.chief_complaint"
+              rows="3"
+              placeholder="填写患者主诉..."
+            />
+          </el-form-item>
 
-    <el-form-item label="初步诊断">
-      <el-input
-        type="textarea"
-        v-model="form.initial_diagnosis"
-        rows="3"
-        placeholder="填写初步诊断..."
-      />
-    </el-form-item>
+          <el-form-item label="初步诊断">
+            <el-input
+              type="textarea"
+              v-model="form.initial_diagnosis"
+              rows="3"
+              placeholder="填写初步诊断..."
+            />
+          </el-form-item>
 
-    <!-- 分组2：急救过程与用药 -->
-    <el-divider content-position="left">
-      <el-icon><Suitcase /></el-icon>
-      急救过程与用药
-    </el-divider>
+          <!-- 分组2：急救过程与用药 -->
+          <el-divider content-position="left">
+            <el-icon><Suitcase /></el-icon>
+            急救过程与用药
+          </el-divider>
 
-    <el-form-item label="急救过程">
-      <el-input
-        type="textarea"
-        v-model="form.procedures"
-        rows="4"
-        placeholder="描述急救过程..."
-      />
-    </el-form-item>
+          <el-form-item label="急救过程">
+            <el-input
+              type="textarea"
+              v-model="form.procedures"
+              rows="4"
+              placeholder="描述急救过程..."
+            />
+          </el-form-item>
 
-    <el-form-item label="药物使用">
-      <el-input
-        type="textarea"
-        v-model="form.medicine"
-        rows="3"
-        placeholder="记录药物使用情况..."
-      />
-    </el-form-item>
+          <el-form-item label="药物使用">
+            <el-input
+              type="textarea"
+              v-model="form.medicine"
+              rows="3"
+              placeholder="记录药物使用情况..."
+            />
+          </el-form-item>
 
-    <el-form-item label="急救结果">
-      <el-input
-        type="textarea"
-        v-model="form.outcome"
-        rows="3"
-        placeholder="填写急救结果..."
-      />
-    </el-form-item>
+          <el-form-item label="急救结果">
+            <el-input
+              type="textarea"
+              v-model="form.outcome"
+              rows="3"
+              placeholder="填写急救结果..."
+            />
+          </el-form-item>
 
-    <!-- 分组3：院内交接 -->
-    <el-divider content-position="left">
-      <el-icon><User /></el-icon>
-      院内交接
-    </el-divider>
+          <!-- 分组3：院内交接 -->
+          <el-divider content-position="left">
+            <el-icon><User /></el-icon>
+            院内交接
+          </el-divider>
 
-    <el-form-item label="院内接收者">
-      <el-select
-        v-model="form.recipient"
-        filterable
-        placeholder="请选择院内接收者"
-        @focus="fetchRecipients"
-        style="max-width: 300px"
-      >
-        <el-option
-          v-for="person in recipientList"
-          :key="person.id"
-          :label="person.name"
-          :value="person.name"
-        >
-          <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-            {{ person.name }}
+          <el-form-item label="院内接收者">
+            <el-select
+              v-model="form.recipient"
+              filterable
+              placeholder="请选择院内接收者"
+              @focus="fetchRecipients"
+              style="max-width: 300px"
+            >
+              <el-option
+                v-for="person in recipientList"
+                :key="person.id"
+                :label="person.name"
+                :value="person.name"
+              >
+                <div
+                  style="
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                  "
+                >
+                  {{ person.name }}
+                </div>
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+          <!-- 提交区域 -->
+          <el-form-item>
+            <div style="display: flex; gap: 12px">
+              <el-button type="primary" @click="handleSubmit">
+                <el-icon><CircleCheck /></el-icon> 提交记录
+              </el-button>
+              <el-button @click="handleReset">
+                <el-icon><Refresh /></el-icon> 恢复
+              </el-button>
+              <el-button type="warning" @click="handleAIOptimize" plain>
+                <el-icon><MagicStick /></el-icon> AI 优化
+              </el-button>
+            </div>
+          </el-form-item>
+        </el-form>
+      </el-card>
+
+      <!-- 2. 数据摘要（关键指标） -->
+      <el-card class="summary-card" shadow="hover">
+        <div class="summary">
+          <div class="summary-item">
+            <div class="summary-number">{{ summary.total }}</div>
+            <div class="summary-label">总记录数</div>
           </div>
-        </el-option>
-      </el-select>
-    </el-form-item>
+          <div class="summary-item">
+            <div class="summary-number">{{ summary.successRate }}%</div>
+            <div class="summary-label">急救成功率</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-number">{{ summary.avgProcessTime }} 分钟</div>
+            <div class="summary-label">平均处理时间</div>
+          </div>
+        </div>
+      </el-card>
 
-    <!-- 提交区域 -->
-    <el-form-item>
-      <div style="display: flex; gap: 12px;">
-        <el-button type="primary" @click="handleSubmit">
-          <el-icon><CircleCheck /></el-icon> 提交记录
-        </el-button>
-        <el-button @click="handleReset">
-          <el-icon><Refresh /></el-icon> 重置
-        </el-button>
-        <el-button type="warning" @click="handleOptimize" plain>
-          <el-icon><MagicStick /></el-icon> AI 优化
-        </el-button>
+      <!-- 3. 录入记录展示列表（已移除操作栏） -->
+      <el-card class="table-card" shadow="hover">
+        <el-table :data="records" style="width: 100%">
+          <el-table-column
+            prop="initial_diagnosis"
+            label="初步诊断"
+            width="200"
+          ></el-table-column>
+          <el-table-column prop="procedures" label="急救处理"></el-table-column>
+          <el-table-column
+            prop="medicine"
+            label="药物记录"
+            width="200"
+          ></el-table-column>
+          <el-table-column
+            prop="outcome"
+            label="急救结果"
+            width="200"
+          ></el-table-column>
+          <el-table-column
+            prop="recipient"
+            label="院内接收者"
+            width="150"
+          ></el-table-column>
+        </el-table>
+      </el-card>
+
+      <div class="confirm-button">
+        <el-button type="success" @click="handleConfirm">确认结束</el-button>
       </div>
-    </el-form-item>
-  </el-form>
-</el-card>
-
-
-
-    <!-- 2. 数据摘要（关键指标） -->
-    <el-card class="summary-card" shadow="hover">
-      <div class="summary">
-        <div class="summary-item">
-          <div class="summary-number">{{ summary.total }}</div>
-          <div class="summary-label">总记录数</div>
-        </div>
-        <div class="summary-item">
-          <div class="summary-number">{{ summary.successRate }}%</div>
-          <div class="summary-label">急救成功率</div>
-        </div>
-        <div class="summary-item">
-          <div class="summary-number">{{ summary.avgProcessTime }} 分钟</div>
-          <div class="summary-label">平均处理时间</div>
-        </div>
-      </div>
-    </el-card>
-
-    <!-- 3. 录入记录展示列表（已移除操作栏） -->
-    <el-card class="table-card" shadow="hover">
-      <el-table :data="records" style="width: 100%">
-        <el-table-column prop="initial_diagnosis" label="初步诊断" width="200"></el-table-column>
-        <el-table-column prop="procedures" label="急救处理" ></el-table-column>
-        <el-table-column prop="medicine" label="药物记录" width="200"></el-table-column>
-        <el-table-column prop="outcome" label="急救结果" width="200"></el-table-column>
-        <el-table-column prop="recipient" label="院内接收者" width="150"></el-table-column>
-      </el-table>
-    </el-card>
-
-    <div class="confirm-button">
-      <el-button type="success" @click="handleConfirm">确认结束</el-button>
     </div>
   </div>
-</div>
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
-import { useRouter } from 'vue-router';
-import NavigationBar from '@/components/NavigationBars.vue';
+import { computed, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import NavigationBar from "@/components/NavigationBars.vue";
 import api from "@/services/api";
-import { useStore } from "vuex"; 
+import { useStore } from "vuex";
+import { ElMessage } from "element-plus";
 
 import {
   EditPen,
@@ -157,28 +181,147 @@ import {
   User,
   MagicStick,
   CircleCheck,
-  Refresh
-} from '@element-plus/icons-vue';
+  Refresh,
+} from "@element-plus/icons-vue";
 
-const currentStep = ref('统计分析');
+const currentStep = ref("统计分析");
 const store = useStore();
+
+const isOptimizing = ref(false); // 控制按钮 loading
 
 // 表单数据增加 chief_complaint 字段
 const form = ref({
-  chief_complaint: '',
-  initial_diagnosis: '',
-  procedures: '',
-  medicine: '',
-  outcome: '',
-  recipient: '', 
+  chief_complaint: "",
+  initial_diagnosis: "",
+  procedures: "",
+  medicine: "",
+  outcome: "",
+  recipient: "",
 });
 
-const operationIdFromStore = computed(() => store.state.operation_id || "20250");
+const operationIdFromStore = computed(
+  () => store.state.operation_id || "20250"
+);
 
-// AI 优化按钮功能（仅预留，实际功能待接入后端）
-function handleOptimize() {
-  console.log('AI 优化触发，待接入后端');
-  // 后续调用 AI 接口进行优化，更新表单内容
+const fetchOperationData = async () => {
+  try {
+    const response = await api.get(
+      `/operation_histories/operationId/${operationIdFromStore.value}`
+    );
+    const data = response.data;
+
+    // 根据后端字段结构对应填入
+    form.value.chief_complaint = data.chief_complaint || "";
+    form.value.initial_diagnosis = data.initial_diagnosis || "";
+    form.value.procedures = data.procedures || "";
+    form.value.medicine = data.medicine || "";
+    form.value.outcome = data.outcome || "";
+    form.value.recipient = data.recipient || "";
+  } catch (error) {
+    console.error("获取急救记录失败:", error);
+  }
+};
+
+const handleSubmit = async () => {
+  try {
+    const operationHistoryData = {
+      chief_complaint: form.value.chief_complaint,
+      initial_diagnosis: form.value.initial_diagnosis,
+      procedures: form.value.procedures,
+      medicine: form.value.medicine,
+      outcome: form.value.outcome,
+      recipient: form.value.recipient,
+    };
+
+    const response = await api.put(
+      `/operation_histories/update/${operationIdFromStore.value}`,
+      operationHistoryData
+    );
+
+    ElMessage.success("急救记录已成功提交");
+  } catch (error) {
+    console.error("提交失败:", error);
+    ElMessage.error("提交失败，请重试");
+  }
+};
+
+onMounted(() => {
+  fetchOperationData();
+});
+
+const aiAccumulatedText = ref("");
+
+// AI 优化按钮功能
+const handleAIOptimize = async () => {
+  isOptimizing.value = true;
+  try {
+    aiAccumulatedText.value = ""; // 重置
+
+    const response = await api.post(
+      `/chat`,
+      {
+        operation_id: operationIdFromStore.value,
+        message: "生成完整急救记录草稿",
+        prompt_type: "optimize_full_entry",
+      },
+      { responseType: "text" }
+    );
+
+    // ✅ Axios 收到的是拼接好的字符串，直接处理
+    const rawText = response.data;
+    console.log("[SSE] 收到完整文本:", rawText);
+
+    // 逐行解析 response
+    const lines = rawText.split("\n");
+    for (const line of lines) {
+      if (line.startsWith("data:")) {
+        const raw = line.replace(/^data:\s*/, "").trim();
+        try {
+          const parsed = JSON.parse(raw);
+          if (parsed.response) {
+            aiAccumulatedText.value += parsed.response;
+          }
+        } catch (e) {
+          console.warn("[SSE] 跳过无法解析的行:", raw);
+        }
+      }
+    }
+    // 现在 aiAccumulatedText.value 应该是 ```json\n{...}\n``` 这样的结构
+    const result = extractLastJSON(aiAccumulatedText.value);
+    Object.assign(form.value, result); // ✅ 自动填表
+    ElMessage.success("AI 优化内容已自动填入表单");
+  } catch (e) {
+    console.error("[AI 优化失败]", e);
+    ElMessage.error("AI 生成失败，请稍后重试");
+  } finally {
+    isOptimizing.value = false;
+  }
+};
+
+// 工具函数：提取最后一个 JSON 对象
+function extractLastJSON(text) {
+  console.log("[🧪 step 0] AI 原始返回内容 ↓↓↓");
+  console.log(text);
+
+  // Step 1: 尝试提取 JSON 结构中包含目标字段的部分
+  const jsonMatch = text.match(/{[\s\S]*?(chief_complaint|initial_diagnosis|procedures|medicine|outcome)[\s\S]*?}/);
+
+  if (!jsonMatch || !jsonMatch[0]) {
+    console.warn("⚠️ 未匹配到包含关键字段的 JSON 结构");
+    throw new Error("未找到有效 JSON 内容");
+  }
+
+  const jsonCandidate = jsonMatch[0];
+  console.log("[🧪 step 1] ✅ 匹配到 JSON 候选:", jsonCandidate);
+
+  try {
+    const parsed = JSON.parse(jsonCandidate);
+    console.log("[🧪 step 2] ✅ 成功解析 JSON:", parsed);
+    return parsed;
+  } catch (e) {
+    console.error("[🧪 step 3] ❌ JSON 解析失败:", e);
+    throw new Error("匹配内容不是有效 JSON，请尝试重新生成");
+  }
 }
 
 const recipientList = ref([]);
@@ -191,30 +334,29 @@ const fetchRecipients = async () => {
       name: person.name,
     }));
   } catch (error) {
-    console.error('获取院内接收者失败:', error);
+    console.error("获取院内接收者失败:", error);
   }
 };
-
 
 // 模拟已有记录
 const records = ref([
   {
     id: 1,
-    initial_diagnosis: '轻微中毒',
-    procedures: '服用解毒药',
-    medicine: '解毒药A',
-    outcome: '稳定',
-    recipient: '急诊科',
+    initial_diagnosis: "轻微中毒",
+    procedures: "服用解毒药",
+    medicine: "解毒药A",
+    outcome: "稳定",
+    recipient: "急诊科",
     processTime: 30,
     success: true,
   },
   {
     id: 2,
-    initial_diagnosis: '车祸外伤',
-    procedures: '止血包扎',
-    medicine: '止痛药B',
-    outcome: '转院',
-    recipient: '骨科',
+    initial_diagnosis: "车祸外伤",
+    procedures: "止血包扎",
+    medicine: "止痛药B",
+    outcome: "转院",
+    recipient: "骨科",
     processTime: 45,
     success: false,
   },
@@ -224,49 +366,37 @@ const records = ref([
 const summary = ref({
   total: records.value.length,
   successRate: Math.round(
-    (records.value.filter(item => item.success).length / records.value.length) * 100
+    (records.value.filter((item) => item.success).length /
+      records.value.length) *
+      100
   ),
   avgProcessTime: Math.round(
-    records.value.reduce((acc, cur) => acc + cur.processTime, 0) / records.value.length
+    records.value.reduce((acc, cur) => acc + cur.processTime, 0) /
+      records.value.length
   ),
 });
 
-function handleSubmit() {
-  const newRecord = {
-    id: Date.now(),
-    ...form.value,
-    processTime: Math.floor(Math.random() * 60) + 10,
-    success: Math.random() > 0.5,
-  };
-  records.value.push(newRecord);
-  updateSummary();
-  handleReset();
-}
-
 function handleReset() {
-  form.value = {
-    initial_diagnosis: '',
-    procedures: '',
-    medicine: '',
-    outcome: '',
-    recipient: '',
-  };
+  fetchOperationData();
 }
 
 function updateSummary() {
   summary.value.total = records.value.length;
   summary.value.successRate = Math.round(
-    (records.value.filter(item => item.success).length / records.value.length) * 100
+    (records.value.filter((item) => item.success).length /
+      records.value.length) *
+      100
   );
   summary.value.avgProcessTime = Math.round(
-    records.value.reduce((acc, cur) => acc + cur.processTime, 0) / records.value.length
+    records.value.reduce((acc, cur) => acc + cur.processTime, 0) /
+      records.value.length
   );
 }
 
 const router = useRouter();
 function handleConfirm() {
   // 跳转到 AmbuEnd 页面（路由地址根据实际情况配置）
-  router.push('/AmbuEnd');
+  router.push("/AmbuEnd");
 }
 </script>
 
@@ -275,7 +405,6 @@ function handleConfirm() {
   max-width: 1000px;
   margin: 0 auto;
 }
-
 
 .form-card >>> .el-form-item {
   margin-bottom: 18px;
