@@ -107,9 +107,17 @@
               <el-button @click="handleReset">
                 <el-icon><Refresh /></el-icon> 恢复
               </el-button>
-              <el-button type="warning" @click="handleAIOptimize" plain>
-                <el-icon><MagicStick /></el-icon> AI 优化
-              </el-button>
+              <el-button
+  type="warning"
+  :loading="isOptimizing"
+  :disabled="isOptimizing"
+  @click="handleAIOptimize"
+  plain
+>
+  <el-icon><MagicStick /></el-icon>
+  {{ isOptimizing ? '生成中...' : 'AI 优化' }}
+</el-button>
+
             </div>
           </el-form-item>
         </el-form>
