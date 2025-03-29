@@ -30,7 +30,6 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useStore } from "vuex"; // Vuex 版
-// import { useSomeStore } from "@/store"; // Pinia 版
 import { applyReactInVue } from "veaury"; 
 import NavigationBar from "@/components/NavigationBars.vue";
 import Independent from "@/components/Independent.jsx"; 
@@ -56,6 +55,7 @@ html, body {
   overflow: hidden; /* 禁止整个页面的滚动条 */
   height: 100%;
 }
+
 
 .main-container {
   display: flex;

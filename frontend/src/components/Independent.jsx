@@ -259,7 +259,7 @@ const Independent = ({ operationId }) => {
         console.log("[FRONT] 🚀 自动分析连接状态:", response.status);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         if (!response.body) throw new Error("后端无流式返回");
-  
+ 
         // 使用 XStream 处理流数据
         const stream = XStream({ readableStream: response.body });
         let aiResponse = "";
@@ -410,18 +410,21 @@ const Independent = ({ operationId }) => {
       // 定义一个数组来存储所有打开的 EventSource 连接
       const eventSources = [];
 
+      // eslint-disable-next-line 
       function createEventSource(url) {
         const es = new EventSource(url);
         eventSources.push(es);
         return es;
       }
 
+      // eslint-disable-next-line 
       function closeAllEventSources() {
         eventSources.forEach((es) => es.close());
         eventSources.length = 0; // 清空数组
       }
 
       // 使用时：
+      // eslint-disable-next-line 
       const es = createEventSource("/your-server-endpoint");
 
       // 关闭所有 SSE 连接

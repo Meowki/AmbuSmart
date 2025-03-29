@@ -1,4 +1,5 @@
 <template>
+  <transition name="fade-soft" appear>
   <header class="navbar">
     <div class="logo">PEC-AmbuSmart</div>
     <div class="steps">
@@ -22,6 +23,7 @@
         </span>
       </template>
     </el-dialog>
+  </transition>
 </template>
 
 <script setup>
@@ -67,6 +69,14 @@ const exitToHome = async () => {
 
 
 <style scoped>
+
+.fade-soft-enter-active {
+  transition: opacity 0.6s ease-in;
+}
+.fade-soft-enter-from {
+  opacity: 0.4;
+}
+
 .navbar {
   display: flex;
   align-items: center;
