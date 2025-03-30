@@ -13,7 +13,10 @@
 
       <!-- 3. 词云图 -->
       <ChatWordCloud />
-      
+
+      <!-- 4. 一致性分析 -->
+      <ConsistencyAnalysis />
+
       <div class="confirm-button">
         <el-button type="success" @click="handleConfirm">确认结束</el-button>
       </div>
@@ -28,6 +31,7 @@ import NavigationBar from "@/components/NavigationBars.vue";
 import FormSection from "@/components/Stat/FormSection.vue";
 import SmartAdvice from "@/components/Stat/SmartAdvice.vue";
 import ChatWordCloud from "@/components/Stat/ChatWordCloud.vue";
+import ConsistencyAnalysis from "@/components/Stat/ConsistencyAnalysis.vue";
 import api from "@/services/api";
 import { useStore } from "vuex";
 

@@ -69,7 +69,7 @@ onMounted(() => {
         {
           operation_id: operationIdFromStore.value,
           message: '请基于当前急救记录与该患者历史记录，指出是否存在值得特别关注的问题',
-          prompt_type: 'patient_attention_suggestion',
+          prompt_type: "patient_attention_suggestion",
           signal
         },
         { responseType: 'text' }
@@ -123,7 +123,7 @@ onMounted(() => {
       abortControllerRef.value.abort();
       isGenerating.value = false;
       aiAttentionContent.value = '';
-      api.post(`/chat/abort/${operationIdFromStore.value}`).catch(console.error);
+      api.post(`/chat/abort/${operationIdFromStore.value}_patient_attention_suggestion`).catch(console.error);
       ElMessage.warning('生成已终止');
     }
   };

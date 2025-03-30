@@ -1,5 +1,6 @@
 <template>
   <el-card class="form-card" shadow="hover">
+        <span style="font-weight: bold; font-size: 16px; margin-bottom: 8px;">📄 急救记录完善</span>
         <el-form :model="form" label-width="120px">
           <!-- 分组1：主诉与初步诊断 -->
           <el-divider content-position="left">
@@ -293,7 +294,7 @@ const cancelAIOptimize = () => {
     isOptimizing.value = false
     
     // 发送后端中断请求
-    api.post(`/chat/abort/${operationIdFromStore.value}`).catch(console.error)
+    api.post(`/chat/abort/${operationIdFromStore.value}_optimize_full_entry`).catch(console.error)
     
     ElMessage.warning("生成已终止")
   }
@@ -352,6 +353,12 @@ const fetchRecipients = async () => {
 .form-card >>> .el-form-item {
   margin-bottom: 18px;
 }
+
+.card-header {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
 
 .container {
   padding: 20px;

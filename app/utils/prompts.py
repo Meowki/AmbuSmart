@@ -101,6 +101,14 @@ def get_prompt_by_type(prompt_type: str):
 ]
 
 """
+   elif prompt_type == "chat_consistency_check":
+      return base_prompt + """
+请对以下急救记录内容进行一致性分析：
+1. 急救过程中是否存在与最终结果不一致、逻辑冲突或信息缺失；
+2. 是否存在明显遗漏或处理不当的地方；
+3. 针对上述问题，提出改进建议或优化方向；
+结果请使用中文输出，简洁、专业，适合医生查看，尽可能简短。
+"""
    else:  # 默认对话模式
       return base_prompt + """
 请提供 **简洁明确的急救方案建议**：
