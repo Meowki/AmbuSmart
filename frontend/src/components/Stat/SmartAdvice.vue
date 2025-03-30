@@ -49,7 +49,7 @@
   const operationIdFromStore = computed(() => store.state.operation_id || '20250');
 
 onMounted(() => {
-  // generateAttention();
+  generateAttention();
 });
   
   const renderMarkdown = (text) => {
@@ -65,7 +65,7 @@ onMounted(() => {
   
     try {
       const response = await api.post(
-        '/chat',
+        '/chat/patient_attention_suggestion',
         {
           operation_id: operationIdFromStore.value,
           message: '请基于当前急救记录与该患者历史记录，指出是否存在值得特别关注的问题',

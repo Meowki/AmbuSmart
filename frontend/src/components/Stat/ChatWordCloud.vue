@@ -43,7 +43,7 @@
   
     try {
       const response = await api.post(
-        '/chat',
+        '/chat/chat_keyword_extraction',
         {
           operation_id: operationIdFromStore.value,
           message: '请从该急救操作的完整对话中提取关键词及其重要程度，用于生成词云图',

@@ -88,8 +88,9 @@ async def abort_chat(operation_id: int):
 async def chat_endpoint(request: Request, chat_request: ChatRequest, db: Session = Depends(get_db)):
     operation_id = chat_request.operation_id
     logger.info(f"🎬 收到新的聊天请求: operation_id={operation_id}, prompt={chat_request.prompt_type}")
+    prompt_type=chat_request.prompt_type,
     async def response_generator():
-        async with create_abort_channel(operation_id) as abort_queue:
+        async with create_abort_channel(f"{operation_id}_{prompt_type}") as abort_queue:  # 使用异步上下文管理器,并且可以多功能同步运行
             try:
                 async for chunk in chat_with_ai(
                     db=db,
@@ -151,3 +152,97 @@ async def auto_patient_basic_analysis(request: Request, operation_id: int, db: S
         media_type="text/event-stream",
         headers={"X-Accel-Buffering": "no"}
     )
+
+# 拆分api，以实现同步运行多个ai request
+# 1. form section 获得主诉~最终结果
+@chat_router.post("/optimize_full_entry")
+async def chat_optimize_full_entry(request: Request, chat_request: ChatRequest, db: Session = Depends(get_db)):
+    operation_id = chat_request.operation_id
+    logger.info(f"🎬 收到新的聊天请求: operation_id={operation_id}, prompt={chat_request.prompt_type}")
+    prompt_type=chat_request.prompt_type,
+    async def response_generator():
+        async with create_abort_channel(f"{operation_id}_{prompt_type}") as abort_queue:
+            try:
+                async for chunk in chat_with_ai(
+                    db=db,
+                    request=request,
+                    operation_id=operation_id,
+                    message=chat_request.message,
+                    prompt_type=chat_request.prompt_type,
+                    abort_queue=abort_queue
+                ):
+                    yield chunk
+            except asyncio.CancelledError:
+                logger.warning(f"🎬 操作 {operation_id} 被取消")
+                yield "event: error\ndata: 请求已取消\n\n"
+            except Exception as e:
+                logger.error(f"生成器异常: {str(e)}")
+                yield f"event: error\ndata: {str(e)}\n\n"
+
+    return StreamingResponse(
+        response_generator(),
+        media_type="text/event-stream",
+        headers={"X-Accel-Buffering": "no"}
+    )
+# 2. smart advice 根据最后结果，给出建议
+@chat_router.post("/patient_attention_suggestion")
+async def chat_patient_attention_suggestion(request: Request, chat_request: ChatRequest, db: Session = Depends(get_db)):
+    operation_id = chat_request.operation_id
+    logger.info(f"🎬 收到新的聊天请求: operation_id={operation_id}, prompt={chat_request.prompt_type}")
+    prompt_type=chat_request.prompt_type,
+    async def response_generator():
+        async with create_abort_channel(f"{operation_id}_{prompt_type}") as abort_queue:
+            try:
+                async for chunk in chat_with_ai(
+                    db=db,
+                    request=request,
+                    operation_id=operation_id,
+                    message=chat_request.message,
+                    prompt_type=chat_request.prompt_type,
+                    abort_queue=abort_queue
+                ):
+                    yield chunk
+            except asyncio.CancelledError:
+                logger.warning(f"🎬 操作 {operation_id} 被取消")
+                yield "event: error\ndata: 请求已取消\n\n"
+            except Exception as e:
+                logger.error(f"生成器异常: {str(e)}")
+                yield f"event: error\ndata: {str(e)}\n\n"
+
+    return StreamingResponse(
+        response_generator(),
+        media_type="text/event-stream",
+        headers={"X-Accel-Buffering": "no"}
+    )
+
+# 3. 词云
+@chat_router.post("/chat_keyword_extraction")
+async def chat_chat_keyword_extraction(request: Request, chat_request: ChatRequest, db: Session = Depends(get_db)):
+    operation_id = chat_request.operation_id
+    logger.info(f"🎬 收到新的聊天请求: operation_id={operation_id}, prompt={chat_request.prompt_type}")
+    prompt_type=chat_request.prompt_type,
+    async def response_generator():
+        async with create_abort_channel(f"{operation_id}_{prompt_type}") as abort_queue:
+            try:
+                async for chunk in chat_with_ai(
+                    db=db,
+                    request=request,
+                    operation_id=operation_id,
+                    message=chat_request.message,
+                    prompt_type=chat_request.prompt_type,
+                    abort_queue=abort_queue
+                ):
+                    yield chunk
+            except asyncio.CancelledError:
+                logger.warning(f"🎬 操作 {operation_id} 被取消")
+                yield "event: error\ndata: 请求已取消\n\n"
+            except Exception as e:
+                logger.error(f"生成器异常: {str(e)}")
+                yield f"event: error\ndata: {str(e)}\n\n"
+
+    return StreamingResponse(
+        response_generator(),
+        media_type="text/event-stream",
+        headers={"X-Accel-Buffering": "no"}
+    )
+# 4. 矛盾项分析

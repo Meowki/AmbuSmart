@@ -209,6 +209,7 @@ const aiAccumulatedText = ref("");
 const abortControllerRef = ref(null);
 
 // AI 优化按钮功能
+// 如需修改后进行AI优化，请先提交再点击
 const handleAIOptimize = async () => {
   isOptimizing.value = true;
   try {
@@ -219,7 +220,7 @@ const handleAIOptimize = async () => {
     const signal = abortControllerRef.value.signal;
 
     const response = await api.post(
-      `/chat`,
+      `/chat/optimize_full_entry`,
       {
         operation_id: operationIdFromStore.value,
         message: "生成完整急救记录草稿",
