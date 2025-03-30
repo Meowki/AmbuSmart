@@ -108,16 +108,21 @@
                 <el-icon><Refresh /></el-icon> 恢复
               </el-button>
               <el-button
-  type="warning"
-  :loading="isOptimizing"
-  :disabled="isOptimizing"
-  @click="handleAIOptimize"
-  plain
->
-  <el-icon><MagicStick /></el-icon>
-  {{ isOptimizing ? '生成中...' : 'AI 优化' }}
-</el-button>
+                type="warning"
+                :loading="isOptimizing"
+                :disabled="isOptimizing"
+                @click="handleAIOptimize"
+              >
+              <el-icon><MagicStick /></el-icon>
+              {{ isOptimizing ? '生成中...' : 'AI 优化' }}
+              </el-button>
 
+              <!-- 新增取消按钮（仅在生成中显示） -->
+              <el-button type="danger" @click="cancelAIOptimize" plain
+              v-if="isOptimizing">
+                <el-icon><Close /></el-icon>
+                取消生成
+              </el-button>
             </div>
           </el-form-item>
         </el-form>
@@ -259,11 +264,17 @@ onMounted(() => {
 
 const aiAccumulatedText = ref("");
 
+const abortControllerRef = ref(null);
+
 // AI 优化按钮功能
 const handleAIOptimize = async () => {
   isOptimizing.value = true;
   try {
     aiAccumulatedText.value = ""; // 重置
+
+    // 创建新的 AbortController
+    abortControllerRef.value = new AbortController();
+    const signal = abortControllerRef.value.signal;
 
     const response = await api.post(
       `/chat`,
@@ -271,9 +282,16 @@ const handleAIOptimize = async () => {
         operation_id: operationIdFromStore.value,
         message: "生成完整急救记录草稿",
         prompt_type: "optimize_full_entry",
+        signal: signal,
       },
       { responseType: "text" }
     );
+
+    // 检查是否已取消
+    if (signal.aborted) {
+      console.log("[AI优化] 请求已被取消");
+      return;
+    }
 
     // ✅ Axios 收到的是拼接好的字符串，直接处理
     const rawText = response.data;
@@ -282,6 +300,7 @@ const handleAIOptimize = async () => {
     // 逐行解析 response
     const lines = rawText.split("\n");
     for (const line of lines) {
+      if (signal.aborted) break; // 如果已取消，停止处理
       if (line.startsWith("data:")) {
         const raw = line.replace(/^data:\s*/, "").trim();
         try {
@@ -294,17 +313,50 @@ const handleAIOptimize = async () => {
         }
       }
     }
+
+    if (signal.aborted) {
+      console.log("[AI优化] 处理过程中被取消");
+      return;
+    }
+
     // 现在 aiAccumulatedText.value 应该是 ```json\n{...}\n``` 这样的结构
     const result = extractLastJSON(aiAccumulatedText.value);
     Object.assign(form.value, result); // ✅ 自动填表
     ElMessage.success("AI 优化内容已自动填入表单");
   } catch (e) {
-    console.error("[AI 优化失败]", e);
-    ElMessage.error("AI 生成失败，请稍后重试");
-  } finally {
-    isOptimizing.value = false;
-  }
+    if (e.name === "CanceledError") {
+      console.log("[AI优化] 请求已被用户取消");
+      ElMessage.warning("AI 优化已取消");
+    } else {
+      console.error("[AI 优化失败]", e);
+      ElMessage.error("AI 生成失败，请稍后重试");
+    }
+  } // 修改优化函数的 finally
+finally {
+  // 确保任何情况下都能解除状态
+  isOptimizing.value = false
+  abortControllerRef.value = null
+}
 };
+
+// 取消函数强化
+const cancelAIOptimize = () => {
+  if (abortControllerRef.value) {
+    // 发送取消信号
+    abortControllerRef.value.abort()
+    
+    // 强制清理
+    aiAccumulatedText.value = ""
+    isOptimizing.value = false
+    
+    // 发送后端中断请求
+    api.post(`/chat/abort/${operationIdFromStore.value}`).catch(console.error)
+    
+    ElMessage.warning("生成已终止")
+  }
+}
+
+
 
 // 工具函数：提取最后一个 JSON 对象
 function extractLastJSON(text) {
@@ -312,7 +364,9 @@ function extractLastJSON(text) {
   console.log(text);
 
   // Step 1: 尝试提取 JSON 结构中包含目标字段的部分
-  const jsonMatch = text.match(/{[\s\S]*?(chief_complaint|initial_diagnosis|procedures|medicine|outcome)[\s\S]*?}/);
+  const jsonMatch = text.match(
+    /{[\s\S]*?(chief_complaint|initial_diagnosis|procedures|medicine|outcome)[\s\S]*?}/
+  );
 
   if (!jsonMatch || !jsonMatch[0]) {
     console.warn("⚠️ 未匹配到包含关键字段的 JSON 结构");
