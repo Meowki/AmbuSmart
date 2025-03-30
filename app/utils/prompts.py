@@ -77,6 +77,15 @@ def get_prompt_by_type(prompt_type: str):
 请确保内容专业、简洁，内容应符合医学急救记录规范，语言简洁、专业，不包含多余注释或自然语言。
 若无记录请用”无“替代。
 """
+   elif prompt_type == "patient_attention_suggestion":
+      return base_prompt + """
+综合判断并指出是否存在以下情况：
+
+- 当前记录中存在的可疑症状、生命体征异常或需要紧急关注的情况；
+- 与患者历史记录相比较，是否存在复发性症状或值得关注的慢性问题。
+
+请以简洁、专业的语言输出，使用 Markdown 格式，重点突出。
+"""
    else:  # 默认对话模式
       return base_prompt + """
 请提供 **简洁明确的急救方案建议**：

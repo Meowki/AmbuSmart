@@ -221,6 +221,32 @@ def format_patient_data(db: Session, operation_data: dict, patient_id:str, promp
         if not patient_data:
             raise HTTPException(status_code=404, detail="无法获取患者历史数据")
         return json.dumps(patient_data, ensure_ascii=False)
+    
+    # 模式二：当前操作 + 患者历史
+    if prompt_type == "patient_attention_suggestion":
+        logger.info(f"[BACKEND] 获取患者 {patient_id} 的历史数据用于特别关注分析")
+        patient_data = get_patient_history(db, patient_id)
+        if not patient_data:
+            raise HTTPException(status_code=404, detail="无法获取患者历史数据")
+        history_part = json.dumps(patient_data, ensure_ascii=False) if patient_data else "无患者历史信息"
+
+        return f"""
+        当前急救记录如下：
+        患者信息：{operation_data['patient_info']}
+        主诉：{operation_data['chief_complaint']}
+        急救类型：{operation_data['emergency_type']}，病情分级：{operation_data['severity_level']}
+        初步诊断：{operation_data['initial_diagnosis']}
+        处理措施：{operation_data['procedures']}，用药情况：{operation_data['medicine']}
+        初检：{operation_data['initial_check']}
+        终检：{operation_data['final_check']}
+        TI 评分：{operation_data['ti_content']}
+        GCS 评分：{operation_data['gcs_score']}，内容：{operation_data['gcs_content']}
+        Killip 分级：{operation_data['Killip_score']}，内容：{operation_data['Killip_content']}，诊断：{operation_data['Killip_diagnosis']}
+        脑卒中评估：{operation_data['cerebral_stroke_content']}
+
+        患者详细历史信息如下：
+        {history_part}
+        """
 
     return f"""
     患者信息：{operation_data['patient_info']}
