@@ -152,6 +152,7 @@ const Independent = ({ operationId }) => {
     const signal = abortControllerRef.current.signal;
 
     try {
+      console.log("[FRONT] 🚀 开始请求:", { prompt_type});
       const response = await fetch(`/chat/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -250,6 +251,8 @@ const Independent = ({ operationId }) => {
       ]);
       setLoading(true);
       setIsAborted(false);
+
+      setCurrentPromptType("patient_basic_analysis");
   
       try {
         const response = await fetch(`/chat/auto/${operationId}`, {
@@ -346,10 +349,13 @@ const Independent = ({ operationId }) => {
       { role: "ai", content: "..." },
     ]);
 
+
     onRequest({
       message: nextContent,
-      prompt_type: currentPromptType || "standard_advice",
+      prompt_type: "standard_advice",
     });
+
+    setCurrentPromptType("standard_advice");
 
     console.log(
       "nextContent:" + nextContent + "currentPromptType:" + currentPromptType
@@ -360,6 +366,7 @@ const Independent = ({ operationId }) => {
 
   // 新增 Prompt 按钮的选择事件
   const onPromptSelect = (item) => {
+    if (loading) return;
     const promptType = item.data.key;
     const promptDescription = item.data.label;
 
@@ -385,14 +392,6 @@ const Independent = ({ operationId }) => {
       prompt_type: promptType,
     });
   };
-
-  // const onCancel = () => {
-  //   console.log("[FRONT] 用户点击取消按钮", new Date().toISOString());
-  //   setIsAborted(true);
-  //   abortControllerRef.current.abort();
-  //   console.log("[FRONT] AbortController 已触发 abort()");
-  //   setLoading(false);
-  // };
 
   // 强化版取消逻辑
   const onCancel = () => {
@@ -432,7 +431,7 @@ const Independent = ({ operationId }) => {
     }
 
     // 发送显式中断信号到后端
-    fetch(`/chat/abort/${operationId}`, { method: "POST" }).catch((e) =>
+    fetch(`/chat/abort/${operationId}_${currentPromptType}`, { method: "POST" }).catch((e) =>
       console.log("中断信号发送失败:", e)
     );
 
@@ -468,7 +467,7 @@ const Independent = ({ operationId }) => {
           typing={{ step: 2, interval: 50 }}
         />
 
-        <Prompts items={items} wrap onItemClick={onPromptSelect} />
+        <Prompts items={items} wrap onItemClick={onPromptSelect} disabled={loading} />
 
         <Sender
           value={content}
