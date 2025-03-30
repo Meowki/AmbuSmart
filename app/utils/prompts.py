@@ -86,6 +86,21 @@ def get_prompt_by_type(prompt_type: str):
 
 请以简洁、专业的语言输出，使用 Markdown 格式，重点突出。
 """
+   elif prompt_type == "chat_keyword_extraction":
+      return base_prompt + """
+   请从以下对话中提取出**最具代表性的关键词**，这些关键词应能反映出对话的核心内容和医学相关重点，并估算其重要程度（1-10 分）。
+
+请遵循以下要求：
+- 关键词应为名词或短语，例如“胸痛”、“转运”、“急性阑尾炎”
+- 去除无意义的语气词、修饰词、日常用语
+- 不要返回完整句子
+- 返回格式为 JSON 数组，如：
+[
+  { "name": "关键词1", "value": 8 },
+  { "name": "关键词2", "value": 5 }
+]
+
+"""
    else:  # 默认对话模式
       return base_prompt + """
 请提供 **简洁明确的急救方案建议**：

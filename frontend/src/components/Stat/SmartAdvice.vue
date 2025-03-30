@@ -34,7 +34,7 @@
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed,onMounted } from 'vue';
   import api from '@/services/api';
   import { useStore } from 'vuex';
   import { ElMessage } from 'element-plus';
@@ -47,6 +47,10 @@
   
   const store = useStore();
   const operationIdFromStore = computed(() => store.state.operation_id || '20250');
+
+onMounted(() => {
+  // generateAttention();
+});
   
   const renderMarkdown = (text) => {
     return md.render(text);

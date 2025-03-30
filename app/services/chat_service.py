@@ -247,6 +247,8 @@ def format_patient_data(db: Session, operation_data: dict, patient_id:str, promp
         患者详细历史信息如下：
         {history_part}
         """
+    elif prompt_type == "chat_keyword_extraction":
+        return ""
 
     return f"""
     患者信息：{operation_data['patient_info']}

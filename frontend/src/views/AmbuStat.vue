@@ -11,11 +11,9 @@
       <!-- 2. AI 建议 -->
       <SmartAdvice />
 
-      <!-- 3. 录入记录展示列表（已移除操作栏） -->
-      <el-card class="table-card" shadow="hover">
-        
-      </el-card>
-
+      <!-- 3. 词云图 -->
+      <ChatWordCloud />
+      
       <div class="confirm-button">
         <el-button type="success" @click="handleConfirm">确认结束</el-button>
       </div>
@@ -29,6 +27,7 @@ import { useRouter } from "vue-router";
 import NavigationBar from "@/components/NavigationBars.vue";
 import FormSection from "@/components/Stat/FormSection.vue";
 import SmartAdvice from "@/components/Stat/SmartAdvice.vue";
+import ChatWordCloud from "@/components/Stat/ChatWordCloud.vue";
 import api from "@/services/api";
 import { useStore } from "vuex";
 
