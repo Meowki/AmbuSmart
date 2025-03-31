@@ -22,6 +22,9 @@ import {
 import { Avatar, Badge, Button, Typography, message } from "antd";
 import markdownit from "markdown-it";
 import { XStream } from "@ant-design/x";
+import withAliyunASR from './utils/withAliyunASR';
+
+const EnhancedSender = withAliyunASR(Sender);
 
 // 头像与气泡位置
 const userAvatar = { color: "#fff", backgroundColor: "#1677ff" }; // 用户头像
@@ -116,6 +119,7 @@ const Independent = ({ operationId }) => {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [isAborted, setIsAborted] = useState(false);
+  const [recording, setRecording] = useState(false);
   const md = markdownit({ html: true, breaks: true });
 
   //打断流式输出
@@ -469,15 +473,16 @@ const Independent = ({ operationId }) => {
 
         <Prompts items={items} wrap onItemClick={onPromptSelect} disabled={loading} />
 
-        <Sender
-          value={content}
-          onSubmit={onSubmit}
-          onChange={setContent}
-          loading={loading} // 绑定明确的状态
-          onCancel={onCancel} // 绑定取消事件
-          className={styles.sender}
-          allowSpeech
-        />
+        <EnhancedSender
+      value={content}
+      onSubmit={onSubmit}
+      onChange={setContent}
+      loading={loading}
+      onCancel={onCancel}
+      className={styles.sender}
+      allowSpeech={{ recording }}
+    />
+        
       </div>
     </div>
   );

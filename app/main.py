@@ -20,6 +20,7 @@ from api.ambulance.ambulance_routers import router as ambulance_routers
 from api.ambulance.basic_check_routers import router as basic_check_routers
 from api.ambulance.operation_histories_routers import router as operation_history_routers
 from api.chat_router import chat_router
+from api.audio_router import audio_router
 
 
 from db.base import Base
@@ -79,6 +80,9 @@ app.include_router(operation_history_routers, prefix="/api")
 
 # 注册 AI 对话 API
 app.include_router(chat_router, prefix="/api")
+
+# 注册语音转文字 API
+app.include_router(audio_router, prefix="/api")
 
 
 # 记录应用启动事件

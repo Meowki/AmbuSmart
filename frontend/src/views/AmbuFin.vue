@@ -4,6 +4,7 @@
     <el-card class="end-card" shadow="hover">
       <h2>急救记录结束</h2>
       <p>您的急救记录已成功结束，感谢您的使用！</p>
+
       <el-button type="primary" @click="goHome">返回首页</el-button>
     </el-card>
   </div>
@@ -13,6 +14,9 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import NavigationBar from '@/components/NavigationBars.vue'
+
+// 需要加本次记录最终的报告
+// 搞完这个加个语音输入 知识图谱？ 再看看历史记录需要花多少时间，或者搞个小接口输入 就可以论文了
 
 const currentStep = ref('急救结束')
 const router = useRouter()
