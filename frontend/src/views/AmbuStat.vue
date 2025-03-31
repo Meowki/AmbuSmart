@@ -25,20 +25,20 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { computed, ref} from "vue";
 import { useRouter } from "vue-router";
 import NavigationBar from "@/components/NavigationBars.vue";
 import FormSection from "@/components/Stat/FormSection.vue";
 import SmartAdvice from "@/components/Stat/SmartAdvice.vue";
 import ChatWordCloud from "@/components/Stat/ChatWordCloud.vue";
 import ConsistencyAnalysis from "@/components/Stat/ConsistencyAnalysis.vue";
-import api from "@/services/api";
 import { useStore } from "vuex";
 
 
 const currentStep = ref("统计分析");
 const store = useStore();
 
+// eslint-disable-next-line 
 const operationIdFromStore = computed(
   () => store.state.operation_id || "20250"
 );

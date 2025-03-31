@@ -140,7 +140,6 @@ import {
   Close,
 } from "@element-plus/icons-vue";
 
-const currentStep = ref("统计分析");
 const store = useStore();
 
 const isOptimizing = ref(false); // 控制按钮 loading
@@ -189,6 +188,7 @@ const handleSubmit = async () => {
       recipient: form.value.recipient,
     };
 
+    // eslint-disable-next-line no-unused-vars
     const response = await api.put(
       `/operation_histories/update/${operationIdFromStore.value}`,
       operationHistoryData

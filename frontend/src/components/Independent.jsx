@@ -120,6 +120,7 @@ const Independent = ({ operationId }) => {
   const [loading, setLoading] = useState(false);
   const [isAborted, setIsAborted] = useState(false);
   const [recording, setRecording] = useState(false);
+  const [interimText, setInterimText] = useState('');
   const md = markdownit({ html: true, breaks: true });
 
   //打断流式输出
@@ -474,13 +475,18 @@ const Independent = ({ operationId }) => {
         <Prompts items={items} wrap onItemClick={onPromptSelect} disabled={loading} />
 
         <EnhancedSender
-      value={content}
+      value={content}  // 合并最终文本和中间文本
       onSubmit={onSubmit}
       onChange={setContent}
       loading={loading}
       onCancel={onCancel}
       className={styles.sender}
-      allowSpeech={{ recording }}
+      allowSpeech={{
+        recording,  // 控制录音的状态
+        onRecordingChange: (nextRecording) => {
+          setRecording(nextRecording);
+        },
+      }}
     />
         
       </div>
