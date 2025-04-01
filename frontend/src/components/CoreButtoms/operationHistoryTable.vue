@@ -11,7 +11,10 @@
           </div>
           <div class="info-item">
             <span class="label">出诊日期：</span>
-            <span class="value">{{ currentOperation.dispatch_time.split(' ')[0] }}</span>
+            <span class="value">
+  {{ currentOperation.dispatch_time?.split(' ')[0] || '-' }}
+</span>
+
           </div>
         </div>
       </div>
@@ -219,8 +222,8 @@ watch(
     console.log("解包后记录:", rawRecords);
     
     if (rawRecords) {
-      currentOperation.value = rawRecords;
-      console.log("当前记录:", currentOperation.value);
+      currentOperation.value = rawRecords[0] || {};
+      console.log("当前记录:", JSON.stringify(currentOperation.value));
     } else {
       currentOperation.value = {};
     }
