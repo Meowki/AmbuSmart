@@ -23,6 +23,7 @@
     "echarts-wordcloud": "^2.1.0",
     "element-plus": "^2.9.4",
     "html2canvas": "^1.4.1",
+    "html2pdf.js": "^0.10.3",
     "jspdf": "^3.0.0",
     "markdown-it": "^14.1.0",
     "openai": "^4.87.3",

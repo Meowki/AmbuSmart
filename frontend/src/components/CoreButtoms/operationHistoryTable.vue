@@ -270,44 +270,43 @@ function formatKey(key) {
 <style scoped lang="scss">
 .emergency-record {
   padding: 20px;
-  background: #f5f7fa;
-  min-height: 100vh;
+  background: #f0f4f8;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .header-box {
-  background: linear-gradient(135deg, #409EFF, #337ecc);
+  background: linear-gradient(135deg,rgb(64, 104, 235),rgb(103, 145, 245));
   color: white;
-  padding: 24px 32px;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px;
 
   .main-title {
-    font-size: 24px;
-    margin: 0 0 12px;
-    letter-spacing: 1px;
+    font-size: 28px;
+    margin-bottom: 10px;
+    font-weight: 700;
   }
 
-  .operation-info {
+.operation-info {
     display: flex;
-    gap: 32px;
+    gap: 40px;
 
     .info-item {
-      display: flex;
-      align-items: center;
-      font-size: 14px;
+      font-size: 15px;
 
       .label {
-        opacity: 0.8;
+        opacity: 0.9;
+        margin-right: 4px;
+      }
+
+      .value.highlight {
+        color: #ffd700;
+        font-weight: bold;
       }
 
       .value {
         font-weight: 500;
-
-        &.highlight {
-          font-size: 16px;
-          color: #ffd04b;
-        }
       }
     }
   }

@@ -11,9 +11,17 @@
     </el-card>
   </div>
 
-  <!-- 急救记录单展示 -->
-  <el-dialog v-model="dialogVisibleOperation" width="80%" title="院前急救电子记录单">
-    <OperationHistoryTable :records="[currentOperation]" />
+
+  <el-dialog v-model="dialogVisibleOperation" width="70%" title="院前急救电子记录单">
+    <template #header>
+    <div class="dialog-header">
+      <el-button type="primary" @click="exportPDF">导出PDF</el-button>
+    </div>
+  </template>
+
+    <div ref="printContent">
+      <OperationHistoryTable :records="[currentOperation]" />
+    </div>
   </el-dialog>
 </template>
 
@@ -23,13 +31,33 @@ import { useRouter } from 'vue-router';
 import { useStore } from "vuex";
 import api from "@/services/api";
 import dayjs from 'dayjs';
+import html2pdf from 'html2pdf.js';
 import NavigationBar from '@/components/NavigationBars.vue';
 import OperationHistoryTable from '@/components/CoreButtoms/operationHistoryTable.vue';
+
 
 const currentStep = ref('急救结束');
 const router = useRouter();
 const store = useStore();
 const dialogVisibleOperation = ref(false);
+const printContent = ref(null);
+
+// 导出PDF功能
+const exportPDF = () => {
+  const element = printContent.value;
+  
+  const options = {
+    margin: 5,
+    filename: `急救记录单_${dayjs().format('YYYYMMDD_HHmmss')}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(options).from(element).save().catch(err => {
+    console.error("PDF生成失败：", err);
+  });
+};
 
 // 基本患者信息
 const patientInfo = ref({
@@ -198,5 +226,13 @@ function handleExit() {
   display: flex;
   justify-content: center;
   gap: 16px;
+}
+
+
+.dialog-header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 40px; /* 避免与默认关闭按钮重叠 */
 }
 </style>
