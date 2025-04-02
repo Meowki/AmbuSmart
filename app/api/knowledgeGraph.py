@@ -28,19 +28,25 @@ def fetch_schema(entity: str):
     }
     try:
         response = requests.get(api_url, params=params, timeout=10)
-        response.raise_for_status()
-        # print("DEBUG response.text:", response.text)  
-        data = response.json()  # 解析 JSON
+        # 先检查响应码，不 raise_for_status
+        if response.status_code >= 400:
+            # 打印调试
+            print(f"[schema] cpubmed返回错误码 {response.status_code}, entity={entity}")
+            print("响应文本:", response.text)
+            # 返回空结构
+            return {}  
+        
+        # status_code 2xx
+        data = response.json()
         return data
+
     except requests.JSONDecodeError as jde:
-        raise HTTPException(
-            status_code=500,
-            detail=f"JSON 解析错误: {jde}. 原始响应: {response.text}"
-        )
+        print(f"[schema] JSON解析错误, entity={entity}, response={response.text}")
+        return {}
+
     except requests.RequestException as re:
-        raise HTTPException(
-            status_code=500, detail=f"请求异常: {re}"
-        )
+        print(f"[schema] 请求异常, entity={entity}, err={re}")
+        return {}
 
 
 

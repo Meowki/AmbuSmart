@@ -10,6 +10,7 @@
         <PatientInfo /> 
         <CheckPage />
         <ScoreTableDialogue />
+        <KeywordsGraph />
         <TimeLineButtom />
       </div>
     </el-card>
@@ -37,6 +38,7 @@ import PatientInfo from "@/components/CoreButtoms/PatientInfo.vue";
 import TimeLineButtom from "@/components/CoreButtoms/timeLineButtom.vue";
 import CheckPage from "@/components/CoreButtoms/basicCheckDialogue.vue";
 import ScoreTableDialogue from "@/components/CoreButtoms/scoreTableDialogue.vue";
+import KeywordsGraph from "@/components/CoreButtoms/KeywordsGraph.vue"
 
 const IndependentInVue = applyReactInVue(Independent); 
 

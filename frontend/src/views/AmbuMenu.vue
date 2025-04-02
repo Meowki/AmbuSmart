@@ -38,7 +38,7 @@
   </div>
 
   <el-dialog v-model="dialogVisible" title="急救知识图谱" width="70%">
-    <KnowledgeGraph />
+    <KnowledgeGraph :initialKeyword="'胸痛'" />
   </el-dialog>
 </template>
 
