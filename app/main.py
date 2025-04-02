@@ -21,6 +21,7 @@ from api.ambulance.basic_check_routers import router as basic_check_routers
 from api.ambulance.operation_histories_routers import router as operation_history_routers
 from api.chat_router import chat_router
 from api.audio_router import audio_router
+from api.knowledgeGraph import router as knowledge_graph_routers
 
 
 from db.base import Base
@@ -83,6 +84,9 @@ app.include_router(chat_router, prefix="/api")
 
 # 注册语音转文字 API
 app.include_router(audio_router, prefix="/api")
+
+# 注册知识图谱 API
+app.include_router(knowledge_graph_routers, prefix="/api")
 
 
 # 记录应用启动事件

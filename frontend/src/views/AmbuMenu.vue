@@ -23,7 +23,7 @@
             <p>📞 历史记录</p>
           </div>
         </el-card>
-        <el-card class="card" shadow="always">
+        <el-card class="card" shadow="always" @click="showKnowledgeGraph">
           <div class="card-content">
             <p>📖 急救手册</p>
           </div>
@@ -36,76 +36,78 @@
       </div>
     </el-card>
   </div>
+
+  <el-dialog v-model="dialogVisible" title="急救知识图谱" width="70%">
+    <KnowledgeGraph />
+  </el-dialog>
 </template>
 
-<script>
-import api from "@/services/api";
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import api from '@/services/api';
+import KnowledgeGraph from '@/components/utils/KnowledgeGraph.vue';
 
-export default {
-  name: "HomePage",
+const router = useRouter();
+const store = useStore();
 
-  data() {
-  return {
-    operation_id: null, // 用于存储 operation_id
-  };
-},
-methods: {
-  
-  async startEmergency() {
-    try {
-      // 发送请求创建 operation_history 记录
-     const response = await api.post("/operation_histories/",{
-        patient_id: null,
-        informant: null,
-        scene_address: null,
-        dispatch_time: new Date().toISOString(),
-        arrival_on_scene_time: null,
-        departure_from_scene_time: null,
-        arrival_at_hospital_time: null,
-        destination: null,
-        severity_level: null,
-        emergency_type: null,
-        chief_complaint: null,
-        initial_diagnosis: null,
-        procedures: null,
-        medicine: null,
-        outcome: null,
-        physician: null,
-        nurse: null,
-        driver: null,
-        paramedic: null,
-        stretcher_bearer: null,
-        recipient: null,
-        initial_eid: null,
-        final_eid: null,
-        ti_score: null,
-        ti_content: null,
-        gcs_score: null,
-        gcs_content: null,
-        Killip_score: null,
-        Killip_content: null,
-        Killip_diagnosis: null,
-        cerebral_stroke_content: null
-      });
+const operation_id = ref(null);
+const dialogVisible = ref(false); // 控制知识图谱弹窗
 
-      // 存储 operation_id
-      this.operation_id = response.data.operation_id; 
-      console.log("Operation created, ID:", this.operation_id);
+const startEmergency = async () => {
+  try {
+    const response = await api.post('/operation_histories/', {
+      patient_id: null,
+      informant: null,
+      scene_address: null,
+      dispatch_time: new Date().toISOString(),
+      arrival_on_scene_time: null,
+      departure_from_scene_time: null,
+      arrival_at_hospital_time: null,
+      destination: null,
+      severity_level: null,
+      emergency_type: null,
+      chief_complaint: null,
+      initial_diagnosis: null,
+      procedures: null,
+      medicine: null,
+      outcome: null,
+      physician: null,
+      nurse: null,
+      driver: null,
+      paramedic: null,
+      stretcher_bearer: null,
+      recipient: null,
+      initial_eid: null,
+      final_eid: null,
+      ti_score: null,
+      ti_content: null,
+      gcs_score: null,
+      gcs_content: null,
+      Killip_score: null,
+      Killip_content: null,
+      Killip_diagnosis: null,
+      cerebral_stroke_content: null,
+    });
 
-      // 记录到 Vuex 
-      this.$store.commit("setOperationId", this.operation_id);
-      console.log("Operation ID stored in Vuex:", this.$store.state.operation_id);
+    operation_id.value = response.data.operation_id;
+    console.log('Operation created, ID:', operation_id.value);
 
-      // 跳转到急救页面，并传递 ID
-      this.$router.push({ path: "/AmbuStart", query: { operation_id: this.operation_id } });
-    } catch (error) {
-      console.error("Failed to create operation history:", error);
-    }
+    store.commit('setOperationId', operation_id.value);
+    console.log('Operation ID stored in Vuex:', store.state.operation_id);
+
+    router.push({ path: '/AmbuStart', query: { operation_id: operation_id.value } });
+  } catch (error) {
+    console.error('Failed to create operation history:', error);
   }
-}
+};
 
+const showKnowledgeGraph = () => {
+  dialogVisible.value = true;
 };
 </script>
+
 
 <style scoped>
 .home-container {
