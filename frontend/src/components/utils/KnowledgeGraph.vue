@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- 保留搜索框，让用户可以自己查 -->
     <div class="search-area">
       <el-input
         v-model="keyword"
@@ -20,20 +19,17 @@
       </el-button>
     </div>
 
-    <!-- 图表区域 -->
     <div id="knowledge-graph" style="height: 500px; margin-top: 20px;"></div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch, defineProps } from 'vue'
+import { ref, onMounted, watch, defineProps,nextTick } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import api from '@/services/api'
 import * as echarts from 'echarts'
 
-// 让组件支持：
-// 1. graphData: 如果传了，就渲染这份数据
-// 2. initialKeyword: 如果外部想默认搜索“胸痛”之类，可以设
+// =========== PROPS & STATE ===========
 const props = defineProps({
   graphData: {
     type: Object,
@@ -45,30 +41,35 @@ const props = defineProps({
   }
 })
 
-// 内部状态
 const keyword = ref(props.initialKeyword)
 const chartRef = ref(null)
 
-// 如果外部有传 graphData，则先渲染
+// =========== WATCH LOGIC ===========
 watch(
   () => props.graphData,
   (newVal) => {
     if (newVal) {
-      // 由于 newVal 里可能没有 keyword 概念，所以不改 keyword
-      renderGraph(newVal, '外部数据') 
+      // 自动判断：单中心还是多中心
+      nextTick(() => {
+        renderAutoGraph(newVal)
+      })
     }
   },
-  { immediate: true }
+  { immediate: true, deep: true } // 添加 deep: true 确保对象变化被捕获
 )
 
-// 如果需要默认搜索
+// 如果 initialKeyword 不为空 && 没有外部graphData => 自动执行单中心搜索
 onMounted(() => {
-  // 如果 initialKeyword 不为空 & 未传外部 graphData 时，自动请求
   if (props.initialKeyword && !props.graphData) {
+       // 每次初始化前先销毁旧实例
+   if (chartRef.value) {
+    chartRef.value.dispose()
+  }
     fetchGraph()
   }
 })
 
+// =========== API REQUEST (SINGLE CENTER) ===========
 async function fetchGraph() {
   if (!keyword.value) return
   try {
@@ -76,18 +77,41 @@ async function fetchGraph() {
       params: { entity: keyword.value }
     })
     console.log('查询关键词=', keyword.value, '返回:', resp.data)
-    renderGraph(resp.data, keyword.value)
+    // 根据顶层keys判断渲染模式
+    renderAutoGraph(resp.data)
   } catch (err) {
     console.error('请求失败:', err)
   }
 }
 
-// 根据 data 来渲染 ECharts
-function renderGraph(graphData, centerName) {
-  // graphData 结构: { [中心词]: { relation1: [...], ... } }
-  // centerName 可能是 keyword，也可能是 '外部数据'
-  // 需要找到 graphData 中的那个顶层 key
-  const mainKey = centerName && graphData[centerName] ? centerName : Object.keys(graphData)[0]
+// =========== AUTO DETECTION ===========
+function renderAutoGraph(data) {
+  const topKeys = Object.keys(data)
+  if (!topKeys.length) {
+    console.warn('[renderAutoGraph] data 为空')
+    return
+  }
+
+  // 如果只有一个key => 单中心
+  if (topKeys.length === 1) {
+    renderSingleCenterLegacy(data)
+  } else {
+    // 多中心 => 新增逻辑
+    renderMultiCenter(data)
+  }
+}
+
+/**
+ * 单中心：当 data 只有一个 topKey
+ */
+function renderSingleCenterLegacy(graphData, centerName = '') {
+  console.log('[renderSingleCenterLegacy] data:', graphData, 'centerName=', centerName)
+
+  // 需要找到 mainKey
+  const mainKey = centerName && graphData[centerName] 
+    ? centerName 
+    : Object.keys(graphData)[0]
+  
   if (!graphData[mainKey]) {
     console.warn('graphData 不包含 mainKey:', mainKey)
     return
@@ -134,12 +158,107 @@ function renderGraph(graphData, centerName) {
       addNode(tailEntity, 35, categoryIndex)
       addLink(relation, tailEntity)
     })
-
     categoryIndex++
   }
 
   const categories = [{ name: '中心' }, ...Array.from(categorySet).map(name => ({ name }))]
 
+  initECharts(nodes, links, categories)
+}
+
+
+/**
+ * 多中心：当 data 有多个 topKey
+ */
+ function renderMultiCenter(graphData) {
+  console.log('[renderMultiCenter] data:', graphData)
+
+  const nodes = []
+  const links = []
+  const nodeMap = {}
+  const linkSet = new Set()
+
+  function addNode(name, size, category) {
+    console.log('[addNode] called with:', name, size, category)
+    if (!nodeMap[name]) {
+      nodeMap[name] = { id: name, name, symbolSize: size, category }
+      nodes.push(nodeMap[name])
+    } 
+  }
+
+  function addLink(source, target) {
+    const key = `${source}->${target}`
+    if (!linkSet.has(key)) {
+      linkSet.add(key)
+      links.push({ source, target })
+    } else {
+    }
+  }
+
+  const superCenter = '中心词'
+  addNode(superCenter, 80, 0)
+
+  let categoryIndex = 1
+
+  // 遍历每个 topKey
+  const topKeys = Object.keys(graphData)
+
+  for (const topKey of topKeys) {
+    const topVal = graphData[topKey]
+    if (!topVal) {
+      continue
+    }
+
+    // realKey => 例如 "腹痛"
+    const subKeys = Object.keys(topVal)
+    if (!subKeys.length) {
+      continue
+    }
+
+    const realKey = subKeys[0]
+    if (!realKey || !topVal[realKey]) {
+      continue
+    }
+
+    // 建立 topKey 节点 => 连接 superCenter
+    addNode(topKey, 60, categoryIndex)
+    addLink(superCenter, topKey)
+
+    // 遍历 topVal[realKey], 例如 { "病因": [...], "症状": [...], ... }
+    const relationObj = topVal[realKey]
+    
+    for (const relation in relationObj) {
+      addNode(relation, 50, categoryIndex)
+      addLink(topKey, relation)
+
+      const arr = relationObj[relation]
+      if (!Array.isArray(arr)) {
+        continue
+      }
+
+      for (const item of arr) {
+        // item like [tailEntity, ID]
+        const tailEntity = item[0]
+        const tailId = item[1]
+        addNode(tailEntity, 35, categoryIndex)
+        addLink(relation, tailEntity)
+      }
+    }
+    categoryIndex++
+  }
+
+  const categories = [{ name: '中心词' }]
+  for (let i = 1; i < categoryIndex; i++) {
+    categories.push({ name: `中心${i}` })
+  }
+
+  initECharts(nodes, links, categories)
+}
+
+
+// =========== ECHARTS INIT ===============
+function initECharts(nodes, links, categories) {
+  console.log('[initECharts]')
   const chartDom = document.getElementById('knowledge-graph')
   if (!chartDom) return
 
@@ -154,7 +273,6 @@ function renderGraph(graphData, centerName) {
       {
         type: 'graph',
         layout: 'force',
-        symbolSize: 45,
         roam: true,
         draggable: true,
         categories,
@@ -167,8 +285,8 @@ function renderGraph(graphData, centerName) {
       }
     ]
   }
-
   chartRef.value.setOption(option)
+  window.addEventListener('resize', () => chartRef.value?.resize())
 }
 </script>
 

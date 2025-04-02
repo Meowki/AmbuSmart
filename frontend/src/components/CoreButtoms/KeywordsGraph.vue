@@ -1,5 +1,4 @@
 <template>
-  <!-- 外层按钮：打开Dialog -->
   <el-button
     class="uniform-button"
     type="primary"
@@ -8,14 +7,11 @@
     关键词知识图谱
   </el-button>
 
-  <!-- 弹窗 -->
   <el-dialog
     v-model="dialogVisible"
     title="关键词知识图谱"
     width="70%"
-    :close-on-click-modal="false"
   >
-    <!-- 弹窗内的标题 & 按钮区 -->
     <div class="dialog-header">
       <span>🗣️ 聊天关键词生成</span>
       <div>
@@ -41,7 +37,6 @@
       </div>
     </div>
 
-    <!-- 弹窗内主体区域：如果有数据，就展示 KnowledgeGraph，否则显示空提示 -->
     <div class="dialog-body">
       <div v-if="finalData">
         <KnowledgeGraph :graphData="finalData" />
@@ -135,11 +130,14 @@ async function fetchChatKeywords() {
      console.log('[关键词图谱] 收到关键词:', keywordsArr);
 
     // 4) 循环 /knowledge/schema 获取图谱
-    const subGraphs = {}
-      for (let i = 0; i < keywordsArr.length; i++) {
-      if (signal.aborted) return;
+      const maxValidKeywords = 5;
+let validCount = 0;
+const subGraphs = {};
 
-      const kwItem = keywordsArr[i];
+for (let i = 0; i < keywordsArr.length || validCount < maxValidKeywords; i++) {
+  if (signal.aborted) return;
+
+  const kwItem = keywordsArr[i];
       const kw = kwItem.name || ''; // name 字段
       if (!kw){
         console.warn('[关键词图谱] 跳过空关键词', kwItem);
@@ -148,28 +146,33 @@ async function fetchChatKeywords() {
 
       console.log(`[关键词图谱] [${i+1}/${keywordsArr.length}] 查询: ${kw}`);
 
-      try {
-        // 请求 /knowledge/schema?entity=kw
-        const res = await api.get('/knowledge/schema', {
-          params: { entity: kw }
-        });
-
-        console.log(`[关键词图谱] ${kw} => status: ${res.status}`);
-        console.log(`[关键词图谱] ${kw} => data:`, res.data);
-
-        subGraphs[kw] = res.data;
-      } catch (err) {
-        console.error(`[关键词图谱] 请求关键词 ${kw} 失败:`, err);
-        // 如果后端返回详细报错，可以查看 err.response.data
-        if (err.response) {
-          console.log('[关键词图谱] 后端错误信息:', err.response.data);
-        }
-        throw err; // 重新抛出以让后续 catch 捕获
-      }
+  try {
+    // 请求 /knowledge/schema?entity=kw
+    const res = await api.get('/knowledge/schema', {
+      params: { entity: kw }
+    });
+    // console.log(`[关键词图谱] ${kw} => status: ${res.status}`);
+    console.log(`[关键词图谱] ${kw} => data:`, res.data);
+    
+    // 判断返回数据是否有效（非空对象）
+    if (res.data && Object.keys(res.data).length > 0) {
+      subGraphs[kw] = res.data;
+      validCount++;
+    } else {
+      console.log(`[关键词图谱] ${kw} 返回空数据，跳过`);
     }
+  } catch (err) {
+    console.error(`[关键词图谱] 请求关键词 ${kw} 失败:`, err);
+    if (err.response) {
+      console.log('[关键词图谱] 后端错误信息:', err.response.data);
+    }
+  }
+}
+
 
     // 5) 合并 => finalData
     finalData.value = mergeGraphs(subGraphs)
+    
     ElMessage.success('知识图谱已生成')
   } catch (err) {
     if (err.name === 'CanceledError') {
@@ -205,43 +208,39 @@ function cancelChatKeywords() {
 function mergeGraphs(subGraphs) {
   console.log("[mergeGraphs] 收到 subGraphs:", subGraphs);
 
-  const merged = { "多关键词": {} };
+  const merged = { "中心词": {} };
+
+  // 限制每个关键词的 relation 数量
+  const maxRelationsPerKeyword = 200;
+  // 限制每个 relation 下的尾实体数量
+  const maxTailEntities = 200;
 
   for (const [kw, data] of Object.entries(subGraphs)) {
-    console.log(`[mergeGraphs] 处理关键词: ${kw}`, data);
-
-    // realKey 通常就是 kw (若后端返回 { [kw]: {...} })
-    // 但也可能是别的(若后端返回 { \"静脉补液\": {...} })
     const realKey = Object.keys(data)[0];
-    if (!realKey) {
-      console.log(`[mergeGraphs] 跳过关键词 ${kw}, 因为 data 没有任何 key`);
-      continue;
-    }
-    if (!data[realKey]) {
-      console.log(`[mergeGraphs] 跳过关键词 ${kw}, data[${realKey}] 不存在`);
-      continue;
-    }
+    if (!realKey || !data[realKey]) continue;
 
-    console.log(`[mergeGraphs] realKey = ${realKey}, data[realKey] = `, data[realKey]);
+    // 1) 获取该关键词的所有 relation
+    const allRelations = Object.keys(data[realKey]);
+    // 2) 截取前 maxRelationsPerKeyword 条 relation
+    const limitedRelations = allRelations.slice(0, maxRelationsPerKeyword);
 
-    // 遍历 realKey 下的所有 relation, 例如 \"病因\"/\"症状\"
-    // data[realKey][relation] => [ [\"尾实体\", \"ID\"], ...]
-    for (const relation in data[realKey]) {
-      // 如果 merged['多关键词'] 里还没有这个 relation，就先建空数组
-      if (!merged["多关键词"][relation]) {
-        merged["多关键词"][relation] = [];
+    for (const relation of limitedRelations) {
+      if (!merged["中心词"][relation]) {
+        merged["中心词"][relation] = [];
       }
+      // 原始数组  e.g. [ ["尾实体", "ID"], ... ]
+      const originalArray = data[realKey][relation] || [];
+      // 3) 截取前 maxTailEntities
+      const truncatedArr = originalArray.slice(0, maxTailEntities);
 
-      console.log(`[mergeGraphs] relation=${relation}, data[realKey][relation]=`, data[realKey][relation]);
-      // 合并到 merged["多关键词"][relation]
-      merged["多关键词"][relation].push(...data[realKey][relation]);
+      merged["中心词"][relation].push(...truncatedArr);
     }
   }
 
-  // 最后打印合并结果
   console.log("[mergeGraphs] 最终 merged:", JSON.stringify(merged, null, 2));
   return merged;
 }
+
 
 </script>
 
