@@ -3,7 +3,6 @@
 AmbuSmart
 ├─ .env
 ├─ README.md
-├─ Untitled.ipynb
 ├─ app
 │  ├─ __init__.py
 │  ├─ api
@@ -12,11 +11,13 @@ AmbuSmart
 │  │  │  ├─ ambulance_routers.py
 │  │  │  ├─ basic_check_routers.py
 │  │  │  └─ operation_histories_routers.py
+│  │  ├─ audio_router.py
 │  │  ├─ chat.py
 │  │  ├─ chat_router.py
 │  │  ├─ check
 │  │  │  ├─ check_histories_routers.py
 │  │  │  └─ check_routers.py
+│  │  ├─ knowledgeGraph.py
 │  │  ├─ medicine
 │  │  │  ├─ medicine_histories_routers.py
 │  │  │  └─ medicine_routers.py
@@ -154,6 +155,7 @@ AmbuSmart
 │  │  │  └─ logo.png
 │  │  ├─ components
 │  │  │  ├─ CoreButtoms
+│  │  │  │  ├─ KeywordsGraph.vue
 │  │  │  │  ├─ PatientInfo.vue
 │  │  │  │  ├─ basicCheckDialogue.vue
 │  │  │  │  ├─ caseHistoryTable.vue
@@ -177,7 +179,9 @@ AmbuSmart
 │  │  │  │  └─ WordCloudChart.vue
 │  │  │  └─ utils
 │  │  │     ├─ ExitComponent.vue
-│  │  │     └─ mapComponent.vue
+│  │  │     ├─ KnowledgeGraph.vue
+│  │  │     ├─ mapComponent.vue
+│  │  │     └─ withAliyunASR.jsx
 │  │  ├─ main.js
 │  │  ├─ router
 │  │  │  └─ index.js
@@ -199,7 +203,6 @@ AmbuSmart
 │  │     ├─ UserManagement.vue
 │  │     └─ test.vue
 │  └─ vue.config.js
-├─ huggingface.ipynb
-└─ requirements.txt
+└─ huggingface.ipynb
 
 ```

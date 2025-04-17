@@ -260,9 +260,9 @@ const Independent = ({ operationId }) => {
       setCurrentPromptType("patient_basic_analysis");
   
       try {
-        // const response = await fetch(`/chat/auto/${operationId}`, {
-        //   signal: autoAnalysisAbortController.signal,
-        // });
+        const response = await fetch(`/chat/auto/${operationId}`, {
+          signal: autoAnalysisAbortController.signal,
+        });
   
         console.log("[FRONT] 🚀 自动分析连接状态:", response.status);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
