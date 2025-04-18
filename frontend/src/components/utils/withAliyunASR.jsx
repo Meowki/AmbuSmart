@@ -11,11 +11,25 @@ const withAliyunASR = (WrappedComponent) => (props) => {
   const processorRef = useRef(null);
 
   // 合并实时文本和最终文本
+  // useEffect(() => {
+  //   if (finalText || interimText) {
+  //     props.onChange?.(finalText + " " + interimText);  // 实时更新最终显示的文本
+  //   }
+  // }, [interimText, finalText]);
+
+  // useEffect(() => {
+  //   if (finalText || interimText) {
+  //     props.onChange?.((prev) => (prev || '') + ' ' + finalText + ' ' + interimText);
+  //   }
+  // }, [interimText, finalText]);
   useEffect(() => {
-    if (finalText || interimText) {
-      props.onChange?.(finalText + " " + interimText);  // 实时更新最终显示的文本
+    if (finalText) {
+      props.onChange?.((prev) => (prev || '') + ' ' + finalText);
+      setFinalText(''); // append 之后立即清空，避免反复追加
     }
-  }, [interimText, finalText]);
+  }, [finalText]);
+  
+
 
   // 处理录音状态变化
   const handleRecordingChange = async (nextRecording) => {
@@ -150,10 +164,10 @@ const withAliyunASR = (WrappedComponent) => (props) => {
 
   return (
     <WrappedComponent
-      {...props}
-      value={finalText + " " + interimText}  // 显示最终和中间的文本
-      allowSpeech={mergedAllowSpeech}
-    />
+  {...props}
+  value={props.value + (interimText ? ' ' + interimText : '')}
+  allowSpeech={mergedAllowSpeech}
+  />
   );
 };
 

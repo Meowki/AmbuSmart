@@ -222,7 +222,7 @@ watch(
     console.log("解包后记录:", rawRecords);
     
     if (rawRecords) {
-      currentOperation.value = rawRecords[0] || {};
+      currentOperation.value = rawRecords[0] || rawRecords || {};
       console.log("当前记录:", JSON.stringify(currentOperation.value));
     } else {
       currentOperation.value = {};
