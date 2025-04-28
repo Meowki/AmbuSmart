@@ -130,7 +130,7 @@ async function fetchChatKeywords() {
      console.log('[关键词图谱] 收到关键词:', keywordsArr);
 
     // 4) 循环 /knowledge/schema 获取图谱
-      const maxValidKeywords = 5;
+      const maxValidKeywords = 3;
 let validCount = 0;
 const subGraphs = {};
 
@@ -211,9 +211,9 @@ function mergeGraphs(subGraphs) {
   const merged = { "中心词": {} };
 
   // 限制每个关键词的 relation 数量
-  const maxRelationsPerKeyword = 200;
+  const maxRelationsPerKeyword = 30;
   // 限制每个 relation 下的尾实体数量
-  const maxTailEntities = 200;
+  const maxTailEntities = 20;
 
   for (const [kw, data] of Object.entries(subGraphs)) {
     const realKey = Object.keys(data)[0];

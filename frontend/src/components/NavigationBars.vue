@@ -1,5 +1,4 @@
 <template>
-  <transition name="fade-soft" appear>
   <header class="navbar">
     <div class="logo">PEC-AmbuSmart</div>
     <div class="steps">
@@ -23,7 +22,6 @@
         </span>
       </template>
     </el-dialog>
-  </transition>
 </template>
 
 <script setup>

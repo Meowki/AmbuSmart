@@ -61,7 +61,7 @@ const exportPDF = () => {
 
 // 基本患者信息
 const patientInfo = ref({
-  patient_id: store.state.patient_id || "123123200308281234",
+  patient_id: store.state.patient_id || "310101198003154000",
   name: "",
   sex: "",
   idType: "身份证",
@@ -78,7 +78,7 @@ const currentOperation = ref({});
 onMounted(async () => {
   try {
     const patientId = patientInfo.value.patient_id;
-    const operationId = store.state.operation_id || "20250";
+    const operationId = store.state.operation_id || "20257";
 
     // 获取患者信息
     const patientResponse = await api.get(`/patients/${patientId}`);

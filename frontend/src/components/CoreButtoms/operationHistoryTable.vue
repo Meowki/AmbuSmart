@@ -174,16 +174,6 @@
       </el-descriptions>
     </el-card>
 
-        <div class="treatment-plan">
-        <h4>处理措施：</h4>
-        <ul>
-          <!-- 检查 measures 是否为非空字符串 -->
-          <li v-for="(item, index) in (currentOperation.procedures ? currentOperation.procedures.split('，') : [])" :key="index">
-            <el-icon><caret-right /></el-icon>
-            {{ item }}
-          </li>
-        </ul>
-      </div>
 
     <!-- 签名区 -->
     <div class="signature-area">
